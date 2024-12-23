@@ -1,82 +1,81 @@
-import { Dimensions, StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from 'react-native';
 import { themes } from "../../global/themes";
 
+const { width } = Dimensions.get('window'); // Pega a largura da tela
+
 export const style = StyleSheet.create({
-    container : {
+    container: {
         flex: 1,
-        alignItems: 'center',
+        backgroundColor: themes.colors.background,
+        padding: 20,
         justifyContent: 'center',
     },
-    boxTop : {
-        height:Dimensions.get('window').height / 3,
-        width: '100%',
+    boxTop: {
         alignItems: 'center',
-        justifyContent: 'center',
+        marginBottom: 20,
     },
-    boxMid : {
-        height:Dimensions.get('window').height / 4,
-        width: '100%',
-        paddingHorizontal: 37
+    logo: {
+        width: 100,
+        height: 100,
+        marginBottom: 10,
     },
-    boxBottom : {
-        height:Dimensions.get('window').height / 3,
-        width: '100%',
-        alignItems: 'center',
-    },
-    logo : {
-        width: 80,
-        height: 80
-    },
-    text : {
+    text: {
+        fontSize: 18,
+        color: themes.colors.primary,
         fontWeight: 'bold',
-        marginTop: 40,
-        fontSize: 18
     },
-    titleInput : {
-        marginLeft: 5,
-        marginTop: 20,
-        color: themes.colors.gray
+    boxMid: {
+        marginBottom: 20,
     },
-    boxInput : {
-        width: '100%',
-        height: 40,
+    titleInput: {
+        fontSize: 14,
+        color: themes.colors.gray,
+        marginBottom: 5,
+    },
+    boxInput: {
+        flexDirection: 'row',
+        alignItems: 'center',
         borderWidth: 1,
-        borderRadius: 40,
-        marginTop: 10,
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 5,
-        backgroundColor: themes.colors.lightGray,
-        borderColor: themes.colors.lightGray
+        borderColor: themes.colors.gray,
+        borderRadius: 8,
+        paddingHorizontal: 10,
+        marginBottom: 10,
     },
-    input : {
-        height: '100%',
-        width: '90%',
-        borderRadius: 40,
-        paddingLeft: 5
-    }, 
-    button : {
-        width: '50%',
-        height: 40,
-        marginTop: 40,
+    input: {
+        flex: 1,
+        fontSize: 16,
+        color: themes.colors.text,
+    },
+    boxBottom: {
+        marginVertical: 20,
+    },
+    button: {
+        backgroundColor: themes.colors.primary,
+        paddingVertical: 12,
+        borderRadius: 20,
+        boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px',
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 40,
-        backgroundColor: themes.colors.primary,
-        boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)'
+        width: width * 0.9, // 90% da largura da tela
+        alignSelf: 'center', // Centraliza o botão horizontalmente
     },
-    textButton : {
-        color: themes.colors.secondary,
+    textButton: {
+        fontSize: 16,
+        color: themes.colors.white,
         fontWeight: 'bold',
     },
-    textBottom : {
-        fontSize: 16,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    textBottomCadastroContainer : {
+    textBottomCadastroContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-        alignItems: 'center'
-    }
-})
+    },
+    textBottom: {
+        fontSize: 14,
+        color: themes.colors.gray,
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
+        marginVertical: 10,
+        textAlign: 'center',
+    },
+});

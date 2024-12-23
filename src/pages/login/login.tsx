@@ -9,7 +9,7 @@ import {
     ActivityIndicator
 } from "react-native";
 import { style } from "./styles";
-import Logo from '../../assets/logo.png'
+import Logo from '../../assets/logo.png';
 import { MaterialIcons } from '@expo/vector-icons';
 import { themes } from "../../global/themes";
 
@@ -19,29 +19,35 @@ export default function Login() {
     const [loading, setLoading] = useState(false);
     const [messageError, setMessageError] = useState('');
     const [boxError, setBoxError] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     async function getLogin() {
         setLoading(true);
         try {
             if(!email || !password) {
-                setBoxError(true)
-                setMessageError('Preencha todos os campos')
+                setBoxError(true);
+                setMessageError('Preencha todos os campos');
+                setLoading(false);
             }
+           else if(!email.includes('@') || !email.includes('.com')) {
+                setBoxError(true);
+                setMessageError('Email inválido');
+                setLoading(false);
+           }
             else {
                 setTimeout(() =>  {
-                    setBoxError(false)
-                    setMessageError('')
-                    alert('Logado com sucesso!')
-                    setLoading(false)
+                    setBoxError(false);
+                    setMessageError('');
+                    alert('Logado com sucesso!');
+                    setLoading(false);
                 }, 3000);
             } 
         } catch (error) {
             console.log("Erro ao logar: ", error);
-            setBoxError(true)
-            setMessageError('Erro ao logar')
+            setBoxError(true);
+            setMessageError('Erro ao logar');
         }
     }
-
 
     return (
         <View style={style.container}>
@@ -51,7 +57,7 @@ export default function Login() {
                     style={style.logo}
                     resizeMode="contain"
                 />
-                <Text style={style.text}>Bem vindo de volta!</Text>
+                <Text style={style.text}>Gerencie suas finanças e conquiste seus objetivos!</Text>
             </View>
 
             <View style={style.boxMid}>
@@ -68,7 +74,6 @@ export default function Login() {
                         size={20}
                         color={themes.colors.gray}
                     />
-                
                 </View>
                 <Text style={style.titleInput}>SENHA</Text>
                 <View style={style.boxInput}>
@@ -76,22 +81,24 @@ export default function Login() {
                         style={style.input}
                         value={password}
                         onChangeText={(text) => setPassword(text)}
+                        secureTextEntry={!showPassword}
                         placeholder="Digite sua senha"
                     />
-                    <MaterialIcons
-                        name="remove-red-eye"
-                        size={20}
-                        color={themes.colors.gray}
-                    />
-                
+                    <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                        <MaterialIcons
+                            name={showPassword ? "visibility" : "visibility-off"}
+                            size={20}
+                            color={themes.colors.gray}
+                        />
+                    </TouchableOpacity>
                 </View>
             </View>
 
-            {boxError && <Text style={{color: 'red'}}>{messageError}</Text>}
+            {boxError && <Text style={style.errorText}>{messageError}</Text>}
 
             <View style={style.boxBottom}>
                 <TouchableOpacity style={style.button} onPress={() => getLogin()}>
-                    {loading? 
+                    {loading ? 
                     <ActivityIndicator color={themes.colors.secondary} size={'small'}/> : 
                     <Text style={style.textButton}>ENTRAR</Text>}
                 </TouchableOpacity>
@@ -101,5 +108,5 @@ export default function Login() {
                 <TouchableOpacity><Text style={{color: themes.colors.primary}}>Cadastre-se</Text></TouchableOpacity>
             </View>
         </View>
-    )
+    );
 }
