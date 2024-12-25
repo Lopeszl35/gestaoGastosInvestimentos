@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
   Alert
 } from "react-native";
-import { style } from "./styles";
+import { style } from "../styles/styles";
 import Logo from "../assets/images/logo.png";
 import { MaterialIcons } from "@expo/vector-icons";
 import { themes } from "../global/themes";

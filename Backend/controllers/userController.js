@@ -12,28 +12,29 @@ class UserController {
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const { nome, email, password, perfil_financeiro, salario_mensal, saldo_inicial, saldo_atual } = req.body;
+        const user = req.body;
+        console.log("user recebido no controller: ", user);
 
         try {
             // Validação do e-mail e senha
-            const isValid = await this.UserModel.isValidUser(email, password);
+            const isValid = await this.UserModel.isValidUser(user.email, user.senha_hash);
             if (!isValid) {
                 return res.status(400).json({ message: "E-mail ou senha inválidos: " + isValid });
             }
 
             // Executa a lógica dentro de uma transação
             const response = await this.TransactionUtil.executeTransaction(async (connection) => {
-                const user = {
-                    nome: nome,
-                    email: email,
-                    senha_hash: password,
-                    perfil_financeiro: perfil_financeiro,
-                    salario_mensal: salario_mensal,
-                    saldo_inicial: saldo_inicial,
-                    saldo_atual: saldo_atual,
+                const userModelo = {
+                    nome: user.nome,
+                    email: user.email,
+                    senha_hash: user.senha_hash,
+                    perfil_financeiro: user.perfil_financeiro,
+                    salario_mensal: user.salario_mensal,
+                    saldo_inicial: user.saldo_inicial,
+                    saldo_atual: user.saldo_atual,
                 };
 
-                return await this.UserModel.createUser(user, connection);
+                return await this.UserModel.createUser(userModelo, connection);
             });
 
             res.status(200).json(response);
