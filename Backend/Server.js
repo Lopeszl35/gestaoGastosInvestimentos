@@ -4,6 +4,9 @@ import morgan from 'morgan';
 import session from 'express-session';
 import dotenv from 'dotenv';
 import events from 'events';
+import fs from 'fs';
+import http from 'http';
+import https from 'https';
 import DependencyInjector from './utils/DependencyInjector.js'; // Utilitário de injeção de dependências
 
 // Inicialização do Servidor
@@ -18,18 +21,25 @@ dotenv.config();
 // Configuração do Servidor Express
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(
+    cors({
+        origin: "*", // Substitua pelo domínio do frontend
+        methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+        credentials: true, // Permite o envio de cookies
+    })
+);
 app.use(morgan('dev'));
 
 // Configuração da Sessão
 app.use(
     session({
-        secret: process.env.SESSION_SECRET || 'default-secret',
+        secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: false,
         cookie: {
             maxAge: 1000 * 60 * 60 * 24, // 1 dia
-            secure: false, // Altere para `true` em produção com HTTPS
+            secure: true, // Altere para `true` em produção com HTTPS
             httpOnly: true,
         },
     })
@@ -46,7 +56,7 @@ const loadDependencies = async () => {
         DependencyInjector.register('Database', database);
 
         console.log('Database registrado com sucesso.');
-        
+
         // Registra TransactionUtil
         const { default: TransactionUtil } = await import('./utils/TransactionUtil.js');
         DependencyInjector.register('TransactionUtil', new TransactionUtil(DependencyInjector.get('Database')));
@@ -87,9 +97,9 @@ const initializeServer = async () => {
         const { default: UserRoutes } = await import('./routes/UserRoutes.js');
         const userController = DependencyInjector.get('UserController');
 
-        if (!userController || typeof userController.createUser !== 'function') {
-            throw new Error('UserController não está definido corretamente ou o método createUser não existe.');
-        }
+        const { default: routerTest } = await import('./routes/routerTest.js');
+        app.use(routerTest);
+     
         app.use(UserRoutes(userController));
         console.log('Rotas carregadas com sucesso!');
     } catch (error) {
@@ -99,11 +109,25 @@ const initializeServer = async () => {
 };
 
 // Inicializa o Servidor e escuta na porta especificada
-const PORT = process.env.SERVER_PORT || 3000;
-const HOST = process.env.SERVER_HOST || '0.0.0.0';
+const PORT = process.env.SERVER_PORT;
+const HOST = process.env.SERVER_HOST;
 
 initializeServer().then(() => {
     app.listen(PORT, HOST, () => {
         console.log(`Servidor rodando em http://${HOST}:${PORT}`);
     });
+});
+
+// Servidor HTTPS
+https.createServer({
+    cert: fs.readFileSync('./SSL/code.crt'), 
+    key: fs.readFileSync('./SSL/code.key')
+}, app).listen(443, ()=> console.log('Servidor rodando em https na porta 443'));
+
+// Servidor HTTP para redirecionar para HTTPS
+http.createServer((req, res) => {
+    res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
+    res.end();
+}).listen(80, () => {
+    console.log("Servidor HTTP rodando e redirecionando para HTTPS");
 });

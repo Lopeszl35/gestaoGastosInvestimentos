@@ -18,6 +18,7 @@ export const registerUser = async (user: User): Promise<any> => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(user),
+      credentials: "include",
     });
 
     const data = await response.json();

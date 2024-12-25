@@ -9,15 +9,15 @@ export const style = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: themes.colors.background,
-    padding: 20,
-    marginTop: 60
+    padding: 40,
+    marginTop: 20
   },
   titleContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 20,
-    marginTop: 20,
+    marginTop: 5,
   },
   title: {
     fontSize: 20,
@@ -33,7 +33,7 @@ export const style = StyleSheet.create({
     marginBottom: 20,
   },
   input: {
-    width: "100%",
+    width: width * 0.9,
     padding: 15,
     marginBottom: 15,
     borderWidth: 1,
@@ -45,6 +45,7 @@ export const style = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: themes.colors.gray,
+    marginTop: 15,
     marginBottom: 5,
     alignSelf: "flex-start",
   },
@@ -54,11 +55,12 @@ export const style = StyleSheet.create({
     borderColor: themes.colors.gray,
     borderRadius: 8,
     marginBottom: 15,
-    backgroundColor: themes.colors.white,
   },
   picker: {
     width: "100%",
     height: 50,
+    borderRadius: 20,
+    color: themes.colors.gray,
   },
   button: {
     width: width * 0.6,
@@ -68,11 +70,6 @@ export const style = StyleSheet.create({
     boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px',
     alignItems: "center",
     marginTop: 10,
-  },
-  textButton: {
-    color: themes.colors.white,
-    fontSize: 16,
-    fontWeight: "bold",
   },
   errorText: {
     color: themes.colors.error,

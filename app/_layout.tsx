@@ -8,6 +8,10 @@ export default function Layout() {
         headerStyle: { backgroundColor: themes.colors.primary }, // Cor de fundo do cabeçalho
         headerTintColor: themes.colors.white, // Cor do texto no cabeçalho
         contentStyle: { backgroundColor: themes.colors.background }, // Cor de fundo das telas
+        headerTitleStyle: {
+          fontWeight: "bold",
+        },
+        headerTitleAlign: "center",
       }}
     >
       <Stack.Screen name="index" options={{ headerTitle: "Login" }} />

@@ -8,11 +8,15 @@ import {
   ActivityIndicator,
   Alert
 } from "react-native";
-import { style } from "../styles/styles";
+import { style } from "../styles/stylesIndex";
 import Logo from "../assets/images/logo.png";
 import { MaterialIcons } from "@expo/vector-icons";
 import { themes } from "../global/themes";
 import { Link } from "expo-router";
+import { stylesGlobal } from "@/styles/stylesGlobal";
+import { useTogglePasswordVisibility } from "@/hooks/useTogglePasswordVisibility";
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"; // Ignora certificados SSL autoassinados
+
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -20,7 +24,7 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [messageError, setMessageError] = useState<string>("");
   const [boxError, setBoxError] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const {isPasswordVisible, togglePasswordVisibility} = useTogglePasswordVisibility();
 
   async function getLogin() {
     setLoading(true);
@@ -59,10 +63,10 @@ const Login: React.FC = () => {
       </View>
 
       <View style={style.boxMid}>
-        <Text style={style.titleInput}>ENDEREÇO E-MAIL</Text>
-        <View style={style.boxInput}>
+        <Text style={stylesGlobal.titleInput}>ENDEREÇO E-MAIL</Text>
+        <View style={stylesGlobal.boxInput}>
           <TextInput
-            style={style.input}
+            style={stylesGlobal.input}
             value={email}
             onChangeText={(text) => setEmail(text)}
             placeholder="Digite seu e-mail"
@@ -73,18 +77,18 @@ const Login: React.FC = () => {
             color={themes.colors.gray}
           />
         </View>
-        <Text style={style.titleInput}>SENHA</Text>
-        <View style={style.boxInput}>
+        <Text style={stylesGlobal.titleInput}>SENHA</Text>
+        <View style={stylesGlobal.boxInput}>
           <TextInput
-            style={style.input}
+            style={stylesGlobal.input}
             value={password}
             onChangeText={(text) => setPassword(text)}
-            secureTextEntry={!showPassword}
+            secureTextEntry={!isPasswordVisible}
             placeholder="Digite sua senha"
           />
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+          <TouchableOpacity onPress={togglePasswordVisibility}>
             <MaterialIcons
-              name={showPassword ? "visibility" : "visibility-off"}
+              name={isPasswordVisible ? "visibility" : "visibility-off"}
               size={20}
               color={themes.colors.gray}
             />
@@ -102,7 +106,7 @@ const Login: React.FC = () => {
               size={"small"}
             />
           ) : (
-            <Text style={style.textButton}>ENTRAR</Text>
+            <Text style={stylesGlobal.textButton}>ENTRAR</Text>
           )}
         </TouchableOpacity>
       </View>

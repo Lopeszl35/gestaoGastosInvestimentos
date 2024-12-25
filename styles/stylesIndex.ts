@@ -27,25 +27,6 @@ export const style = StyleSheet.create({
     boxMid: {
         marginBottom: 20,
     },
-    titleInput: {
-        fontSize: 14,
-        color: themes.colors.gray,
-        marginBottom: 5,
-    },
-    boxInput: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: themes.colors.gray,
-        borderRadius: 8,
-        paddingHorizontal: 10,
-        marginBottom: 10,
-    },
-    input: {
-        flex: 1,
-        fontSize: 16,
-        color: themes.colors.text,
-    },
     boxBottom: {
         marginVertical: 20,
     },
@@ -58,11 +39,6 @@ export const style = StyleSheet.create({
         justifyContent: 'center',
         width: width * 0.9, // 90% da largura da tela
         alignSelf: 'center', // Centraliza o botão horizontalmente
-    },
-    textButton: {
-        fontSize: 16,
-        color: themes.colors.white,
-        fontWeight: 'bold',
     },
     textBottomCadastroContainer: {
         flexDirection: 'row',

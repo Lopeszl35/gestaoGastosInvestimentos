@@ -50,7 +50,7 @@ class UserModel {
             }
             return response;
         } catch (error) {
-            console.log('Erro ao criar o usuário:', error.message);
+            console.log('Erro ao criar o usuário no modelo:', error.message);
             ErroSqlHandler.tratarErroDuplicado(error, 'usuario');
             throw error;
         }
