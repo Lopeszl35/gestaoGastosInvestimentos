@@ -1,5 +1,5 @@
 import { StyleSheet, Dimensions } from 'react-native';
-import { themes } from "../../global/themes";
+import { themes } from "../global/themes";
 
 const { width } = Dimensions.get('window'); // Pega a largura da tela
 

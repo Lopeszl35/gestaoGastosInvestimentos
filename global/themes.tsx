@@ -7,6 +7,7 @@ export const themes = {
         bgScreen: '#f1f7fa', // Cor de fundo da tela
         background: '#f1f7fa', // Cor de fundo geral
         text: '#000000', // Cor de texto padrão
-        white: '#ffffff' // Branco para textos e elementos
+        white: '#ffffff', // Branco para textos e elementos
+        error: "#B00020", // Cor de erro para mensagens de erro
     }
 };
