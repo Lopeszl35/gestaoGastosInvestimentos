@@ -12,5 +12,6 @@ export const themes = {
         success: '#28a745', // Verde para mensagens de sucesso ou destaques
         info: '#17a2b8', // Azul para mensagens informativas
         black: '#000000', // Preto para textos e elementos de contraste
+        blue: '#007bff', // Azul para links ou elementos de contraste
     }
 };

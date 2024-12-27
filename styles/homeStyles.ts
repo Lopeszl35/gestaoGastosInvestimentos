@@ -1,21 +1,20 @@
 import { StyleSheet, Dimensions } from "react-native";
 import { themes } from "../global/themes";
 
-const { width, height } = Dimensions.get("window"); // Pega a largura e altura da tela
+const { width, height } = Dimensions.get("window");
 
 export const homeStyles = StyleSheet.create({
     navBar: {
         width: "100%",
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between",
+        justifyContent: "space-between", // Botão de menu à esquerda e "Bem-vindo" à direita
         backgroundColor: themes.colors.primary,
         padding: 10,
     },
     welcomeContainer: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "flex-end",
     },
     welcomeText: {
         color: themes.colors.white,
@@ -23,37 +22,64 @@ export const homeStyles = StyleSheet.create({
         fontWeight: "bold",
         marginRight: 5,
     },
-    menuContainer: {
-        alignItems: "center",
-        justifyContent: "center",
-    },
     menuOverlay: {
         position: "absolute",
         top: 0,
         left: 0,
         height: height,
         width: width,
-        backgroundColor: "rgba(0, 0, 0, 0.5)", // Fundo transparente
-        zIndex: 1, // Garante que o overlay fique acima
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        zIndex: 1,
     },
     sideMenu: {
         position: "absolute",
         top: 0,
         left: 0,
         height: height,
-        width: width * 0.75, // 75% da largura da tela
-        backgroundColor: themes.colors.black, // Fundo preto
+        width: width * 0.75,
+        backgroundColor: themes.colors.black,
         padding: 20,
-        zIndex: 2, // Fica acima do overlay
+        zIndex: 2,
     },
     menuItem: {
+        flexDirection: "row", // Ícone à direita do texto
+        justifyContent: "flex-start",
+        alignItems: "center",
         paddingVertical: 15,
-        borderBottomWidth: 1,
-        borderBottomColor: themes.colors.lightGray,
     },
     menuText: {
         color: themes.colors.white,
         fontSize: 16,
         fontWeight: "bold",
     },
+    menuTextActive: {
+        color: themes.colors.blue,
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    menuButton: {
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    subMenu: {
+        paddingTop: 5,
+        paddingLeft: 20, // Indenta para diferenciar do menu principal
+    },
+    subMenuItem: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        paddingVertical: 10,
+        paddingLeft: 5, // Adiciona mais indentação
+    },
+    subMenuText: {
+        color: themes.colors.gray,
+        fontSize: 14,
+        fontFamily: "Arial",
+    },
+
+    subMenuIconActive: {
+        color: themes.colors.blue,
+    }
 });
+
