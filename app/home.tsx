@@ -10,10 +10,14 @@ import {
 import { homeStyles } from "../styles/homeStyles";
 import { MaterialIcons } from "@expo/vector-icons";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { useUser } from "@/context/UserContext";
+import { logoutUser } from "@/services/userServices";
+import { router } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
 const Home: React.FC = () => {
+    const { user } = useUser();
     const [menuVisible, setMenuVisible] = React.useState(false);
     const animation = useRef(new Animated.Value(-width * 0.75)).current; // Começa fora da tela
     const [subMenuVisible, setSubMenuVisible] = React.useState(false);
@@ -41,11 +45,10 @@ const Home: React.FC = () => {
         }
     };
 
-    const mockUser = {
-        id: 1,
-        name: "John Doe",
-        email: "t0ZQ2@example.com",
-    };
+    const Logout = () => {
+        logoutUser();
+        router.replace("/");
+    }
 
     return (
         <ProtectedRoute>
@@ -60,7 +63,7 @@ const Home: React.FC = () => {
                     {/* Bem-vindo */}
                     <View style={homeStyles.welcomeContainer}>
                         <Text style={homeStyles.welcomeText}>
-                            {mockUser.name}
+                            {user?.nome || 'Usuário'}
                         </Text>
                         <MaterialIcons name="person" size={20} color="white" />
                     </View>
@@ -115,7 +118,7 @@ const Home: React.FC = () => {
                     <TouchableOpacity style={homeStyles.menuItem} onPress={toggleMenu}>
                         <Text style={homeStyles.menuText}>Configurações</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={homeStyles.menuItem} onPress={toggleMenu}>
+                    <TouchableOpacity style={homeStyles.menuItem} onPress={Logout}>
                         <Text style={homeStyles.menuText}>Sair</Text>
                     </TouchableOpacity>
                 </Animated.View>

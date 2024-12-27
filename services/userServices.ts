@@ -1,15 +1,8 @@
 import { API_URL } from "../constants/ApiUrl";
 import { storeTokenSecure, removeTokenSecure } from "../utils/tokenStorage";
+import { User } from "../interfaces/userInterface";
 
-export interface User {
-  nome: string;
-  email: string;
-  senha_hash: string;
-  perfil_financeiro: string;
-  salario_mensal: number;
-  saldo_inicial: number;
-  saldo_atual: number;
-}
+
 
 export const registerUser = async (user: User): Promise<any> => {
   try {
@@ -19,7 +12,6 @@ export const registerUser = async (user: User): Promise<any> => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(user),
-      credentials: "include",
     });
 
     const data = await response.json();

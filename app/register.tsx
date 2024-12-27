@@ -16,7 +16,8 @@ import { Picker } from "@react-native-picker/picker";
 import { Link } from "expo-router";
 import { themes } from "@/global/themes";
 import { MaterialIcons } from "@expo/vector-icons";
-import { registerUser, User } from "../services/userServices";
+import { registerUser } from "../services/userServices";
+import { User } from "../interfaces/userInterface";
 import { useTogglePasswordVisibility } from "@/hooks/useTogglePasswordVisibility";
 
 const Register: React.FC = () => {
