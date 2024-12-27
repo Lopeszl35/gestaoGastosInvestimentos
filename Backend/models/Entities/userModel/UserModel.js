@@ -51,7 +51,21 @@ class UserModel {
             return response;
         } catch (error) {
             console.log('Erro ao criar o usuário no modelo:', error.message);
-            ErroSqlHandler.tratarErroDuplicado(error, 'usuario');
+            ErroSqlHandler.tratarErroSql(error, 'usuario');
+            throw error;
+        }
+    }
+
+    async loginUser(email, password) {
+        try {
+            const result = await this.UserRepository.loginUser(email, password);
+            if(!result) {
+                throw new Error("Nenhum usuário encontrado.");
+            }
+            return result;
+        } catch (error) {
+            console.log("Erro ao logar o usuário no modelo:", error.message);
+            ErroSqlHandler.tratarErroSql(error, 'usuario');
             throw error;
         }
     }

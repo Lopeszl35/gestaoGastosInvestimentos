@@ -23,7 +23,7 @@ const app = express();
 app.use(express.json());
 app.use(
     cors({
-        origin: "*", // Substitua pelo domínio do frontend
+        origin: "http://localhost:8081", // Substitua pelo domínio do frontend
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
         allowedHeaders: ["Content-Type", "Authorization"],
         credentials: true, // Permite o envio de cookies
@@ -41,6 +41,7 @@ app.use(
             maxAge: 1000 * 60 * 60 * 24, // 1 dia
             secure: true, // Altere para `true` em produção com HTTPS
             httpOnly: true,
+            sameSite: 'none',
         },
     })
 );
@@ -117,6 +118,20 @@ initializeServer().then(() => {
         console.log(`Servidor rodando em http://${HOST}:${PORT}`);
     });
 });
+
+//Testar conexao com o banco de dados	
+async function testDatabaseConnection() {
+    try {
+        const { default: Database } = await import('./database/connection.js');
+        const database = Database.getInstance();
+        const result = await database.executaComando('SELECT 1 + 1 AS solution');
+        console.log('Conexão com o banco de dados estabelecida com sucesso. Sua solução é:', result);
+    } catch (error) {
+        console.error('Erro ao estabelecer conexão com o banco de dados:', error.message);
+    }
+}
+
+testDatabaseConnection();
 
 // Servidor HTTPS
 https.createServer({

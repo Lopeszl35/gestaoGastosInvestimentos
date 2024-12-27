@@ -12,13 +12,14 @@ import { style } from "../styles/stylesIndex";
 import Logo from "../assets/images/logo.png";
 import { MaterialIcons } from "@expo/vector-icons";
 import { themes } from "../global/themes";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { stylesGlobal } from "@/styles/stylesGlobal";
 import { useTogglePasswordVisibility } from "@/hooks/useTogglePasswordVisibility";
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"; // Ignora certificados SSL autoassinados
+import { loginUser } from "@/services/userServices";
 
 
 const Login: React.FC = () => {
+  const router = useRouter();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -37,18 +38,17 @@ const Login: React.FC = () => {
         setBoxError(true);
         setMessageError("Email inválido");
         setLoading(false);
-      } else {
-        setTimeout(() => {
-          setBoxError(false);
-          setMessageError("");
-          Alert.alert("Logado com sucesso!");
-          setLoading(false);
-        }, 3000);
-      }
-    } catch (error) {
-      console.log("Erro ao logar: ", error);
+      } 
+
+      const data = await loginUser(email, password);
+      Alert.alert("Logado com sucesso!");
+      router.push("/home");
+      setLoading(false);
+      
+    } catch (error: any) {
+      console.log(error.message);
       setBoxError(true);
-      setMessageError("Erro ao logar");
+      setMessageError(error.message || "Erro ao logar");
       setLoading(false);
     }
   }

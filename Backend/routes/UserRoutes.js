@@ -9,5 +9,9 @@ export default (userController) => {
         userController.createUser(req, res);
     });
 
+    router.post('/loginUser', (req, res) => {
+        userController.loginUser(req, res);
+    })
+
     return router;
 };
