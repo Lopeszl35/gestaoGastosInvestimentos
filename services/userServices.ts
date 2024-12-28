@@ -1,10 +1,10 @@
 import { API_URL } from "../constants/ApiUrl";
 import { storeTokenSecure, removeTokenSecure } from "../utils/tokenStorage";
-import { User } from "../interfaces/userInterface";
+import { UserCadastro } from "../interfaces/userInterface";
 
 
 
-export const registerUser = async (user: User): Promise<any> => {
+export const registerUser = async (user: UserCadastro): Promise<any> => {
   try {
     const response = await fetch(`${API_URL}/createUser`, {
       method: "POST",

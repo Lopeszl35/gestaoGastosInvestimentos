@@ -101,10 +101,10 @@ const NavBar: React.FC = () => {
                         style={[styleNavBar.subMenu, { opacity: subMenuVisible ? 1 : 0 }]}
                     >
                         <TouchableOpacity style={styleNavBar.subMenuItem}>
-                            <Text style={styleNavBar.subMenuText}>Gasto Fixo</Text>
+                            <Text style={styleNavBar.subMenuText}>Gastos Fixos</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styleNavBar.subMenuItem}>
-                            <Text style={styleNavBar.subMenuText}>Gasto Variável</Text>
+                        <TouchableOpacity style={styleNavBar.subMenuItem} onPress={() => router.push("/gastosVariaveis")}>
+                            <Text style={styleNavBar.subMenuText}>Gastos Variáveis</Text>
                         </TouchableOpacity>
                     </Animated.View>
                 )}
