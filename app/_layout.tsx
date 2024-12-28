@@ -44,15 +44,6 @@ export default function Layout() {
           }}
         />
 
-        {/* Exemplo de outra tela com cabeçalho customizado */}
-        <Stack.Screen
-          name="profile"
-          options={{
-            headerStyle: { backgroundColor: themes.colors.secondary },
-            headerTintColor: themes.colors.primary,
-            headerTitle: "Perfil",
-          }}
-        />
       </Stack>
     </UserProvider>
   );

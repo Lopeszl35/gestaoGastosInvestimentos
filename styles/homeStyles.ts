@@ -4,11 +4,16 @@ import { themes } from "../global/themes";
 const { width, height } = Dimensions.get("window");
 
 export const homeStyles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: themes.colors.background, // Fundo principal
+    },
+    // Estilo da barra de navegação superior
     navBar: {
-        width: "100%",
+        width: width,
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between", // Botão de menu à esquerda e "Bem-vindo" à direita
+        justifyContent: "space-between", // Botão de menu à esquerda e usuário à direita
         backgroundColor: themes.colors.primary,
         padding: 10,
     },
@@ -22,38 +27,57 @@ export const homeStyles = StyleSheet.create({
         fontWeight: "bold",
         marginRight: 5,
     },
+    // Overlay para o fundo quando o menu lateral é aberto
     menuOverlay: {
         position: "absolute",
         top: 0,
         left: 0,
         height: height,
         width: width,
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        backgroundColor: "rgba(0, 0, 0, 0.5)", // Overlay transparente
         zIndex: 1,
     },
+    // Estilo do menu lateral
     sideMenu: {
         position: "absolute",
         top: 0,
         left: 0,
         height: height,
         width: width * 0.75,
-        backgroundColor: themes.colors.black,
-        padding: 20,
+        backgroundColor: "#f4f4f4", // Cor de fundo clara
+        padding: 10,
         zIndex: 2,
+        borderTopRightRadius: 20, // Bordas arredondadas
+        borderBottomRightRadius: 20,
+        shadowColor: "#000", // Sombra para destacar o menu
+        shadowOffset: { width: 2, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+        elevation: 5, // Sombra no Android
     },
+    // Estilo dos itens do menu lateral
     menuItem: {
         flexDirection: "row", // Ícone à direita do texto
         justifyContent: "flex-start",
         alignItems: "center",
         paddingVertical: 15,
+        paddingHorizontal: 10,
+        borderRadius: 10, // Bordas arredondadas nos itens
+        backgroundColor: "#ffffff", // Fundo branco para os itens
+        marginBottom: 10,
+        shadowColor: "#000", // Sombra nos itens
+        shadowOffset: { width: 1, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+        elevation: 5,
     },
     menuText: {
-        color: themes.colors.white,
+        color: themes.colors.black, // Texto preto para contraste
         fontSize: 16,
-        fontWeight: "bold",
+        fontWeight: "600",
     },
     menuTextActive: {
-        color: themes.colors.blue,
+        color: themes.colors.blue, // Destaque para o item ativo
         fontSize: 16,
         fontWeight: "bold",
     },
@@ -61,6 +85,7 @@ export const homeStyles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
     },
+    // Estilo do submenu
     subMenu: {
         paddingTop: 5,
         paddingLeft: 20, // Indenta para diferenciar do menu principal
@@ -71,15 +96,96 @@ export const homeStyles = StyleSheet.create({
         justifyContent: "flex-start",
         paddingVertical: 10,
         paddingLeft: 5, // Adiciona mais indentação
+        borderRadius: 8,
+        backgroundColor: "#eaeaea", // Fundo claro para submenus
+        marginBottom: 8,
     },
     subMenuText: {
         color: themes.colors.gray,
         fontSize: 14,
         fontFamily: "Arial",
     },
-
     subMenuIconActive: {
         color: themes.colors.blue,
-    }
+    },
+    // Caixa de resumo do saldo e perfil
+    summaryBox: {
+        backgroundColor: "#ffffff",
+        padding: 15,
+        marginHorizontal: 15,
+        marginVertical: 10,
+        borderRadius: 10,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    summaryText: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: themes.colors.black,
+        marginBottom: 5,
+    },
+    summarySubText: {
+        fontSize: 14,
+        color: themes.colors.gray,
+    },
+    // Estilo para contêiner de gráficos
+    chartContainerPizza: {
+        backgroundColor: "#ffffff",
+        padding: 5,
+        marginHorizontal: 15,
+        marginVertical: 10,
+        borderRadius: 10,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 7,
+    },
+    chartContainerBarra: {
+        backgroundColor: "#ffffff",
+        padding: 14,
+        marginHorizontal: 15,
+        marginVertical: 10,
+        borderRadius: 10,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 7,
+    },
+    sectionTitle: {
+        paddingHorizontal: 10,
+        fontSize: 16,
+        fontWeight: "bold",
+        color: themes.colors.black,
+        marginBottom: 10,
+    },
+    // Estilo para metas financeiras
+    goalsContainer: {
+        backgroundColor: "#ffffff",
+        padding: 15,
+        marginHorizontal: 15,
+        marginVertical: 10,
+        borderRadius: 10,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    goalItem: {
+        marginBottom: 10,
+    },
+    goalText: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: themes.colors.black,
+    },
+    goalProgress: {
+        fontSize: 14,
+        color: themes.colors.gray,
+    },
 });
-
