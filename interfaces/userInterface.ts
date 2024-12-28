@@ -1,4 +1,4 @@
-export interface User {
+export interface UserCadastro {
   nome: string;
   email: string;
   senha_hash: string;
@@ -7,3 +7,4 @@ export interface User {
   saldo_inicial: number;
   saldo_atual: number;
 }
+

@@ -17,7 +17,7 @@ import { Link } from "expo-router";
 import { themes } from "@/global/themes";
 import { MaterialIcons } from "@expo/vector-icons";
 import { registerUser } from "../services/userServices";
-import { User } from "../interfaces/userInterface";
+import { UserCadastro } from "../interfaces/userInterface";
 import { useTogglePasswordVisibility } from "@/hooks/useTogglePasswordVisibility";
 
 const Register: React.FC = () => {
@@ -48,7 +48,7 @@ const Register: React.FC = () => {
     
     try {
 
-      const user: User = {
+      const user: UserCadastro = {
         nome: name,
         email: email,
         senha_hash: password,

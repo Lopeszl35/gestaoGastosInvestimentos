@@ -1,54 +1,19 @@
-import React, { useRef } from "react";
+import React from "react";
 import {
     View,
-    Text,
-    TouchableOpacity,
-    Animated,
-    Dimensions,
-    TouchableWithoutFeedback,
     ScrollView,
+    Text,
+    Dimensions
 } from "react-native";
 import { homeStyles } from "../styles/homeStyles";
-import { MaterialIcons } from "@expo/vector-icons";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useUser } from "@/context/UserContext";
-import { logoutUser } from "@/services/userServices";
-import { router } from "expo-router";
 import { PieChart, BarChart } from "react-native-chart-kit";
 
 const { width } = Dimensions.get("window");
 
 const Home: React.FC = () => {
     const { user } = useUser();
-    const [menuVisible, setMenuVisible] = React.useState(false);
-    const animation = useRef(new Animated.Value(-width * 0.75)).current;
-    const [subMenuVisible, setSubMenuVisible] = React.useState(false);
-
-    const toggleSubMenu = () => {
-        setSubMenuVisible(!subMenuVisible);
-    };
-
-    const toggleMenu = () => {
-        if (menuVisible) {
-            Animated.timing(animation, {
-                toValue: -width * 0.75,
-                duration: 300,
-                useNativeDriver: false,
-            }).start(() => setMenuVisible(false));
-        } else {
-            setMenuVisible(true);
-            Animated.timing(animation, {
-                toValue: 0,
-                duration: 300,
-                useNativeDriver: false,
-            }).start();
-        }
-    };
-
-    const Logout = () => {
-        logoutUser();
-        router.replace("/");
-    };
 
     // Dados de exemplo
     const gastosPorCategoria = [
@@ -66,17 +31,6 @@ const Home: React.FC = () => {
     return (
         <ProtectedRoute>
             <View style={homeStyles.container}>
-                {/* Barra de navegação */}
-                <View style={homeStyles.navBar}>
-                    <TouchableOpacity onPress={toggleMenu} style={homeStyles.menuButton}>
-                        <MaterialIcons name="menu" size={24} color="white" />
-                    </TouchableOpacity>
-                    <View style={homeStyles.welcomeContainer}>
-                        <Text style={homeStyles.welcomeText}>{user?.nome || "Usuário"}</Text>
-                        <MaterialIcons name="person" size={20} color="white" />
-                    </View>
-                </View>
-
                 <ScrollView>
                     {/* Resumo */}
                     <View style={homeStyles.summaryBox}>
@@ -108,7 +62,7 @@ const Home: React.FC = () => {
 
                     <View style={homeStyles.chartContainerBarra}>
                         <Text style={homeStyles.sectionTitle}>Gastos dos Últimos Meses</Text>
-                        <BarChart style={{ alignItems: "center" }}
+                        <BarChart
                             data={{
                                 labels: gastosUltimosMeses.map((item) => item.label),
                                 datasets: [{ data: gastosUltimosMeses.map((item) => item.valor) }],
@@ -142,48 +96,6 @@ const Home: React.FC = () => {
                         </View>
                     </View>
                 </ScrollView>
-
-                {/* Overlay Transparente */}
-                {menuVisible && (
-                    <TouchableWithoutFeedback onPress={toggleMenu}>
-                        <View style={homeStyles.menuOverlay} />
-                    </TouchableWithoutFeedback>
-                )}
-
-                {/* Menu Lateral */}
-                <Animated.View style={[homeStyles.sideMenu, { transform: [{ translateX: animation }] }]}>
-                    <TouchableOpacity style={homeStyles.menuItem} onPress={toggleMenu}>
-                        <Text style={homeStyles.menuText}>Home</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={homeStyles.menuItem}>
-                        <Text style={homeStyles.menuText}>Perfil</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={homeStyles.menuItem} onPress={toggleSubMenu}>
-                        <Text style={subMenuVisible ? homeStyles.menuTextActive : homeStyles.menuText}>Categoria Gastos</Text>
-                        <MaterialIcons
-                            name={subMenuVisible ? "keyboard-arrow-up" : "keyboard-arrow-down"}
-                            style={subMenuVisible ? homeStyles.subMenuIconActive : ""}
-                            size={24}
-                            color="black"
-                        />
-                    </TouchableOpacity>
-                    {subMenuVisible && (
-                        <Animated.View style={[homeStyles.subMenu, { opacity: subMenuVisible ? 1 : 0 }]}>
-                            <TouchableOpacity style={homeStyles.subMenuItem}>
-                                <Text style={homeStyles.subMenuText}>Gasto Fixo</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={homeStyles.subMenuItem}>
-                                <Text style={homeStyles.subMenuText}>Gasto Variável</Text>
-                            </TouchableOpacity>
-                        </Animated.View>
-                    )}
-                    <TouchableOpacity style={homeStyles.menuItem} onPress={toggleMenu}>
-                        <Text style={homeStyles.menuText}>Configurações</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={homeStyles.menuItem} onPress={Logout}>
-                        <Text style={homeStyles.menuText}>Sair</Text>
-                    </TouchableOpacity>
-                </Animated.View>
             </View>
         </ProtectedRoute>
     );
