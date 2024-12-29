@@ -3,7 +3,7 @@ import { themes } from '../global/themes';
 
 const { width } = Dimensions.get('window'); // Pega a largura da tela
 
-export const AddModalStyles = StyleSheet.create({
+export const ModaGlobalStyles = StyleSheet.create({
     modalContainer: {
         flex: 1,
         justifyContent: "center",
@@ -38,24 +38,24 @@ export const AddModalStyles = StyleSheet.create({
         flexDirection: "column",
         gap: 10,
     },
-    button: {
-        flex: 1,
+    buttonSalvar: {
+        borderRadius: 10,
         backgroundColor: themes.colors.success,
-        paddingVertical: 10,
-        borderRadius: 5,
+        justifyContent: "center",
         alignItems: "center",
-        marginHorizontal: 5,
+        padding: 10,
     },
-    buttonCancel: {
-        flex: 1,
+    buttonCancelar: {
+        borderRadius: 10,
         backgroundColor: themes.colors.danger,
-        paddingVertical: 10,
-        borderRadius: 5,
+        justifyContent: "center",
         alignItems: "center",
-        marginHorizontal: 5,
+        padding: 10,
     },
     buttonText: {
-        color: themes.colors.white,
+        alignItems: "center",
         fontWeight: "bold",
-    },
+        color: themes.colors.white,
+        justifyContent: "center",
+    }
 })

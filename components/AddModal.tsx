@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, Modal } from "react-native";
-import { AddModalStyles } from "@/styles/AddModalStyles";
+import { ModaGlobalStyles } from "@/styles/ModaGlobalStyles";
 
 interface AddModalProps {
     visible: boolean;
@@ -19,11 +19,13 @@ const AddModal: React.FC<AddModalProps> = ({ visible, onClose, onSave }) => {
                 nome,
                 limite: parseFloat(limite),
                 descricao,
-            });
+            }); 
             setNome("");
             setLimite("");
             setDescricao("");
             onClose();
+        } else {
+            alert("Por favor, preencha todos os campos obrigatórios.");
         }
     };
 
@@ -34,40 +36,34 @@ const AddModal: React.FC<AddModalProps> = ({ visible, onClose, onSave }) => {
             animationType="slide"
             onRequestClose={onClose}
         >
-            <View style={AddModalStyles.modalContainer}>
-                <View style={AddModalStyles.modalContent}>
-                    <Text style={AddModalStyles.modalTitle}>Adicionar Categoria</Text>
+            <View style={ModaGlobalStyles.modalContainer}>
+                <View style={ModaGlobalStyles.modalContent}>
+                    <Text style={ModaGlobalStyles.modalTitle}>Adicionar Categoria</Text>
                     <TextInput
-                        style={AddModalStyles.input}
+                        style={ModaGlobalStyles.input}
                         placeholder="Nome da Categoria"
                         value={nome}
                         onChangeText={setNome}
                     />
                     <TextInput
-                        style={AddModalStyles.input}
+                        style={ModaGlobalStyles.input}
                         placeholder="Limite de Gasto (R$)"
                         keyboardType="numeric"
                         value={limite}
                         onChangeText={setLimite}
                     />
                     <TextInput
-                        style={AddModalStyles.input}
+                        style={ModaGlobalStyles.input}
                         placeholder="Descrição (opcional)"
                         value={descricao}
                         onChangeText={setDescricao}
                     />
-                   <View style={AddModalStyles.buttonContainer}>
-                        <TouchableOpacity
-                            style={AddModalStyles.button}
-                            onPress={handleSave}
-                        >
-                            <Text style={AddModalStyles.buttonText}>Salvar</Text>
+                    <View style={ModaGlobalStyles.buttonContainer}>
+                        <TouchableOpacity onPress={handleSave} style={ModaGlobalStyles.buttonSalvar}>
+                            <Text style={ModaGlobalStyles.buttonText}>Salvar</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity
-                            style={AddModalStyles.buttonCancel}
-                            onPress={onClose}
-                        >
-                            <Text style={AddModalStyles.buttonText}>Cancelar</Text>
+                        <TouchableOpacity onPress={onClose} style={ModaGlobalStyles.buttonCancelar}>
+                            <Text style={ModaGlobalStyles.buttonText}>Cancelar</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

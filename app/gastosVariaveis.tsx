@@ -8,8 +8,9 @@ import {
 } from "react-native";
 import { useUser } from "@/context/UserContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import ScroolNav from "@/components/ScroolNav";
 import AddModal from "@/components/AddModal";
+import ConfigGastoMesModal from "@/components/ConfigGastoMesModal";
+import ConfigGastoCategoriaModal from "@/components/ConfigGastoCategoriaModal";
 import { stylesGastosVariaveis } from "@/styles/GastosVariaveisStyles";
 import { MaterialIcons } from "@expo/vector-icons";
 
@@ -18,9 +19,22 @@ const GastosVariaveis: React.FC = () => {
     const [gastostotalMes, setGastosTotalMes] = useState(0);
     const [gastosLimiteMes, setGastosLimiteMes] = useState(0);
     const [alertaGastoExcedido, setAlertaGastoExcedido] = useState(false);
-    const [categoriaSelecionada, setCategoriaSelecionada] = useState<string | null>(null);
-    const [showModal, setShowModal] = useState(false);
+    const [categoriaSelecionada, setCategoriaSelecionada] = useState<{
+        id: number;
+        nome: string;
+        limite: number;
+        descricao: string;
+    } | null>(null);
+    
+    const [showModalAddCategoria, setShowModalAddCategoria] = useState(false);
+    const [showModalConfigGastoMes, setShowModalConfigGastoMes] = useState(false);
+    const [showModalConfigCategoria, setShowModalConfigCategoria] = useState(false);
     const [categorias, setCategorias] = useState<any[]>([]);
+    const [updateFlag, setUpdateFlag] = useState(false);
+
+    // Captura o mês atual
+    const mes = new Date().toLocaleString("default", { month: "long" });
+
 
     // Mock de categorias
     useEffect(() => {
@@ -29,22 +43,28 @@ const GastosVariaveis: React.FC = () => {
             { id: 2, nome: "Uber", total: 800, limite: 900, descricao: "Gastos com transporte" },
         ];
         const totalGastos = categoriasMock.reduce((total, categoria) => total + categoria.total, 0);
-        const limiteGastosMes = 3000;
+        const limiteGastosMes = gastosLimiteMes || 0;
         setGastosTotalMes(totalGastos);
         setGastosLimiteMes(limiteGastosMes);
         setCategorias(categoriasMock);
-        if (totalGastos > limiteGastosMes) {
-            setAlertaGastoExcedido(true);
-        }
-    }, []);
+        setAlertaGastoExcedido(totalGastos > limiteGastosMes);
+    }, [gastosLimiteMes, updateFlag]);
 
-    const handleCategoriaSelecionada = (nome: string) => {
-        setCategoriaSelecionada(nome);
+    const handleCategoriaSelecionada = (id: number) => {
+        const categoria = categorias.find((cat) => cat.id === id) || null;
+        setCategoriaSelecionada(categoria);
+        setShowModalConfigCategoria(true); // Abre o modal
     };
+    
 
     const handleAdicionarCategoria = () => {
-        setShowModal(true);
+        setShowModalAddCategoria(true);
     };
+
+    const handleConfigGastoMes = () => {
+        setShowModalConfigGastoMes(true);
+    }
+   
 
     const handleSalvarCategoria = (data: { nome: string; limite: number; descricao: string }) => {
         setCategorias([
@@ -59,13 +79,35 @@ const GastosVariaveis: React.FC = () => {
         ]);
     };
 
+    const handleSalvarCategoriaAtualizada = (
+        idCategoria: number,
+        nomeCategoria: string,
+        limiteGastoCategoria: number,
+        descricaoCategoria: string
+    ) => {
+        setCategorias((prevCategorias) =>
+            prevCategorias.map((categoria) =>
+                categoria.id === idCategoria
+                    ? {
+                          ...categoria,
+                          nome: nomeCategoria,
+                          limite: limiteGastoCategoria,
+                          descricao: descricaoCategoria,
+                      }
+                    : categoria
+            )
+        );
+        setUpdateFlag((prev) => !prev); // Força a reatualização
+    };
+    
+
     return (
         <ProtectedRoute>
             <ScrollView>
                 {/* Resumo */}
                 <View style={stylesGastosVariaveis.summaryBox}>
                     <Text style={stylesGastosVariaveis.summaryText}>
-                        Total de gastos para o mês de Dezembro: R$ {gastostotalMes || "0.00"}
+                        Total de gastos para o mês de {mes}: R$ {gastostotalMes || "0.00"}
                     </Text>
                     <Text style={stylesGastosVariaveis.summarySubText}>
                         Total de gastos estabelecido para esse mês: {gastosLimiteMes || "0.00"}
@@ -75,13 +117,39 @@ const GastosVariaveis: React.FC = () => {
                             Atenção! Os gastos deste mês excederam o limite estabelecido!
                         </Text>
                     )}
+                    <View style={stylesGastosVariaveis.settingsContainer}>
+                        <TouchableOpacity 
+                            onPress={handleConfigGastoMes} 
+                            style={stylesGastosVariaveis.settingsIcon}
+                        >
+                            <MaterialIcons 
+                                name="settings"
+                                size={24}
+                            />
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
                 {/* Modal para adicionar nova categoria */}
                 <AddModal
-                    visible={showModal}
-                    onClose={() => setShowModal(false)}
+                    visible={showModalAddCategoria}
+                    onClose={() => setShowModalAddCategoria(false)}
                     onSave={handleSalvarCategoria}
+                />
+
+                {/* Modal para configurar o gasto do mês */}
+                <ConfigGastoMesModal
+                    visible={showModalConfigGastoMes}
+                    onClose={() => setShowModalConfigGastoMes(false)}
+                    onSave={(gastoMes: number) => setGastosLimiteMes(gastoMes)}
+                />
+
+                {/*Modal para configurar categoria */}
+                <ConfigGastoCategoriaModal
+                    visible={showModalConfigCategoria}
+                    onClose={() => setShowModalConfigCategoria(false)}
+                    onSave={handleSalvarCategoriaAtualizada}
+                    categoria={categoriaSelecionada}
                 />
 
                 {/* Título */}
@@ -99,7 +167,7 @@ const GastosVariaveis: React.FC = () => {
                                 categoria.total > categoria.limite &&
                                     stylesGastosVariaveis.cardExceeded,
                             ]}
-                            onPress={() => handleCategoriaSelecionada(categoria.nome)}
+                            onPress={() => handleCategoriaSelecionada(categoria.id)} // Passa o ID
                         >
                             <Text style={stylesGastosVariaveis.cardTitle}>{categoria.nome}</Text>
                             <Text style={stylesGastosVariaveis.cardDetail}>
@@ -115,6 +183,7 @@ const GastosVariaveis: React.FC = () => {
                                 <Text style={stylesGastosVariaveis.cardAlert}>⚠ Gastos excedidos!</Text>
                             )}
                         </TouchableOpacity>
+                    
                     ))}
                     <View style={stylesGastosVariaveis.addButtonContainer}>
                         <MaterialIcons

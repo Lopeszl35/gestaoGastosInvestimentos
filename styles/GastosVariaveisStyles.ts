@@ -35,6 +35,24 @@ export const stylesGastosVariaveis = StyleSheet.create({
         fontSize: 14,
         color: themes.colors.gray,
     },
+    settingsContainer: {
+        width: "100%",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        alignItems: "flex-end",
+    },
+    settingsIcon: {
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 10,
+        backgroundColor: themes.colors.white,
+        borderRadius: 30, // Torna o ícone redondo
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 3, // Sombra no Android
+    },
     alertText: {
         fontSize: 16,
         fontWeight: "bold",
