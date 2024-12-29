@@ -43,6 +43,15 @@ const NavBar: React.FC = () => {
         }
     };
 
+    const navigateAndCloseMenu = (path: string & Parameters<typeof router.push>[0]) => {
+        router.push(path as any);
+        Animated.timing(animation, {
+            toValue: -width * 0.75,
+            duration: 300,
+            useNativeDriver: false,
+        }).start(() => setMenuVisible(false));
+    };
+
     const Logout = () => {
         logoutUser();
         setUser(null);
@@ -73,7 +82,7 @@ const NavBar: React.FC = () => {
             <Animated.View
                 style={[styleNavBar.sideMenu, { transform: [{ translateX: animation }] }]}
             >
-                <TouchableOpacity style={styleNavBar.menuItem} onPress={() => router.push("/home")}>
+                <TouchableOpacity style={styleNavBar.menuItem} onPress={() => navigateAndCloseMenu("/home")}>
                     <Text style={styleNavBar.menuText}>Home</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styleNavBar.menuItem}>
@@ -103,7 +112,7 @@ const NavBar: React.FC = () => {
                         <TouchableOpacity style={styleNavBar.subMenuItem}>
                             <Text style={styleNavBar.subMenuText}>Gastos Fixos</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styleNavBar.subMenuItem} onPress={() => router.push("/gastosVariaveis")}>
+                        <TouchableOpacity style={styleNavBar.subMenuItem} onPress={() => navigateAndCloseMenu("/gastosVariaveis")}>
                             <Text style={styleNavBar.subMenuText}>Gastos Variáveis</Text>
                         </TouchableOpacity>
                     </Animated.View>

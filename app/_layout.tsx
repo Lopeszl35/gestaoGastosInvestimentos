@@ -7,12 +7,8 @@ import NavBar from "@/components/NavBar";
 export default function Layout() {
   const segments = useSegments();
 
-  // Adicionando log para depuração
-  console.log("segments: ", segments);
-
   // Use um fallback para o primeiro segmento
   const firstSegment = segments.length > 0 ? segments[0] : "index"; // Fallback para "index"
-  console.log("firstSegment: ", firstSegment);
 
   // Decide se o NavBar deve ser exibido
   const showNavBar = firstSegment !== "index" && firstSegment !== "register";
@@ -54,6 +50,13 @@ export default function Layout() {
         {/* Outras telas */}
         <Stack.Screen
           name="home"
+          options={{
+            headerShown: false, // Oculta o cabeçalho
+          }}
+        />
+        {/* Tela de Gastos Variáveis */}
+        <Stack.Screen
+          name="gastosVariaveis"
           options={{
             headerShown: false, // Oculta o cabeçalho
           }}
