@@ -6,19 +6,22 @@ import {
     ScrollView,
     Dimensions,
 } from "react-native";
-import { useUser } from "@/context/UserContext";
 import { stylesScroolNav } from "@/styles/ScroolNav";
-import { MaterialIcons } from "@expo/vector-icons"; 
+import { MaterialIcons } from "@expo/vector-icons";
 
 const { width } = Dimensions.get("window");
 
-const ScroolNav = () => {
-    const { user } = useUser();
+// Definição do tipo para as props
+interface ScroolNavProps {
+    onCategoriaSelecionada: (nome: string) => void;
+    onAdicionarCategorias: () => void; // Corrigido para usar a função correta
+}
+
+const ScroolNav: React.FC<ScroolNavProps> = ({ onCategoriaSelecionada, onAdicionarCategorias }) => {
     const [categorias, setCategorias] = useState<any[]>([]);
 
     // Simula uma chamada ao banco de dados para carregar as categorias
     useEffect(() => {
-        // Simula o tempo de resposta do banco de dados
         setTimeout(() => {
             const categoriasMock = [
                 { id: 1, nome: "Mercado", valor: 100 },
@@ -43,10 +46,7 @@ const ScroolNav = () => {
                 <TouchableOpacity
                     key={categoria.id}
                     style={stylesScroolNav.item}
-                    onPress={() => {
-                        // Ação ao clicar na categoria (ex.: carregar gráfico ou detalhes)
-                        console.log(`Categoria selecionada: ${categoria.nome}`);
-                    }}
+                    onPress={() => onCategoriaSelecionada(categoria.nome)}
                 >
                     <Text style={stylesScroolNav.itemText}>{categoria.nome}</Text>
                 </TouchableOpacity>
@@ -54,7 +54,7 @@ const ScroolNav = () => {
             {/* Botão de Adicionar Categorias */}
             <TouchableOpacity
                 style={stylesScroolNav.addButton}
-                onPress={() => console.log("Adicionar nova categoria")}
+                onPress={onAdicionarCategorias} // Corrigido para chamar a função correta
             >
                 <MaterialIcons name="add" size={15} color="white" />
             </TouchableOpacity>

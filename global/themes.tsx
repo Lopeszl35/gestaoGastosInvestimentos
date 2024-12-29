@@ -10,8 +10,11 @@ export const themes = {
         white: '#ffffff', // Branco para textos e elementos
         error: '#dc3545', // Vermelho para mensagens de erro
         success: '#28a745', // Verde para mensagens de sucesso ou destaques
+        danger: '#dc3545', // Vermelho para alertar usuários de ações perigosas
         info: '#17a2b8', // Azul para mensagens informativas
         black: '#000000', // Preto para textos e elementos de contraste
         blue: '#007bff', // Azul para links ou elementos de contraste
+        alert: '#ffc107', // Amarelo para mensagens de alerta
+        alertExcedido: '#dc3545', // Vermelho para mensagens de alerta excedido
     }
 };
