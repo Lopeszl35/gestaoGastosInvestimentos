@@ -88,7 +88,7 @@ const NavBar: React.FC = () => {
                 <TouchableOpacity style={styleNavBar.menuItem}>
                     <Text style={styleNavBar.menuText}>Perfil</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styleNavBar.menuItem} onPress={toggleSubMenu}>
+                <TouchableOpacity style={subMenuVisible ? styleNavBar.menuItemActive : styleNavBar.menuItem} onPress={toggleSubMenu}>
                     <Text
                         style={
                             subMenuVisible

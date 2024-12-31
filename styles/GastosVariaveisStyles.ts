@@ -124,5 +124,27 @@ export const stylesGastosVariaveis = StyleSheet.create({
         padding: 15,
         paddingVertical: 30,
         paddingRight: 40,
-    }
+    },
+    optionIcon: {
+        position: "absolute",
+        width: 50,
+        height: 50,
+        backgroundColor: "#ffffff",
+        borderRadius: 25,
+        justifyContent: "center",
+        alignItems: "center",
+        elevation: 5,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+    },
+    overlay: {
+        position: "absolute",
+        zIndex: 1,
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        top: "50%",
+        left: "55%",
+        transform: [{ translateX: -25 }, { translateY: -25 }],
+    },
 });

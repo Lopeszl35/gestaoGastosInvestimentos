@@ -66,25 +66,34 @@ const ConfigGastoCategoriaModal: React.FC<ConfigGastoCategoriaModalProps> = ({
             <View style={ModaGlobalStyles.modalContainer}>
                 <View style={ModaGlobalStyles.modalContent}>
                     <Text style={ModaGlobalStyles.modalTitle}>Atualizar Categoria</Text>
-                    <TextInput
-                        style={ModaGlobalStyles.input}
-                        placeholder="Nome da Categoria"
-                        value={nomeCategoria}
-                        onChangeText={setNomeCategoria}
-                    />
-                    <TextInput
-                        style={ModaGlobalStyles.input}
-                        placeholder="Limite de Gasto (R$)"
-                        keyboardType="numeric"
-                        value={limiteGastoCategoria}
-                        onChangeText={setLimiteGastoCategoria}
-                    />
-                    <TextInput
-                        style={ModaGlobalStyles.input}
-                        placeholder="Descrição (opcional)"
-                        value={descricaoCategoria}
-                        onChangeText={setDescricaoCategoria}
-                    />
+                    <View style={ModaGlobalStyles.inputContainer}>
+                    <Text style={ModaGlobalStyles.inputLabel}> Nome Categoria</Text>
+                        <TextInput
+                            style={ModaGlobalStyles.input}
+                            placeholder="Nome da Categoria"
+                            value={nomeCategoria}
+                            onChangeText={setNomeCategoria}
+                        />
+                    </View>
+                    <View style={ModaGlobalStyles.inputContainer}>
+                        <Text style={ModaGlobalStyles.inputLabel}> Limite de Gasto</Text>
+                        <TextInput
+                            style={ModaGlobalStyles.input}
+                            placeholder="Limite de Gasto (R$)"
+                            keyboardType="numeric"
+                            value={limiteGastoCategoria}
+                            onChangeText={setLimiteGastoCategoria}
+                        />
+                    </View>
+                    <View style={ModaGlobalStyles.inputContainer}>
+                        <Text style={ModaGlobalStyles.inputLabel}> Descrição</Text>
+                        <TextInput
+                            style={ModaGlobalStyles.input}
+                            placeholder="Descrição (opcional)"
+                            value={descricaoCategoria}
+                            onChangeText={setDescricaoCategoria}
+                        />
+                    </View>
                     <View style={ModaGlobalStyles.buttonContainer}>
                         <TouchableOpacity
                             style={ModaGlobalStyles.buttonSalvar}

@@ -58,7 +58,22 @@ export const styleNavBar = StyleSheet.create({
         paddingVertical: 15,
         paddingHorizontal: 10,
         borderRadius: 10, // Bordas arredondadas nos itens
-        backgroundColor: "#ffffff", // Fundo branco para os itens
+        backgroundColor: themes.colors.white, // Fundo branco para os itens
+        marginBottom: 10,
+        shadowColor: "#000", // Sombra nos itens
+        shadowOffset: { width: 1, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 3,
+        elevation: 5,
+    },
+    menuItemActive: {
+        flexDirection: "row", // Ícone à direita do texto
+        justifyContent: "flex-start",
+        alignItems: "center",
+        paddingVertical: 15,
+        paddingHorizontal: 10,
+        borderRadius: 10, // Bordas arredondadas nos itens
+        backgroundColor: themes.colors.gray, // Fundo branco para os itens
         marginBottom: 10,
         shadowColor: "#000", // Sombra nos itens
         shadowOffset: { width: 1, height: 2 },
@@ -72,7 +87,7 @@ export const styleNavBar = StyleSheet.create({
         fontWeight: "600",
     },
     menuTextActive: {
-        color: themes.colors.blue, // Destaque para o item ativo
+        color: themes.colors.white, // Destaque para o item ativo
         fontSize: 16,
         fontWeight: "bold",
     },
@@ -101,6 +116,6 @@ export const styleNavBar = StyleSheet.create({
         fontFamily: "Arial",
     },
     subMenuIconActive: {
-        color: themes.colors.blue,
+        color: themes.colors.white,
     },
 })

@@ -1,8 +1,7 @@
+import { Platform } from "react-native"; // Disponível apenas em React Native
 import { API_URL } from "../constants/ApiUrl";
 import { storeTokenSecure, removeTokenSecure } from "../utils/tokenStorage";
 import { UserCadastro } from "../interfaces/userInterface";
-
-
 
 export const registerUser = async (user: UserCadastro): Promise<any> => {
   try {
@@ -41,9 +40,8 @@ export const loginUser = async (email: string, password: string): Promise<any> =
     if (!response.ok) {
       throw new Error(data.message || "Erro ao fazer login.");
     }
-
-    //Armazena o token no dispositivo
-    await storeTokenSecure(data.token);
+      // Para mobile (React Native)
+      await storeTokenSecure(data.token);
 
     return data;
   } catch (error: any) {
@@ -53,8 +51,8 @@ export const loginUser = async (email: string, password: string): Promise<any> =
 
 export const logoutUser = async (): Promise<void> => {
   try {
-    // Remove o token ao fazer logout
-    await removeTokenSecure();
+      // Remover token no dispositivo móvel
+      await removeTokenSecure();
     console.log("Usuário deslogado com sucesso.");
   } catch (error: any) {
     console.error("Erro ao fazer logout:", error.message);

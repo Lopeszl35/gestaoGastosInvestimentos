@@ -26,6 +26,18 @@ export const ModaGlobalStyles = StyleSheet.create({
         fontWeight: "bold",
         marginBottom: 10,
     },
+    inputContainer: {
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        width: '100%',
+
+    },
+    inputLabel: {
+        fontSize: 16,
+        marginBottom: 5,
+        color: themes.colors.gray,
+        fontWeight: 'bold',
+    },
     input: {
         height: 40,
         borderColor: themes.colors.gray,
@@ -33,6 +45,7 @@ export const ModaGlobalStyles = StyleSheet.create({
         borderRadius: 5,
         marginBottom: 15,
         paddingHorizontal: 10,
+        width: '100%',
     },
     buttonContainer: {
         flexDirection: "column",
