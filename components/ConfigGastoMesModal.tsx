@@ -51,7 +51,7 @@ const ConfigGastoMesModal: React.FC<ConfigGastoMesModalProps> = ({
                     />
                     <View style={ModaGlobalStyles.buttonContainer}>
                         <TouchableOpacity
-                            style={ModaGlobalStyles.buttonSalvar}
+                            style={ModaGlobalStyles.buttonSucess}
                             onPress={handleSave}
                         >
                             <Text style={ModaGlobalStyles.buttonText}>Salvar</Text>

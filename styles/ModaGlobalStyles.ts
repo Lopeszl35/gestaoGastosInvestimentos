@@ -26,6 +26,12 @@ export const ModaGlobalStyles = StyleSheet.create({
         fontWeight: "bold",
         marginBottom: 10,
     },
+    modalMessage: {
+        fontSize: 16,
+        fontWeight: "normal",
+        marginBottom: 10,
+        color: themes.colors.gray
+    },
     inputContainer: {
         flexDirection: 'column',
         alignItems: 'flex-start',
@@ -47,11 +53,23 @@ export const ModaGlobalStyles = StyleSheet.create({
         paddingHorizontal: 10,
         width: '100%',
     },
+    dateInput: {
+        height: 40,
+        borderColor: themes.colors.gray,
+        borderWidth: 1,
+        borderRadius: 5,
+        marginBottom: 15,
+        paddingHorizontal: 10,
+        width: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
     buttonContainer: {
         flexDirection: "column",
         gap: 10,
     },
-    buttonSalvar: {
+    buttonSucess: {
         borderRadius: 10,
         backgroundColor: themes.colors.success,
         justifyContent: "center",

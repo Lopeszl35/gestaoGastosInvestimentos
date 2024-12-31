@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
     View,
-    Dimensions,
     Text,
     ScrollView,
     TouchableOpacity,
@@ -12,11 +11,17 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 import AddModal from "@/components/AddModal";
 import ConfigGastoMesModal from "@/components/ConfigGastoMesModal";
 import ConfigGastoCategoriaModal from "@/components/ConfigGastoCategoriaModal";
+import AddGastosModal from "@/components/addGastosModal";
+import ConfirmDelete from "@/components/ConfirmDelete";
 import { stylesGastosVariaveis } from "@/styles/GastosVariaveisStyles";
+import { AlertsStyles } from "@/styles/AlertsStyles";
 import { MaterialIcons } from "@expo/vector-icons";
+import { getCategorias } from "@/services/categoriasService";
 
 const GastosVariaveis: React.FC = () => {
     const { user } = useUser();
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
     const [gastostotalMes, setGastosTotalMes] = useState(0);
     const [gastosLimiteMes, setGastosLimiteMes] = useState(0);
     const [alertaGastoExcedido, setAlertaGastoExcedido] = useState(false);
@@ -35,6 +40,9 @@ const GastosVariaveis: React.FC = () => {
     const [showModalAddCategoria, setShowModalAddCategoria] = useState(false);
     const [showModalConfigGastoMes, setShowModalConfigGastoMes] = useState(false);
     const [showModalConfigCategoria, setShowModalConfigCategoria] = useState(false);
+    const [showModalAddGastos, setShowModalAddGastos] = useState(false);
+    const [showCardSelect, setCardSelect] = useState(false);
+    const [showModalConfirmDelete, setShowModalConfirmDelete] = useState(false);
     const [categorias, setCategorias] = useState<any[]>([]);
     const [updateFlag, setUpdateFlag] = useState(false);
 
@@ -43,20 +51,33 @@ const GastosVariaveis: React.FC = () => {
 
     // Mock de categorias
     useEffect(() => {
-        const categoriasMock = [
-            { id: 1, nome: "Mercado", total: 1200, limite: 1000, descricao: "Compras no mercado" },
-            { id: 2, nome: "Uber", total: 800, limite: 900, descricao: "Gastos com transporte" },
-        ];
-        const totalGastos = categoriasMock.reduce((total, categoria) => total + categoria.total, 0);
-        const limiteGastosMes = gastosLimiteMes || 0;
-        setGastosTotalMes(totalGastos);
-        setGastosLimiteMes(limiteGastosMes);
-        setCategorias(categoriasMock);
-        setAlertaGastoExcedido(totalGastos > limiteGastosMes);
+        const fetchCategorias = async () => {
+            try {
+                setLoading(true);  
+                const data = await getCategorias();
+                console.log("Categorias:", data);
+                const totalGastos = categorias.reduce((total, categoria) => total + categoria.total, 0);
+                const limiteGastosMes = gastosLimiteMes || 0;
+                setGastosTotalMes(totalGastos);
+                setGastosLimiteMes(limiteGastosMes);
+                setCategorias(data);
+                setAlertaGastoExcedido(totalGastos > limiteGastosMes);
+            } catch (error: any) {
+                setError(error.message || "Erro ao buscar categorias.");
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        fetchCategorias();
     }, [gastosLimiteMes, updateFlag]);
+
+    if(loading) return (<View><Text>Carregando...</Text></View>);
+    if (error) return (<View><Text>{error}</Text></View>);
 
     const abrirMenu = (id: number) => {
         setMenuAberto(id);
+        setCardSelect(true);
         setCategoriaSelecionada(categorias.find((cat) => cat.id === id));
 
         // Iniciar animações para cada ícone na roda
@@ -80,6 +101,7 @@ const GastosVariaveis: React.FC = () => {
     };
 
     const fecharMenu = () => {
+        setCardSelect(false);
         Animated.stagger(100, [
             Animated.timing(animationRefs[0].current, {
                 toValue: 0,
@@ -126,6 +148,11 @@ const GastosVariaveis: React.FC = () => {
         ]);
     };
 
+    const handleShowModalAddGastos = (idCategoria: number) => {
+        setShowModalAddGastos(true);
+        setCategoriaSelecionada(categorias.find((cat) => cat.id === idCategoria));
+    };
+
     const handleSalvarCategoriaAtualizada = (
         idCategoria: number,
         nomeCategoria: string,
@@ -144,6 +171,29 @@ const GastosVariaveis: React.FC = () => {
                     : categoria
             )
         );
+        setUpdateFlag((prev) => !prev); // Força a reatualização
+    };
+
+    const handleSalvarGasto = (idCategoria: number, valorGasto: number) => {
+        setCategorias((prevCategorias) =>
+            prevCategorias.map((categoria) =>
+                categoria.id === idCategoria
+                    ? {
+                          ...categoria,
+                          total: categoria.total + valorGasto,
+                      }
+                    : categoria
+            )
+        );
+        setUpdateFlag((prev) => !prev); // Força a reatualização
+    };
+
+    const handleConfirmDelete = (idCategoria: number) => {
+        setCategorias((prevCategorias) =>
+            prevCategorias.filter((categoria) => categoria.id !== idCategoria)
+        );
+        alert("Categoria excluida com sucesso!");
+        setShowModalConfirmDelete(false);
         setUpdateFlag((prev) => !prev); // Força a reatualização
     };
 
@@ -195,6 +245,24 @@ const GastosVariaveis: React.FC = () => {
                     categoria={categoriaSelecionada}
                 />
 
+                {/* Modal para adicionar gastos */}
+                <AddGastosModal
+                    visible={showModalAddGastos}
+                    onClose={() => setShowModalAddGastos(false)}
+                    onSave={(data) => handleSalvarGasto(data.idCategoria, data.gastos)}
+                    categoria={categoriaSelecionada?.nome || ""}
+                />
+
+                {/* Modal para confirmar exclusão */}
+                <ConfirmDelete 
+                    visible={showModalConfirmDelete}
+                    onClose={() => setShowModalConfirmDelete(false)}
+                    onConfirm={() => handleConfirmDelete(categoriaSelecionada?.id || 0)}
+                    message={`Tem certeza que deseja excluir a categoria ${categoriaSelecionada?.nome}?`}
+                >
+
+                </ConfirmDelete>
+
                 {/* Título */}
                 <View style={stylesGastosVariaveis.titleContainer}>
                     <Text style={stylesGastosVariaveis.title}>Resumo de Gastos Variáveis</Text>
@@ -202,11 +270,17 @@ const GastosVariaveis: React.FC = () => {
 
                 {/* Cards de Resumo */}
                 <View style={stylesGastosVariaveis.cardsContainer}>
+                    {categorias.length === 0 && (
+                        <Text style={AlertsStyles.alertText}>
+                            Nenhuma categoria cadastrada.
+                        </Text>
+                    )}
                     {categorias.map((categoria) => (
                         <TouchableOpacity
                             key={categoria.id}
                             style={[
-                                stylesGastosVariaveis.card,
+                                showCardSelect && menuAberto === categoria.id
+                                    ? stylesGastosVariaveis.cardSelected : stylesGastosVariaveis.card,
                                 categoria.total > categoria.limite &&
                                     stylesGastosVariaveis.cardExceeded,
                             ]}
@@ -274,7 +348,9 @@ const GastosVariaveis: React.FC = () => {
                                     },
                                 ]}
                             >
-                                <MaterialIcons name="attach-money" size={24} color="blue" />
+                                <TouchableOpacity onPress={() => handleShowModalAddGastos(categoriaSelecionada.id) }>
+                                    <MaterialIcons name="attach-money" size={24} color="blue" />
+                                </TouchableOpacity>
                             </Animated.View>
                             <Animated.View
                                 style={[
@@ -321,7 +397,9 @@ const GastosVariaveis: React.FC = () => {
                                     },
                                 ]}
                             >
-                                <MaterialIcons name="delete" size={24} color="red" />
+                                <TouchableOpacity onPress={() => setShowModalConfirmDelete(true)}>
+                                    <MaterialIcons name="delete" size={24} color="red" />
+                                </TouchableOpacity>
                             </Animated.View>
                         </View>
                     )}

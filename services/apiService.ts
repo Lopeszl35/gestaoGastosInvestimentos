@@ -9,13 +9,22 @@ export const fetchWithToken = async (endpoint: string, options: RequestInit = {}
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
 
-    return fetch(`${API_URL}/${endpoint}`, {
+    const response = await fetch(`${API_URL}/${endpoint}`, {
       ...options,
       headers: {
         ...headers,
         ...(options.headers || {}),
       },
     });
+
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      return response;
+    } else {
+      const text = await response.text();
+      console.error("Resposta não JSON recebida:", text);
+      throw new Error("Resposta inesperada do servidor.");
+    }
   } catch (error) {
     console.error("Erro ao fazer requisição com token:", error);
     throw error;

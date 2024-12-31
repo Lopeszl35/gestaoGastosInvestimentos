@@ -94,6 +94,20 @@ export const stylesGastosVariaveis = StyleSheet.create({
         shadowRadius: 4,
         elevation: 3,
     },
+    cardSelected: {
+        width: "48%",
+        backgroundColor: themes.colors.white,
+        padding: 15,
+        marginBottom: 15,
+        borderRadius: 10,
+        borderColor: themes.colors.primary,
+        borderWidth: 1,
+        shadowColor: themes.colors.primary,
+        shadowOffset: { width: 4, height: 4 },
+        shadowOpacity: 0.5,
+        shadowRadius: 14,
+        elevation: 10,
+    },
     cardExceeded: {
         backgroundColor: themes.colors.alert, // Vermelho para alertas de gastos excedidos
     },

@@ -1,4 +1,3 @@
-import { Platform } from "react-native"; // Disponível apenas em React Native
 import { API_URL } from "../constants/ApiUrl";
 import { storeTokenSecure, removeTokenSecure } from "../utils/tokenStorage";
 import { UserCadastro } from "../interfaces/userInterface";

@@ -59,7 +59,7 @@ const AddModal: React.FC<AddModalProps> = ({ visible, onClose, onSave }) => {
                         onChangeText={setDescricao}
                     />
                     <View style={ModaGlobalStyles.buttonContainer}>
-                        <TouchableOpacity onPress={handleSave} style={ModaGlobalStyles.buttonSalvar}>
+                        <TouchableOpacity onPress={handleSave} style={ModaGlobalStyles.buttonSucess}>
                             <Text style={ModaGlobalStyles.buttonText}>Salvar</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={onClose} style={ModaGlobalStyles.buttonCancelar}>
