@@ -45,7 +45,7 @@ const Login: React.FC = () => {
       const data = await loginUser(email, password);
       // Atualiza o contexto do usuário com os dados retornados do backend
       setUser({
-        id_usuario: data.id_usuario,
+        id_usuario: data.id,
         nome: data.nome,
         email: data.email,
         perfil_financeiro: data.perfil_financeiro,
@@ -55,7 +55,6 @@ const Login: React.FC = () => {
         data_cadastro: data.data_cadastro,
       });
       
-      Alert.alert("Logado com sucesso!");
       router.push("/home");
       setLoading(false);
       

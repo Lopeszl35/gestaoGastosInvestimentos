@@ -8,6 +8,7 @@ import fs from 'fs';
 import http from 'http';
 import https from 'https';
 import DependencyInjector from './utils/DependencyInjector.js'; // Utilitário de injeção de dependências
+import verifyToken from './middleware/verifyToken.js';
 
 // Inicialização do Servidor
 console.log('Servidor iniciando...');
@@ -68,6 +69,10 @@ const loadDependencies = async () => {
         DependencyInjector.register('UserRepository', new UserRepository(database));
         console.log('UserRepository registrado com sucesso.');
 
+        const { default: CategoriasRepository } = await import('./repositories/categoriasRepository.js');
+        DependencyInjector.register('CategoriasRepository', new CategoriasRepository(database));
+        console.log('CategoriasRepository registrado com sucesso.');
+
         // Registro de models
         const { default: UserModel } = await import('./models/Entities/userModel/UserModel.js');
         DependencyInjector.register('UserModel', new UserModel(
@@ -75,10 +80,21 @@ const loadDependencies = async () => {
         ));
         console.log('UserModel registrado com sucesso.');
 
+        const { default: CategoriasModel } = await import('./models/Entities/categoriasModel/CategoriasModel.js');
+        DependencyInjector.register('CategoriasModel', new CategoriasModel(
+            DependencyInjector.get('CategoriasRepository')
+        ));
+        console.log('CategoriasModel registrado com sucesso.');
+
         // Registro de controllers
         const { default: UserController } = await import('./controllers/userController.js');
         DependencyInjector.register('UserController', new UserController(
             DependencyInjector.get('UserModel'),
+            DependencyInjector.get('TransactionUtil')
+        ));
+        const { default: CategoriasController } = await import('./controllers/categoriasController.js');
+        DependencyInjector.register('CategoriasController', new CategoriasController(
+            DependencyInjector.get('CategoriasModel'),
             DependencyInjector.get('TransactionUtil')
         ));
        
@@ -94,13 +110,19 @@ const initializeServer = async () => {
     try {
         await loadDependencies();
 
+        // Rotas para teste
+        const { default: routerTest } = await import('./routes/routerTest.js');
+        app.use(routerTest);
+
         // Registro das Rotas
         const { default: UserRoutes } = await import('./routes/UserRoutes.js');
         const userController = DependencyInjector.get('UserController');
 
-        const { default: routerTest } = await import('./routes/routerTest.js');
-        app.use(routerTest);
-     
+        const { default: CategoriasRoutes } = await import('./routes/CategoriasRoutes.js');
+        const categoriasController = DependencyInjector.get('CategoriasController');
+
+        
+        app.use(CategoriasRoutes(categoriasController));
         app.use(UserRoutes(userController));
         console.log('Rotas carregadas com sucesso!');
     } catch (error) {

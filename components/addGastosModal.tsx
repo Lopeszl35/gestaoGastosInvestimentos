@@ -13,7 +13,7 @@ import { ModaGlobalStyles } from "@/styles/ModaGlobalStyles";
 interface AddGastosModalProps {
     visible: boolean;
     onClose: () => void;
-    onSave: (data: { idCategoria: number; gastos: number; dataGasto: string }) => void;
+    onSave: (data: { idCategoria: number; gastos: number; descricaoCategoria: string; dataGasto: string }) => void;
     categoria: string;
 }
 
@@ -21,6 +21,7 @@ const AddGastosModal: React.FC<AddGastosModalProps> = ({ visible, onClose, onSav
     const [idCategoria, setIdCategoria] = useState<number>(0);
     const [gastos, setGastos] = useState<number>(0);
     const [dataGasto, setDataGasto] = useState<Date | null>(null);
+    const [descricaoCategoria, setDescricaoCategoria] = useState<string>("");
     const [showDatePicker, setShowDatePicker] = useState(false);
 
     const handleDateChange = (event: any, selectedDate?: Date) => {
@@ -36,7 +37,7 @@ const AddGastosModal: React.FC<AddGastosModalProps> = ({ visible, onClose, onSav
 
     const handleSave = () => {
         if (dataGasto) {
-            onSave({ idCategoria, gastos, dataGasto: formatDate(dataGasto) });
+            onSave({ idCategoria, gastos, descricaoCategoria, dataGasto: formatDate(dataGasto) });
         } else {
             alert("Por favor, selecione uma data para o gasto.");
         }
@@ -85,6 +86,16 @@ const AddGastosModal: React.FC<AddGastosModalProps> = ({ visible, onClose, onSav
                             onChangeText={(text) => setGastos(parseInt(text))}
                         />
                     </View>
+
+                       <View style={ModaGlobalStyles.inputContainer}>
+                            <Text style={ModaGlobalStyles.inputLabel}> Descrição</Text>
+                                <TextInput
+                                    style={ModaGlobalStyles.input}
+                                    placeholder="Descrição (opcional)"
+                                    value={descricaoCategoria}
+                                    onChangeText={setDescricaoCategoria}
+                                />
+                        </View>
 
                     {/* Botões */}
                     <View style={ModaGlobalStyles.buttonContainer}>

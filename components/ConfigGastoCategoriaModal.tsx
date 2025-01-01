@@ -15,13 +15,11 @@ interface ConfigGastoCategoriaModalProps {
         idCategoria: number,
         nomeCategoria: string,
         limiteGastoCategoria: number,
-        descricaoCategoria: string
     ) => void;
     categoria: {
         id: number;
         nome: string;
         limite: number;
-        descricao: string;
     } | null; // Dados da categoria selecionada ou null
 }
 
@@ -33,14 +31,12 @@ const ConfigGastoCategoriaModal: React.FC<ConfigGastoCategoriaModalProps> = ({
 }) => {
     const [nomeCategoria, setNomeCategoria] = useState("");
     const [limiteGastoCategoria, setLimiteGastoCategoria] = useState("");
-    const [descricaoCategoria, setDescricaoCategoria] = useState("");
 
     // Preenche os campos com os dados da categoria selecionada quando o modal é aberto
     useEffect(() => {
         if (categoria) {
             setNomeCategoria(categoria.nome);
             setLimiteGastoCategoria(categoria.limite.toString());
-            setDescricaoCategoria(categoria.descricao || "");
         }
     }, [categoria]);
 
@@ -50,7 +46,6 @@ const ConfigGastoCategoriaModal: React.FC<ConfigGastoCategoriaModalProps> = ({
                 categoria?.id || 0,
                 nomeCategoria,
                 parseFloat(limiteGastoCategoria),
-                descricaoCategoria
             );
             onClose(); // Fecha o modal após salvar
         }
@@ -83,15 +78,6 @@ const ConfigGastoCategoriaModal: React.FC<ConfigGastoCategoriaModalProps> = ({
                             keyboardType="numeric"
                             value={limiteGastoCategoria}
                             onChangeText={setLimiteGastoCategoria}
-                        />
-                    </View>
-                    <View style={ModaGlobalStyles.inputContainer}>
-                        <Text style={ModaGlobalStyles.inputLabel}> Descrição</Text>
-                        <TextInput
-                            style={ModaGlobalStyles.input}
-                            placeholder="Descrição (opcional)"
-                            value={descricaoCategoria}
-                            onChangeText={setDescricaoCategoria}
                         />
                     </View>
                     <View style={ModaGlobalStyles.buttonContainer}>

@@ -5,6 +5,7 @@ import {
     ScrollView,
     TouchableOpacity,
     Animated,
+    RefreshControl,
 } from "react-native";
 import { useUser } from "@/context/UserContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -21,6 +22,7 @@ import { getCategorias } from "@/services/categoriasService";
 const GastosVariaveis: React.FC = () => {
     const { user } = useUser();
     const [loading, setLoading] = useState<boolean>(true);
+    const [refreshing, setRefreshing] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [gastostotalMes, setGastosTotalMes] = useState(0);
     const [gastosLimiteMes, setGastosLimiteMes] = useState(0);
@@ -29,7 +31,6 @@ const GastosVariaveis: React.FC = () => {
         id: number;
         nome: string;
         limite: number;
-        descricao: string;
     } | null>(null);
     const [menuAberto, setMenuAberto] = useState<number | null>(null);
     const animationRefs = [
@@ -49,36 +50,48 @@ const GastosVariaveis: React.FC = () => {
     // Captura o mês atual
     const mes = new Date().toLocaleString("default", { month: "long" });
 
-    // Mock de categorias
-    useEffect(() => {
-        const fetchCategorias = async () => {
-            try {
-                setLoading(true);  
-                const data = await getCategorias();
-                console.log("Categorias:", data);
-                const totalGastos = categorias.reduce((total, categoria) => total + categoria.total, 0);
-                const limiteGastosMes = gastosLimiteMes || 0;
-                setGastosTotalMes(totalGastos);
-                setGastosLimiteMes(limiteGastosMes);
-                setCategorias(data);
-                setAlertaGastoExcedido(totalGastos > limiteGastosMes);
-            } catch (error: any) {
-                setError(error.message || "Erro ao buscar categorias.");
-            } finally {
-                setLoading(false);
-            }
-        }
+    
+    // Função para buscar categorias
+    const fetchCategorias = async () => {
+        try {
+            setLoading(true);
+            const data = await getCategorias(user?.id_usuario);
+            console.log("id_usuario:", user?.id_usuario);
+            console.log("Categorias vindas do banco: ", data);
 
+            setCategorias(data);
+            const limiteGastosMes = gastosLimiteMes || 0;
+            setGastosTotalMes(data.total);
+
+            setGastosLimiteMes(limiteGastosMes);
+            setAlertaGastoExcedido(gastostotalMes > limiteGastosMes);
+        } catch (error: any) {
+            setError(error.message || "Erro ao buscar categorias.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // useEffect para carregar as categorias
+    useEffect(() => {
         fetchCategorias();
     }, [gastosLimiteMes, updateFlag]);
 
+    // Função para o RefreshControl
+    const handleRefresh = async () => {
+        setRefreshing(true);
+        await fetchCategorias();
+        setRefreshing(false);
+    };
+
     if(loading) return (<View><Text>Carregando...</Text></View>);
     if (error) return (<View><Text>{error}</Text></View>);
+    console.log("Categorias Definidas: ", categorias);
 
     const abrirMenu = (id: number) => {
         setMenuAberto(id);
         setCardSelect(true);
-        setCategoriaSelecionada(categorias.find((cat) => cat.id === id));
+        setCategoriaSelecionada(categorias.find((cat) => cat.id_categoria === id));
 
         // Iniciar animações para cada ícone na roda
         Animated.stagger(100, [
@@ -157,7 +170,6 @@ const GastosVariaveis: React.FC = () => {
         idCategoria: number,
         nomeCategoria: string,
         limiteGastoCategoria: number,
-        descricaoCategoria: string
     ) => {
         setCategorias((prevCategorias) =>
             prevCategorias.map((categoria) =>
@@ -166,7 +178,6 @@ const GastosVariaveis: React.FC = () => {
                           ...categoria,
                           nome: nomeCategoria,
                           limite: limiteGastoCategoria,
-                          descricao: descricaoCategoria,
                       }
                     : categoria
             )
@@ -174,13 +185,14 @@ const GastosVariaveis: React.FC = () => {
         setUpdateFlag((prev) => !prev); // Força a reatualização
     };
 
-    const handleSalvarGasto = (idCategoria: number, valorGasto: number) => {
+    const handleSalvarGasto = (idCategoria: number, valorGasto: number, descricao: string) => {
         setCategorias((prevCategorias) =>
             prevCategorias.map((categoria) =>
                 categoria.id === idCategoria
                     ? {
                           ...categoria,
                           total: categoria.total + valorGasto,
+                          descricao: descricao,
                       }
                     : categoria
             )
@@ -199,7 +211,11 @@ const GastosVariaveis: React.FC = () => {
 
     return (
         <ProtectedRoute>
-            <ScrollView>
+            <ScrollView 
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+                }
+            >
                 {/* Resumo */}
                 <View style={stylesGastosVariaveis.summaryBox}>
                     <Text style={stylesGastosVariaveis.summaryText}>
@@ -249,7 +265,7 @@ const GastosVariaveis: React.FC = () => {
                 <AddGastosModal
                     visible={showModalAddGastos}
                     onClose={() => setShowModalAddGastos(false)}
-                    onSave={(data) => handleSalvarGasto(data.idCategoria, data.gastos)}
+                    onSave={(data) => handleSalvarGasto(data.idCategoria, data.gastos, data.descricaoCategoria)}
                     categoria={categoriaSelecionada?.nome || ""}
                 />
 
@@ -275,32 +291,35 @@ const GastosVariaveis: React.FC = () => {
                             Nenhuma categoria cadastrada.
                         </Text>
                     )}
-                    {categorias.map((categoria) => (
-                        <TouchableOpacity
-                            key={categoria.id}
-                            style={[
-                                showCardSelect && menuAberto === categoria.id
-                                    ? stylesGastosVariaveis.cardSelected : stylesGastosVariaveis.card,
-                                categoria.total > categoria.limite &&
-                                    stylesGastosVariaveis.cardExceeded,
-                            ]}
-                            onPress={() => abrirMenu(categoria.id)}
-                        >
-                            <Text style={stylesGastosVariaveis.cardTitle}>{categoria.nome}</Text>
-                            <Text style={stylesGastosVariaveis.cardDetail}>
-                                Total Gasto: R$ {categoria.total.toFixed(2)}
-                            </Text>
-                            <Text style={stylesGastosVariaveis.cardDetail}>
-                                Limite: R$ {categoria.limite.toFixed(2)}
-                            </Text>
-                            <Text style={stylesGastosVariaveis.cardDetail}>
-                                Descrição: {categoria.descricao}
-                            </Text>
-                            {categoria.total > categoria.limite && (
-                                <Text style={stylesGastosVariaveis.cardAlert}>⚠ Gastos excedidos!</Text>
-                            )}
-                        </TouchableOpacity>
-                    ))}
+                  {categorias.map((categoria) => {
+                        const limite = parseFloat(categoria.limite || "0");
+                        const total = parseFloat(categoria.total || "0");
+
+                        return (
+                            <TouchableOpacity
+                                key={categoria.id_categoria}
+                                style={[
+                                    showCardSelect && menuAberto === categoria.id_categoria
+                                        ? stylesGastosVariaveis.cardSelected
+                                        : stylesGastosVariaveis.card,
+                                    total > limite && stylesGastosVariaveis.cardExceeded,
+                                ]}
+                                onPress={() => abrirMenu(categoria.id_categoria)}
+                            >
+                                <Text style={stylesGastosVariaveis.cardTitle}>{categoria.nome}</Text>
+                                <Text style={stylesGastosVariaveis.cardDetail}>
+                                    Gastos: R$ {total.toFixed(2)}
+                                </Text>
+                                <Text style={stylesGastosVariaveis.cardDetail}>
+                                    Limite: R$ {limite.toFixed(2)}
+                                </Text>
+                                {total > limite && (
+                                    <Text style={stylesGastosVariaveis.cardAlert}>⚠ Gastos excedidos!</Text>
+                                )}
+                            </TouchableOpacity>
+                        );
+                    })}
+
                     {menuAberto && categoriaSelecionada && (
                         <View style={stylesGastosVariaveis.overlay}>
                             <Animated.View

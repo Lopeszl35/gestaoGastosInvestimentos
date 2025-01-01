@@ -1,8 +1,13 @@
+import { User } from "@/context/UserContext";
 import { fetchWithToken } from "./apiService";
 
-export const getCategorias = async (): Promise<any> => {
+export const getCategorias = async (id_usuario?: number): Promise<any> => {
+    let endpoint = `getCategorias?id_usuario=${id_usuario}`;
+    if (!id_usuario) {
+        endpoint = `getCategorias`;
+    }
     try {
-        const response = await fetchWithToken("getCategorias", {
+        const response = await fetchWithToken(`${endpoint}`, {
             method: "GET",
         });
 

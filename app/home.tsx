@@ -14,6 +14,7 @@ const { width } = Dimensions.get("window");
 
 const Home: React.FC = () => {
     const { user } = useUser();
+    console.log("user: ", user);
 
     // Dados de exemplo
     const gastosPorCategoria = [
