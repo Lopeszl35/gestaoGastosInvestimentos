@@ -17,7 +17,13 @@ import ConfirmDelete from "@/components/ConfirmDelete";
 import { stylesGastosVariaveis } from "@/styles/GastosVariaveisStyles";
 import { AlertsStyles } from "@/styles/AlertsStyles";
 import { MaterialIcons } from "@expo/vector-icons";
-import { getCategorias } from "@/services/categoriasService";
+import { 
+    getCategorias, 
+    createCategoria, 
+    deleteCategoria, 
+    addGasto,
+    updateCategoria
+} from "@/services/categoriasService";
 
 const GastosVariaveis: React.FC = () => {
     const { user } = useUser();
@@ -28,9 +34,10 @@ const GastosVariaveis: React.FC = () => {
     const [gastosLimiteMes, setGastosLimiteMes] = useState(0);
     const [alertaGastoExcedido, setAlertaGastoExcedido] = useState(false);
     const [categoriaSelecionada, setCategoriaSelecionada] = useState<{
-        id: number;
+        id_categoria: number;
         nome: string;
         limite: number;
+        totalGastosMes: number;
     } | null>(null);
     const [menuAberto, setMenuAberto] = useState<number | null>(null);
     const animationRefs = [
@@ -86,7 +93,6 @@ const GastosVariaveis: React.FC = () => {
 
     if(loading) return (<View><Text>Carregando...</Text></View>);
     if (error) return (<View><Text>{error}</Text></View>);
-    console.log("Categorias Definidas: ", categorias);
 
     const abrirMenu = (id: number) => {
         setMenuAberto(id);
@@ -135,7 +141,13 @@ const GastosVariaveis: React.FC = () => {
     };
 
     const handleCategoriaSelecionada = (id: number) => {
-        const categoria = categorias.find((cat) => cat.id === id) || null;
+        const categoria = categorias.find((cat) => cat.id_categoria === id);
+        if (!categoria) {
+            console.error("Categoria não encontrada!");
+            alert("Erro: Categoria não encontrada.");
+            return;
+        }
+
         setCategoriaSelecionada(categoria);
         setShowModalConfigCategoria(true); // Abre o modal
     };
@@ -148,65 +160,114 @@ const GastosVariaveis: React.FC = () => {
         setShowModalConfigGastoMes(true);
     };
 
-    const handleSalvarCategoria = (data: { nome: string; limite: number; descricao: string }) => {
-        setCategorias([
-            ...categorias,
-            {
-                id: categorias.length + 1,
-                nome: data.nome,
-                total: 0,
-                limite: data.limite,
-                descricao: data.descricao,
-            },
-        ]);
+    const handleSalvarCategoria = async (data: { nome: string; limite: number;}) => {
+      try {
+        setLoading(true);
+        const novaCategoria = {
+          id_usuario: user?.id_usuario,
+          nome: data.nome,
+          limite: data.limite,
+        };
+       
+        const response = await createCategoria(novaCategoria);
+        alert("Categoria criada com sucesso!");
+        setShowModalAddCategoria(false);
+
+        setCategorias((prevCategorias) => [...prevCategorias, response]);
+        setUpdateFlag((prev) => !prev);
+      } catch (error: any) {
+        console.error("Erro ao criar categoria:", error.message);
+        alert(error.message || "Erro ao criar categoria.");
+      } finally {
+        setLoading(false);
+      }
     };
 
     const handleShowModalAddGastos = (idCategoria: number) => {
-        setShowModalAddGastos(true);
-        setCategoriaSelecionada(categorias.find((cat) => cat.id === idCategoria));
+        const categoria = categorias.find((cat) => cat.id_categoria === idCategoria);
+        setCategoriaSelecionada(categoria); // Define a categoria selecionada
+        setShowModalAddGastos(true); // Abre o modal
     };
 
-    const handleSalvarCategoriaAtualizada = (
+    const handleSalvarCategoriaAtualizada = async (
         idCategoria: number,
         nomeCategoria: string,
         limiteGastoCategoria: number,
     ) => {
-        setCategorias((prevCategorias) =>
-            prevCategorias.map((categoria) =>
-                categoria.id === idCategoria
-                    ? {
-                          ...categoria,
-                          nome: nomeCategoria,
-                          limite: limiteGastoCategoria,
-                      }
-                    : categoria
-            )
-        );
-        setUpdateFlag((prev) => !prev); // Força a reatualização
+        try {
+            const categoriaAtualiza = {
+                nome: nomeCategoria,
+                limite: limiteGastoCategoria
+            }
+
+            await updateCategoria(categoriaAtualiza, idCategoria);
+            
+            setCategorias((prevCategorias) =>
+                prevCategorias.map((categoria) =>
+                    categoria.id_categoria === idCategoria
+                        ? {
+                              ...categoria,
+                              nome: nomeCategoria,
+                              limite: limiteGastoCategoria,
+                          }
+                        : categoria
+                )
+            );
+            setUpdateFlag((prev) => !prev); // Força a reatualização
+        } catch (error: any) {
+            console.error("Erro ao atualizar categoria:", error.message);
+            alert(error.message || "Erro ao atualizar categoria.");
+        }
     };
 
-    const handleSalvarGasto = (idCategoria: number, valorGasto: number, descricao: string) => {
-        setCategorias((prevCategorias) =>
-            prevCategorias.map((categoria) =>
-                categoria.id === idCategoria
-                    ? {
-                          ...categoria,
-                          total: categoria.total + valorGasto,
-                          descricao: descricao,
-                      }
-                    : categoria
-            )
-        );
-        setUpdateFlag((prev) => !prev); // Força a reatualização
+    const handleSalvarGasto = async (idCategoria: number, dataGasto: string, valor: number, descricao: string) => {
+        try {
+            const novoGasto = {
+                id_categoria: idCategoria,
+                data_gasto: dataGasto,
+                valor: valor,
+                descricao: descricao   
+            }
+
+            await addGasto(novoGasto, user!.id_usuario);
+
+
+            setCategorias((prevCategorias) =>
+                prevCategorias.map((categoria) =>
+                    categoria.id_categoria === idCategoria
+                        ? {
+                              ...categoria,
+                              totalGastosMes: categoria.totalGastosMes + valor,
+                          }
+                        : categoria
+                )
+            );
+            setUpdateFlag((prev) => !prev); // Força a reatualização
+        } catch (error: any) {
+            console.error("Erro ao adicionar gasto:", error.message);
+            alert(error.message || "Erro ao adicionar gasto.");
+        }
+
     };
 
-    const handleConfirmDelete = (idCategoria: number) => {
-        setCategorias((prevCategorias) =>
-            prevCategorias.filter((categoria) => categoria.id !== idCategoria)
-        );
-        alert("Categoria excluida com sucesso!");
-        setShowModalConfirmDelete(false);
-        setUpdateFlag((prev) => !prev); // Força a reatualização
+    const handleConfirmDelete = async (idCategoria: number) => {
+        try {
+            setLoading(true);
+            await deleteCategoria(idCategoria);
+            
+            setCategorias((prevCategorias) =>
+                prevCategorias.filter((categoria) => categoria.id_categoria !== idCategoria)
+            );
+            alert("Categoria excluida com sucesso!");
+            setShowModalConfirmDelete(false);
+            setUpdateFlag((prev) => !prev); // Força a reatualização
+        } catch (error: any) {
+            console.error("Erro ao excluir categoria:", error.message);
+            alert(error.message || "Erro ao excluir categoria.");
+            setShowModalConfirmDelete(false);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -253,30 +314,38 @@ const GastosVariaveis: React.FC = () => {
                     onSave={(gastoMes: number) => setGastosLimiteMes(gastoMes)}
                 />
 
-                {/*Modal para configurar categoria */}
+                {/* Modal para configurar categoria */}
                 <ConfigGastoCategoriaModal
                     visible={showModalConfigCategoria}
                     onClose={() => setShowModalConfigCategoria(false)}
                     onSave={handleSalvarCategoriaAtualizada}
-                    categoria={categoriaSelecionada}
+                    categoria={
+                        categoriaSelecionada
+                            ? {
+                                id_categoria: categoriaSelecionada.id_categoria,
+                                nome: categoriaSelecionada.nome,
+                                limite: categoriaSelecionada.limite,
+                            }
+                            : null
+                    }
                 />
 
                 {/* Modal para adicionar gastos */}
                 <AddGastosModal
                     visible={showModalAddGastos}
                     onClose={() => setShowModalAddGastos(false)}
-                    onSave={(data) => handleSalvarGasto(data.idCategoria, data.gastos, data.descricaoCategoria)}
-                    categoria={categoriaSelecionada?.nome || ""}
+                    onSave={(data) => handleSalvarGasto(data.idCategoria, data.dataGasto, data.valor, data.descricaoCategoria)}
+                    nomeCategoria={categoriaSelecionada?.nome || ""}
+                    idCategoria={categoriaSelecionada?.id_categoria || 0}
                 />
 
                 {/* Modal para confirmar exclusão */}
                 <ConfirmDelete 
                     visible={showModalConfirmDelete}
                     onClose={() => setShowModalConfirmDelete(false)}
-                    onConfirm={() => handleConfirmDelete(categoriaSelecionada?.id || 0)}
+                    onConfirm={() => handleConfirmDelete(categoriaSelecionada?.id_categoria || 0)}
                     message={`Tem certeza que deseja excluir a categoria ${categoriaSelecionada?.nome}?`}
                 >
-
                 </ConfirmDelete>
 
                 {/* Título */}
@@ -292,8 +361,8 @@ const GastosVariaveis: React.FC = () => {
                         </Text>
                     )}
                   {categorias.map((categoria) => {
-                        const limite = parseFloat(categoria.limite || "0");
-                        const total = parseFloat(categoria.total || "0");
+                        const limite = parseFloat(categoria.limite);
+                        const total = parseFloat(categoria.totalGastos);
 
                         return (
                             <TouchableOpacity
@@ -306,13 +375,19 @@ const GastosVariaveis: React.FC = () => {
                                 ]}
                                 onPress={() => abrirMenu(categoria.id_categoria)}
                             >
-                                <Text style={stylesGastosVariaveis.cardTitle}>{categoria.nome}</Text>
-                                <Text style={stylesGastosVariaveis.cardDetail}>
-                                    Gastos: R$ {total.toFixed(2)}
-                                </Text>
-                                <Text style={stylesGastosVariaveis.cardDetail}>
-                                    Limite: R$ {limite.toFixed(2)}
-                                </Text>
+                                <View>
+                                    <Text style={stylesGastosVariaveis.cardTitle}>{categoria.nome}</Text>
+                                    <Text style={stylesGastosVariaveis.cardDetail}>
+                                        Gastos em todo o periódo: R$ {total.toFixed(2)} {/* Exibe o total de gastos no total na categoria */}
+                                    </Text>
+                                    <Text style={stylesGastosVariaveis.cardDetail}>
+                                        Limite: R$ {limite.toFixed(2)}
+                                    </Text>
+                                    <Text style={stylesGastosVariaveis.cardDetail}>
+                                        Gastos no mês: R$ 
+                                        {categoria.totalGastosMes} {/* Exibe o total de gastos no mês */}
+                                    </Text>
+                                </View>
                                 {total > limite && (
                                     <Text style={stylesGastosVariaveis.cardAlert}>⚠ Gastos excedidos!</Text>
                                 )}
@@ -342,8 +417,10 @@ const GastosVariaveis: React.FC = () => {
                                         ],
                                     },
                                 ]}
-                            >   <TouchableOpacity onPress={() => handleCategoriaSelecionada(categoriaSelecionada.id)}>
-                                    <MaterialIcons name="edit" size={24} color="green" />
+                            >   <TouchableOpacity onPress={() => handleCategoriaSelecionada(categoriaSelecionada.id_categoria)}>
+                                    <Text>
+                                        <MaterialIcons name="edit" size={24} color="green" />
+                                    </Text>
                                 </TouchableOpacity>
                             </Animated.View>
                             <Animated.View
@@ -367,8 +444,10 @@ const GastosVariaveis: React.FC = () => {
                                     },
                                 ]}
                             >
-                                <TouchableOpacity onPress={() => handleShowModalAddGastos(categoriaSelecionada.id) }>
-                                    <MaterialIcons name="attach-money" size={24} color="blue" />
+                                <TouchableOpacity onPress={() => handleShowModalAddGastos(categoriaSelecionada.id_categoria) }>
+                                    <Text>
+                                        <MaterialIcons name="attach-money" size={24} color="blue" />
+                                    </Text>
                                 </TouchableOpacity>
                             </Animated.View>
                             <Animated.View
@@ -392,7 +471,9 @@ const GastosVariaveis: React.FC = () => {
                                     },
                                 ]}
                             >   <TouchableOpacity onPress={() => fecharMenu()}>
-                                    <MaterialIcons name="close" size={24} color="red" />
+                                    <Text>
+                                        <MaterialIcons name="close" size={24} color="red" />
+                                    </Text>
                                 </TouchableOpacity>
                             </Animated.View>
                             <Animated.View
@@ -417,7 +498,9 @@ const GastosVariaveis: React.FC = () => {
                                 ]}
                             >
                                 <TouchableOpacity onPress={() => setShowModalConfirmDelete(true)}>
-                                    <MaterialIcons name="delete" size={24} color="red" />
+                                    <Text>
+                                        <MaterialIcons name="delete" size={24} color="red" />
+                                    </Text>
                                 </TouchableOpacity>
                             </Animated.View>
                         </View>

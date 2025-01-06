@@ -5,24 +5,21 @@ import { ModaGlobalStyles } from "@/styles/ModaGlobalStyles";
 interface AddModalProps {
     visible: boolean;
     onClose: () => void;
-    onSave: (data: { nome: string; limite: number; descricao: string }) => void;
+    onSave: (data: { nome: string; limite: number; }) => void;
 }
 
 const AddModal: React.FC<AddModalProps> = ({ visible, onClose, onSave }) => {
     const [nome, setNome] = useState("");
     const [limite, setLimite] = useState("");
-    const [descricao, setDescricao] = useState("");
 
     const handleSave = () => {
         if (nome.trim() && limite.trim()) {
             onSave({
                 nome,
-                limite: parseFloat(limite),
-                descricao,
+                limite: parseFloat(limite)
             }); 
             setNome("");
             setLimite("");
-            setDescricao("");
             onClose();
         } else {
             alert("Por favor, preencha todos os campos obrigatórios.");
@@ -51,12 +48,6 @@ const AddModal: React.FC<AddModalProps> = ({ visible, onClose, onSave }) => {
                         keyboardType="numeric"
                         value={limite}
                         onChangeText={setLimite}
-                    />
-                    <TextInput
-                        style={ModaGlobalStyles.input}
-                        placeholder="Descrição (opcional)"
-                        value={descricao}
-                        onChangeText={setDescricao}
                     />
                     <View style={ModaGlobalStyles.buttonContainer}>
                         <TouchableOpacity onPress={handleSave} style={ModaGlobalStyles.buttonSucess}>

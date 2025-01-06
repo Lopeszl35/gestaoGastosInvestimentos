@@ -83,6 +83,10 @@ export const ModaGlobalStyles = StyleSheet.create({
         alignItems: "center",
         padding: 10,
     },
+    buttonDisabled: {
+        backgroundColor: "#ccc", // Cor desativada
+        borderColor: "#aaa", // Borda desativada
+    },    
     buttonText: {
         alignItems: "center",
         fontWeight: "bold",

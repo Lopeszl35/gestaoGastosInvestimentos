@@ -23,7 +23,7 @@ export const fetchWithToken = async (endpoint: string, options: RequestInit = {}
     } else {
       const text = await response.text();
       console.error("Resposta não JSON recebida:", text);
-      throw new Error("Resposta inesperada do servidor.");
+      throw new Error("Resposta inesperada do servidor." + text);
     }
   } catch (error) {
     console.error("Erro ao fazer requisição com token:", error);

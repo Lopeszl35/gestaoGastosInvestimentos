@@ -13,13 +13,15 @@ import { ModaGlobalStyles } from "@/styles/ModaGlobalStyles";
 interface AddGastosModalProps {
     visible: boolean;
     onClose: () => void;
-    onSave: (data: { idCategoria: number; gastos: number; descricaoCategoria: string; dataGasto: string }) => void;
-    categoria: string;
+    onSave: (data: { idCategoria: number; valor: number; descricaoCategoria: string; dataGasto: string }) => void;
+    nomeCategoria: string;
+    idCategoria: number
 }
 
-const AddGastosModal: React.FC<AddGastosModalProps> = ({ visible, onClose, onSave, categoria }) => {
-    const [idCategoria, setIdCategoria] = useState<number>(0);
-    const [gastos, setGastos] = useState<number>(0);
+const AddGastosModal: React.FC<AddGastosModalProps> = ({ visible, onClose, onSave, nomeCategoria, idCategoria}) => {
+    console.log("Nome da Categoria: ", nomeCategoria);
+    console.log("ID da Categoria: ", idCategoria);
+    const [gastos, setGastos] = useState<string>("");
     const [dataGasto, setDataGasto] = useState<Date | null>(null);
     const [descricaoCategoria, setDescricaoCategoria] = useState<string>("");
     const [showDatePicker, setShowDatePicker] = useState(false);
@@ -36,12 +38,24 @@ const AddGastosModal: React.FC<AddGastosModalProps> = ({ visible, onClose, onSav
     };
 
     const handleSave = () => {
-        if (dataGasto) {
-            onSave({ idCategoria, gastos, descricaoCategoria, dataGasto: formatDate(dataGasto) });
-        } else {
-            alert("Por favor, selecione uma data para o gasto.");
+        if (!gastos || !dataGasto) {
+            alert("Por favor, preencha todos os campos obrigatórios.");
+            return;
         }
+
+        onSave({
+            idCategoria, // Certifique-se de que está passando o ID correto
+            valor: parseFloat(gastos), // Converte para número
+            descricaoCategoria,
+            dataGasto: dataGasto.toISOString().split("T")[0], // Formata a data para "YYYY-MM-DD"
+        });
+
+        setGastos("");
+        setDataGasto(null);
+        setDescricaoCategoria("");
+        onClose();
     };
+
 
     return (
         <Modal
@@ -52,7 +66,7 @@ const AddGastosModal: React.FC<AddGastosModalProps> = ({ visible, onClose, onSav
         >
             <View style={ModaGlobalStyles.modalContainer}>
                 <View style={ModaGlobalStyles.modalContent}>
-                    <Text style={ModaGlobalStyles.modalTitle}>Adicionar Gastos a Categoria {categoria}</Text>
+                    <Text style={ModaGlobalStyles.modalTitle}>Adicionar Gastos a Categoria {nomeCategoria}</Text>
 
                     {/* Data Picker */}
                     <View style={ModaGlobalStyles.inputContainer}>
@@ -82,8 +96,8 @@ const AddGastosModal: React.FC<AddGastosModalProps> = ({ visible, onClose, onSav
                             style={ModaGlobalStyles.input}
                             placeholder="Valor do Gasto (R$)"
                             keyboardType="numeric"
-                            value={gastos.toString()}
-                            onChangeText={(text) => setGastos(parseInt(text))}
+                            value={gastos}
+                            onChangeText={setGastos}
                         />
                     </View>
 
