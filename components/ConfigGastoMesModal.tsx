@@ -11,7 +11,7 @@ import { ModaGlobalStyles } from "@/styles/ModaGlobalStyles";
 interface ConfigGastoMesModalProps {
     visible: boolean;
     onClose: () => void;
-    onSave: (gastoMes: number) => void;
+    onSave: (data: { limiteGastoMes: number; mesAtual: string }) => void;
 }
 
 const ConfigGastoMesModal: React.FC<ConfigGastoMesModalProps> = ({
@@ -24,9 +24,11 @@ const ConfigGastoMesModal: React.FC<ConfigGastoMesModalProps> = ({
 
     const handleSave = () => {
         if (limiteGastoMes.trim()) {
-            onSave(parseFloat(limiteGastoMes));
+            onSave({ limiteGastoMes: parseFloat(limiteGastoMes), mesAtual });
             setLimiteGastoMes("");
             onClose();
+        } else {
+            alert("Por favor, preencha todos os campos obrigatórios.");
         }
     };
 

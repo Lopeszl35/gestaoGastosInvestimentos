@@ -24,6 +24,9 @@ import {
     addGasto,
     updateCategoria
 } from "@/services/categoriasService";
+import {
+    configLimiteGastoMes
+} from "@/services/GastosMesService";
 
 const GastosVariaveis: React.FC = () => {
     const { user } = useUser();
@@ -55,7 +58,7 @@ const GastosVariaveis: React.FC = () => {
     const [updateFlag, setUpdateFlag] = useState(false);
 
     // Captura o mês atual
-    const mes = new Date().toLocaleString("default", { month: "long" });
+    const mes = new Date().toLocaleString("default", { month: "long" }).replace(/^./, match => match.toUpperCase());
 
     
     // Função para buscar categorias
@@ -158,6 +161,22 @@ const GastosVariaveis: React.FC = () => {
 
     const handleConfigGastoMes = () => {
         setShowModalConfigGastoMes(true);
+    };
+
+    const handleSalvarGastoMes = async (data: { limiteGastoMes: number; mesAtual: string }) => {
+        try {
+            setLoading(true);
+            await configLimiteGastoMes(user!.id_usuario, data);
+            alert("Limite de gastos atualizado com sucesso!");
+            setShowModalConfigGastoMes(false);
+            setGastosLimiteMes(data.limiteGastoMes);
+            setUpdateFlag((prev) => !prev); // Força a reatualização
+        } catch (error: any) {
+            console.error("Erro ao atualizar limite de gastos:", error.message);
+            alert(error.message || "Erro ao atualizar limite de gastos.");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleSalvarCategoria = async (data: { nome: string; limite: number;}) => {
@@ -311,7 +330,7 @@ const GastosVariaveis: React.FC = () => {
                 <ConfigGastoMesModal
                     visible={showModalConfigGastoMes}
                     onClose={() => setShowModalConfigGastoMes(false)}
-                    onSave={(gastoMes: number) => setGastosLimiteMes(gastoMes)}
+                    onSave={handleSalvarGastoMes}
                 />
 
                 {/* Modal para configurar categoria */}
