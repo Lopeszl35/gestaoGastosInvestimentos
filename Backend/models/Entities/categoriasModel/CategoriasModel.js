@@ -1,4 +1,4 @@
-import ErroSqlHandler from "../../../utils/ErroSqlHandler.js";
+import ErroSqlHandler from "../../../errors/ErroSqlHandler.js";
 
 export default class CategoriasModel {
     constructor(CategoriasRepoitory) {

@@ -5,7 +5,7 @@ const { width, height } = Dimensions.get("window"); // Pega a largura da tela
 
 export const styleNavBar = StyleSheet.create({
     navBar: {
-        width: width,
+        width: width ,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between", // Botão de menu à esquerda e usuário à direita

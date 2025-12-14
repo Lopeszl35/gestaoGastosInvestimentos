@@ -11,8 +11,8 @@ export default (gastoMesController) => {
         gastoMesController.getGastoLimiteMes(req, res)
     });
 
-    router.post('/configGastoLimiteMes', (req, res) => {
-        gastoMesController.configGastoLimiteMes(req, res);
+    router.post('/configGastoLimiteMes/:id_usuario', (req, res, next) => {
+        gastoMesController.configGastoLimiteMes(req, res, next);
     });
 
     return router;

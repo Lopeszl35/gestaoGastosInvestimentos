@@ -14,8 +14,8 @@ export default (categoriasController) => {
         categoriasController.addGasto(req, res);
     });
 
-    router.get('/getCategorias', (req, res) => {
-        categoriasController.getCategorias(req, res);
+    router.get('/getCategorias', (req, res, next) => {
+        categoriasController.getCategorias(req, res, next);
     });
 
     router.delete('/deleteCategorias', (req, res) => {

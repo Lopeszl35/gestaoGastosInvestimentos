@@ -23,36 +23,49 @@ export default class CategoriasRepository {
     async getCategorias(id_usuario) {
         let sql = `
             SELECT 
-                cg.id_categoria,
-                cg.id_usuario,
-                cg.nome,
-                CAST(cg.limite AS DECIMAL(10, 2)) AS limite,
-                IFNULL((
-                    SELECT CAST(SUM(g.valor) AS DECIMAL(10, 2))
-                    FROM gastos g
-                    WHERE g.id_categoria = cg.id_categoria
-                ), 0) AS totalGastos,
-                IFNULL((
-                    SELECT CAST(SUM(g.valor) AS DECIMAL(10, 2))
-                    FROM gastos g
-                    WHERE g.id_categoria = cg.id_categoria 
-                      AND MONTH(g.data_gasto) = MONTH(CURDATE()) 
-                      AND YEAR(g.data_gasto) = YEAR(CURDATE())
-                ), 0) AS totalGastosMes
+            cg.id_categoria,
+            cg.id_usuario,
+            cg.nome,
+            CAST(cg.limite AS DECIMAL(10, 2)) AS limite,
+
+            IFNULL((
+                SELECT CAST(SUM(g.valor) AS DECIMAL(10, 2))
+                FROM gastos g
+                WHERE g.id_categoria = cg.id_categoria
+            ), 0) AS totalGastos,
+
+            IFNULL((
+                SELECT CAST(SUM(g.valor) AS DECIMAL(10, 2))
+                FROM gastos g
+                WHERE g.id_categoria = cg.id_categoria 
+                AND MONTH(g.data_gasto) = MONTH(CURDATE()) 
+                AND YEAR(g.data_gasto) = YEAR(CURDATE())
+            ), 0) AS totalGastosMes,
+
+            -- só faz sentido de verdade quando filtra por usuário,
+            -- mas aqui já deixamos pronto sem quebrar nada:
+            IFNULL(tgm.limite_gasto_mes, 0) AS limiteGastoMes,
+            IFNULL(tgm.gasto_atual_mes, 0)  AS gastoAtualMes
+
             FROM categorias_gastos cg
+            LEFT JOIN total_gastos_mes tgm
+            ON tgm.id_usuario = cg.id_usuario
+            AND tgm.ano = YEAR(CURDATE())
+            AND tgm.mes = MONTH(CURDATE())
         `;
+
         const params = [];
-    
+
         console.log("id_usuario recebido: ", id_usuario);
-    
+
         // Filtra as categorias pelo id_usuario, se fornecido
-        if (typeof id_usuario === 'number' && id_usuario > 0) {
-            sql += ' WHERE cg.id_usuario = ?';
+        if (typeof id_usuario === "number" && id_usuario > 0) {
+            sql += " WHERE cg.id_usuario = ?";
             params.push(id_usuario);
         }
-    
+
         console.log("SQL executado: ", sql, "com parâmetros:", params);
-    
+
         try {
             const result = await this.database.executaComando(sql, params);
             console.log("result: ", result);
@@ -62,6 +75,7 @@ export default class CategoriasRepository {
             throw error;
         }
     }
+
     
     
     async updateCategoria(id_categoria, categoria) {

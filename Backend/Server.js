@@ -4,10 +4,13 @@ import morgan from 'morgan';
 import session from 'express-session';
 import dotenv from 'dotenv';
 import events from 'events';
+/*
 import fs from 'fs';
 import http from 'http';
 import https from 'https';
+*/
 import DependencyInjector from './utils/DependencyInjector.js'; // Utilitário de injeção de dependências
+import manipuladorDeErros from './middleware/manipuladorDeErros.js';
 import verifyToken from './middleware/verifyToken.js';
 
 // Inicialização do Servidor
@@ -24,7 +27,7 @@ const app = express();
 app.use(express.json());
 app.use(
     cors({
-        origin: "http://localhost:8081", // Substitua pelo domínio do frontend
+        origin: '*', // Substitua pelo domínio do frontend
         methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
         allowedHeaders: ["Content-Type", "Authorization"],
         credentials: true, // Permite o envio de cookies
@@ -40,9 +43,9 @@ app.use(
         saveUninitialized: false,
         cookie: {
             maxAge: 1000 * 60 * 60 * 24, // 1 dia
-            secure: true, // Altere para `true` em produção com HTTPS
+            secure: false, // Altere para `true` em produção com HTTPS
             httpOnly: true,
-            sameSite: 'none',
+            sameSite: 'lax',
         },
     })
 );
@@ -143,6 +146,7 @@ const initializeServer = async () => {
         app.use(CategoriasRoutes(categoriasController));
         app.use(UserRoutes(userController));
         app.use(GastoMesRoutes(gastoMesController));
+        app.use(manipuladorDeErros);
         console.log('Rotas carregadas com sucesso!');
     } catch (error) {
         console.error('Erro ao inicializar o servidor:', error.message);
@@ -174,7 +178,7 @@ async function testDatabaseConnection() {
 
 testDatabaseConnection();
 
-// Servidor HTTPS
+/* Servidor HTTPS
 https.createServer({
     cert: fs.readFileSync('./SSL/code.crt'), 
     key: fs.readFileSync('./SSL/code.key')
@@ -186,4 +190,4 @@ http.createServer((req, res) => {
     res.end();
 }).listen(80, () => {
     console.log("Servidor HTTP rodando e redirecionando para HTTPS");
-});
+});*/

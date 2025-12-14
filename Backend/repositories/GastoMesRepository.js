@@ -1,38 +1,163 @@
+import ErroSqlHandler from "../errors/ErroSqlHandler.js";
 
+class GastoMesRepository {
+  constructor(database) {
+    this.database = database;
+  }
 
-export default class GastoMesRepository {
-    constructor(database) {
-        this.database = database;
+  /**
+   * Cria ou atualiza a configuração mensal do usuário.
+   * Tabela agora tem 1 linha por usuário (UNIQUE(id_usuario)).
+   *
+   * Regra importante:
+   * - Se o usuário mudar (ano/mes), a gente zera gasto_atual_mes,
+   *   pra não carregar gasto do mês anterior.
+   */
+  async configGastoLimiteMes(id_usuario, dadosMes, connection) {
+
+    try {
+      const { ano, mes, limiteGastoMes } = dadosMes;
+
+      const sql = `
+        INSERT INTO total_gastos_mes (id_usuario, ano, mes, limite_gasto_mes, gasto_atual_mes)
+        VALUES (?, ?, ?, ?, 0.00)
+        ON DUPLICATE KEY UPDATE
+          ano = VALUES(ano),
+          mes = VALUES(mes),
+          limite_gasto_mes = VALUES(limite_gasto_mes),
+
+          -- Se mudar de mês/ano, zera o gasto atual do mês
+          gasto_atual_mes = CASE
+            WHEN ano <> VALUES(ano) OR mes <> VALUES(mes) THEN 0.00
+            ELSE gasto_atual_mes
+          END,
+
+          updated_at = CURRENT_TIMESTAMP
+      `;
+
+      const params = [
+        Number(id_usuario),
+        Number(ano),
+        Number(mes),
+        Number(limiteGastoMes),
+      ];
+
+      const result = await connection.query(sql, params);
+
+      return {
+        mensagem: "Configuração mensal salva com sucesso.",
+        id_usuario: Number(id_usuario),
+        ano: Number(ano),
+        mes: Number(mes),
+        limite_gasto_mes: Number(limiteGastoMes),
+        // result pode variar dependendo do seu executaComando
+        result,
+      };
+    } catch (error) {
+      // Mantém o static para não mexer no resto do código
+      ErroSqlHandler.tratarErroSql(error);
+      throw error;
     }
+  }
 
-    async configGastoLimiteMes(id_usuario, dataMes, connection) {
-        const sql = `
-            INSERT INTO Total_Gastos_Mes (id_usuarios, mes, total_limite)
-            VALUES (?, ?, ?)
-        `;
-        const params = [id_usuario, dataMes.mesAtual, dataMes.limiteGastoMes];
-        try {
-            const result = await connection.query(sql, params);
-            return result;
-        } catch (error) {
-            console.error("Erro no GastoMesRepository.configGastoLimiteMes:", error.message);
-            throw error;
-        }
+  /**
+   * Retorna a configuração mensal atual do usuário (linha única).
+   */
+  async getLimiteGastosMes(id_usuario, connection) {
+    const conn = connection ?? this.database;
+
+    try {
+      const sql = `
+        SELECT
+          id_total_gastos_mes,
+          id_usuario,
+          ano,
+          mes,
+          limite_gasto_mes,
+          gasto_atual_mes,
+          created_at,
+          updated_at
+        FROM total_gastos_mes
+        WHERE id_usuario = ?
+        LIMIT 1
+      `;
+
+      const rows = await conn.executaComando(sql, [Number(id_usuario)]);
+      return rows?.[0] ?? null;
+    } catch (error) {
+      ErroSqlHandler.tratarErroSql(error);
+      throw error;
     }
+  }
 
-    async getLimiteGastosMes(id_usuario) {
-        const sql = `
-            SELECT total_limite FROM Total_Gastos_Mes
-            WHERE id_usuarios = ?
-        `
-        try {
-            const result = await this.database.executaComandoNonQuery(sql, id_usuario)
-            console.log("Resultado vindo do banco de dados: " + result)
-            return result;
-        } catch (error) {
-            console.error("Erro no GastoMesRepository ao obter limite gasto mês: " + error.message);
-            throw error;
-        }
+  /**
+   * (Opcional) Atualiza somente o limite (sem trocar mês/ano)
+   * Útil se você quiser endpoint separado.
+   */
+  async atualizarLimite(id_usuario, limite_gasto_mes, connection) {
+    const conn = connection ?? this.database;
+
+    try {
+      const sql = `
+        UPDATE total_gastos_mes
+        SET limite_gasto_mes = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE id_usuario = ?
+      `;
+
+      const result = await conn.executaComando(sql, [
+        Number(limite_gasto_mes),
+        Number(id_usuario),
+      ]);
+
+      return { mensagem: "Limite atualizado com sucesso.", result };
+    } catch (error) {
+      ErroSqlHandler.tratarErroSql(error);
+      throw error;
     }
+  }
 
+  /**
+   * (Opcional) Recalcular gasto_atual_mes a partir da tabela gastos
+   * - Útil se você quiser "consertar" caso alguém mexa manualmente no banco
+   * - Ou se você inserir gastos antigos e quiser garantir consistência
+   */
+  async recalcularGastoAtualMes(id_usuario, connection) {
+    const conn = connection ?? this.database;
+
+    try {
+      // Pega ano/mes configurados
+      const cfg = await this.getLimiteGastosMes(id_usuario, conn);
+      if (!cfg) return null;
+
+      const sql = `
+        UPDATE total_gastos_mes t
+        JOIN (
+          SELECT
+            id_usuario,
+            COALESCE(SUM(valor), 0) AS soma
+          FROM gastos
+          WHERE id_usuario = ?
+            AND YEAR(data_gasto) = ?
+            AND MONTH(data_gasto) = ?
+        ) g ON g.id_usuario = t.id_usuario
+        SET t.gasto_atual_mes = g.soma,
+            t.updated_at = CURRENT_TIMESTAMP
+        WHERE t.id_usuario = ?
+      `;
+
+      const result = await conn.executaComando(sql, [
+        Number(id_usuario),
+        Number(cfg.ano),
+        Number(cfg.mes),
+        Number(id_usuario),
+      ]);
+
+      return { mensagem: "Gasto atual do mês recalculado.", ano: cfg.ano, mes: cfg.mes, result };
+    } catch (error) {
+      ErroSqlHandler.tratarErroSql(error);
+      throw error;
+    }
+  }
 }
+
+export default GastoMesRepository;

@@ -1,5 +1,5 @@
 import { validationResult } from 'express-validator';
-import validarEntradaGastos from '../models/Entities/categoriasModel/validarEntradaGastos.js';
+import validarEntradaGastos from '../errors/validarEntradaGastos.js';
 
 class CategoriasController {
     constructor(CategoriasModel, TransactionUtil) {
@@ -72,7 +72,7 @@ class CategoriasController {
         }
     }
 
-    async getCategorias(req, res) {
+    async getCategorias(req, res, next) {
         const errors = validationResult(req);
         const id_usuario = req.query;
         if(!errors.isEmpty()) {
@@ -82,8 +82,7 @@ class CategoriasController {
             const result = await this.CategoriasModel.getCategorias(id_usuario);
             res.status(200).json(result);
         } catch (error) {
-            console.log('Erro ao buscar categorias:', error.message);
-            res.status(400).json({ message: "Erro ao buscar categorias: " + error.message});
+            next(error);
         }
     }
 
@@ -96,9 +95,6 @@ class CategoriasController {
         const gastos = req.body;
         const { id_usuario } = req.query;
        
-        if(!id_usuario) {
-            return res.status(400).json({ message: "Id de usuário não informado."});
-        }
         // Validar os campos obrigatórios usando a função validarEntradaGastos
         const validacao = validarEntradaGastos(gastos);
         if (validacao !== true) {

@@ -11,7 +11,7 @@ import { ModaGlobalStyles } from "@/styles/ModaGlobalStyles";
 interface ConfigGastoMesModalProps {
     visible: boolean;
     onClose: () => void;
-    onSave: (data: { limiteGastoMes: number; mesAtual: string }) => void;
+    onSave: (data: { limiteGastoMes: number; mes: string, ano: number }) => void;
 }
 
 const ConfigGastoMesModal: React.FC<ConfigGastoMesModalProps> = ({
@@ -20,11 +20,12 @@ const ConfigGastoMesModal: React.FC<ConfigGastoMesModalProps> = ({
     onSave,
 }) => {
     const [limiteGastoMes, setLimiteGastoMes] = useState<string>("");
-    const mesAtual = new Date().toLocaleString("default", { month: "long" });
+    const mes = new Date().toLocaleString("default", { month: "long" });
+    const ano = new Date().getFullYear();
 
     const handleSave = () => {
         if (limiteGastoMes.trim()) {
-            onSave({ limiteGastoMes: parseFloat(limiteGastoMes), mesAtual });
+            onSave({ limiteGastoMes: parseFloat(limiteGastoMes), mes, ano });
             setLimiteGastoMes("");
             onClose();
         } else {
@@ -42,7 +43,7 @@ const ConfigGastoMesModal: React.FC<ConfigGastoMesModalProps> = ({
             <View style={ModaGlobalStyles.modalContainer}>
                 <View style={ModaGlobalStyles.modalContent}>
                     <Text style={ModaGlobalStyles.modalTitle}>
-                        Configurar Limite de Gastos para {mesAtual}
+                        Configurar Limite de Gastos para {mes} de {ano}
                     </Text>
                     <TextInput
                         style={ModaGlobalStyles.input}

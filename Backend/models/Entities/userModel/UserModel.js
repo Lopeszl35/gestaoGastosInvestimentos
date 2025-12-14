@@ -1,6 +1,6 @@
 import bycrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import ErroSqlHandler from '../../../utils/ErroSqlHandler.js';
+import ErroSqlHandler from '../../../errors/ErroSqlHandler.js';
 
 class UserModel {
     constructor(UserRepository) {
@@ -65,6 +65,39 @@ class UserModel {
             return result;
         } catch (error) {
             console.log("Erro ao logar o usuário no modelo:", error.message);
+            ErroSqlHandler.tratarErroSql(error, 'usuario');
+            throw error;
+        }
+    }
+
+    async getUserSaldo(userId) {
+        try {
+            const saldo = await this.UserRepository.getUserSaldo(userId);
+            return saldo;
+        } catch (error) {
+            console.log("Erro ao obter o saldo do usuário no modelo:", error.message);
+            ErroSqlHandler.tratarErroSql(error, 'usuario');
+            throw error;
+        }
+    }
+
+    async atualizarUserSaldo(userId, novoSaldo,) {
+        try {
+            const novoSaldoAtualizado = await this.UserRepository.atualizarUserSaldo(userId, novoSaldo);
+            return novoSaldoAtualizado;
+        } catch (error) {
+            console.log("Erro ao atualizar o saldo do usuário no modelo:", error.message);
+            ErroSqlHandler.tratarErroSql(error, 'usuario');
+            throw error;
+        }
+    }
+
+    async getUserData(userId) {
+        try {
+            const userData = await this.UserRepository.getUserData(userId);
+            return userData;
+        } catch (error) {
+            console.log("Erro ao obter os dados do usuário no modelo:", error.message);
             ErroSqlHandler.tratarErroSql(error, 'usuario');
             throw error;
         }

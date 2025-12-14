@@ -13,5 +13,17 @@ export default (userController) => {
         userController.loginUser(req, res);
     })
 
+    router.get('/userSaldo', (req, res) => {
+        userController.getUserSaldo(req, res);
+    });
+
+    router.put('/userSaldo', (req, res, next) => {
+        userController.atualizarUserSaldo(req, res, next);
+    });
+
+    router.get('/userData/:userId', (req, res, next) => {
+        userController.getUserData(req, res, next);
+    })
+
     return router;
 };

@@ -1,4 +1,6 @@
 import { validationResult } from 'express-validator';
+import RequisicaoIncorreta from '../errors/RequisicaoIncorreta.js';
+import ErroValidacao from '../errors/validationError.js';
 
 class UserController {
     constructor(UserModel, TransactionUtil) {
@@ -61,6 +63,62 @@ class UserController {
             res.status(400).json({message: "Erro ao logar o usuário: " + error.message});
         }
     }
+
+    async getUserSaldo(req, res) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array()});
+        }
+
+        const { userId } = req.body;
+        
+        try {
+            const saldo = await this.UserModel.getUserSaldo(userId);
+            console.log("Saldo do usuário: ", saldo);
+            res.status(200).json({ saldo });
+        } catch (error) {
+            console.error('Erro ao obter o saldo do usuário:', error.message);
+            res.status(400).json({ message: "Erro ao obter o saldo do usuário: " + error.message });
+        }
+    }
+
+    async atualizarUserSaldo(req, res, next) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        throw new ErroValidacao(errors.array());
+      }
+
+      const { userId, saldo } = req.body;
+      console.log("Saldo recebido no controller:", saldo);
+
+      // aqui bloqueia letras
+      const saldoNumber = Number(String(saldo).trim().replace(",", "."));
+      if (!Number.isFinite(saldoNumber)) {
+        throw new RequisicaoIncorreta("Saldo inválido: envie apenas números (ex: 1000.50).");
+      }
+
+      const result = await this.UserModel.atualizarUserSaldo(userId, saldoNumber);
+
+      res.status(200).json(result);
+    } catch (erro) {
+      next(erro);
+    }
+  };
+
+  async getUserData(req, res, next) {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            throw new ErroValidacao(errors.array());
+        }
+        const { userId } = req.params;
+        const userData = await this.UserModel.getUserData(userId);
+        res.status(200).json(userData);
+    } catch (error) {
+        next(error);
+    }
+  }
 
 }
 

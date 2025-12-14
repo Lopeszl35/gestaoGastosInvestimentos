@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
+import FullScreenLoader from "@/components/FullScreenLoader";
+import LoadingOverlay from "@/components/LoadingOverlay";
 import {
     View,
     Text,
@@ -6,6 +8,7 @@ import {
     TouchableOpacity,
     Animated,
     RefreshControl,
+    ActivityIndicator,
 } from "react-native";
 import { useUser } from "@/context/UserContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -30,7 +33,8 @@ import {
 
 const GastosVariaveis: React.FC = () => {
     const { user } = useUser();
-    const [loading, setLoading] = useState<boolean>(true);
+    const [initialLoading, setInitialLoading] = useState(true);
+    const [loading, setLoading] = useState(false); 
     const [refreshing, setRefreshing] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
     const [gastostotalMes, setGastosTotalMes] = useState(0);
@@ -62,30 +66,44 @@ const GastosVariaveis: React.FC = () => {
 
     
     // Função para buscar categorias
-    const fetchCategorias = async () => {
+    const fetchCategorias = async (opts?: { showOverlay?: boolean }) => {
+        const showOverlay = opts?.showOverlay ?? false;
+
         try {
-            setLoading(true);
-            const data = await getCategorias(user?.id_usuario);
-            console.log("id_usuario:", user?.id_usuario);
+            if (showOverlay) setLoading(true);
+
+            const data = await getCategorias(user?.id_usuario); // aqui é array
             console.log("Categorias vindas do banco: ", data);
 
-            setCategorias(data);
-            const limiteGastosMes = gastosLimiteMes || 0;
-            setGastosTotalMes(data.total);
+            // Garantir que data é um array
+            const categoriasArray = Array.isArray(data) ? data : [];
+            setCategorias(categoriasArray);
 
-            setGastosLimiteMes(limiteGastosMes);
-            setAlertaGastoExcedido(gastostotalMes > limiteGastosMes);
+            // pega limite e gasto do mês do primeiro item
+            const limiteMes = categoriasArray.length > 0 ? Number(categoriasArray[0].limiteGastoMes) : 0;
+            const gastoMes = categoriasArray.length > 0 ? Number(categoriasArray[0].gastoAtualMes) : 0;
+
+            setGastosLimiteMes(Number.isFinite(limiteMes) ? limiteMes : 0);
+            setGastosTotalMes(Number.isFinite(gastoMes) ? gastoMes : 0);
+
+            // não usa state antigo aqui, usa os valores calculados
+            setAlertaGastoExcedido(gastoMes > limiteMes);
+            setError(null);
         } catch (error: any) {
             setError(error.message || "Erro ao buscar categorias.");
         } finally {
+            setInitialLoading(false);
             setLoading(false);
         }
     };
 
+
     // useEffect para carregar as categorias
-    useEffect(() => {
+   useEffect(() => {
+        if (!user?.id_usuario) return;
         fetchCategorias();
-    }, [gastosLimiteMes, updateFlag]);
+    }, [user?.id_usuario, updateFlag]);
+
 
     // Função para o RefreshControl
     const handleRefresh = async () => {
@@ -94,8 +112,19 @@ const GastosVariaveis: React.FC = () => {
         setRefreshing(false);
     };
 
-    if(loading) return (<View><Text>Carregando...</Text></View>);
-    if (error) return (<View><Text>{error}</Text></View>);
+    
+
+    if (initialLoading) {
+        return <FullScreenLoader text="Preparando seus dados financeiros..." />;
+    }
+
+    if (error) {
+        return (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 16 }}>
+            <Text>{error}</Text>
+            </View>
+        );
+    }
 
     const abrirMenu = (id: number) => {
         setMenuAberto(id);
@@ -163,17 +192,18 @@ const GastosVariaveis: React.FC = () => {
         setShowModalConfigGastoMes(true);
     };
 
-    const handleSalvarGastoMes = async (data: { limiteGastoMes: number; mesAtual: string }) => {
+    const handleSalvarGastoMes = async (data: { limiteGastoMes: number; mes: string, ano: number }) => {
         try {
             setLoading(true);
             await configLimiteGastoMes(user!.id_usuario, data);
             alert("Limite de gastos atualizado com sucesso!");
             setShowModalConfigGastoMes(false);
+            
             setGastosLimiteMes(data.limiteGastoMes);
             setUpdateFlag((prev) => !prev); // Força a reatualização
         } catch (error: any) {
-            console.error("Erro ao atualizar limite de gastos:", error.message);
-            alert(error.message || "Erro ao atualizar limite de gastos.");
+            console.error("Erro ao atualizar limite de gastos:", error);
+            alert(`${error.message}`);
         } finally {
             setLoading(false);
         }
@@ -291,6 +321,8 @@ const GastosVariaveis: React.FC = () => {
 
     return (
         <ProtectedRoute>
+            <View style={{ flex: 1 }}>
+                <LoadingOverlay visible={loading} />
             <ScrollView 
                 refreshControl={
                     <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
@@ -535,6 +567,7 @@ const GastosVariaveis: React.FC = () => {
                     </View>
                 </View>
             </ScrollView>
+            </View>
         </ProtectedRoute>
     );
 };

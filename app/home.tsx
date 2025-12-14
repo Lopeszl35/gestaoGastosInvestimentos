@@ -1,20 +1,36 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
     View,
     ScrollView,
     Text,
-    Dimensions
+    Dimensions,
+    TouchableOpacity,
+    RefreshControl
 } from "react-native";
 import { homeStyles } from "../styles/homeStyles";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import { useUser } from "@/context/UserContext";
 import { PieChart, BarChart } from "react-native-chart-kit";
+import { stylesGastosVariaveis } from "../styles/GastosVariaveisStyles";
+import { MaterialIcons } from "@expo/vector-icons";
+import ConfigSaldoAtualModal from "@/components/ConfigSaldoAtuaModal";
+import { 
+    atualizarUserSaldo,
+    getUserData
+ } from "@/services/userServices";
+
+
+
 
 const { width } = Dimensions.get("window");
 
 const Home: React.FC = () => {
     const { user } = useUser();
-    console.log("user: ", user);
+    const [loading, setLoading] = React.useState(false);
+    const [error, setError] = React.useState<string | null>(null);
+    const [refreshing, setRefreshing] = React.useState(false);
+    const [userData, setUserData] = React.useState<any>(null);
+    const [showModalConfigSaldo, setShowModalConfigSaldo] = React.useState(false);
 
     // Dados de exemplo
     const gastosPorCategoria = [
@@ -29,14 +45,69 @@ const Home: React.FC = () => {
         { label: "Dez", valor: 1800 },
     ];
 
+    const handleConfigSaldoAtual = () => {
+        setShowModalConfigSaldo(true);
+    }
+
+    const saveConfigSaldoAtual = async (saldo: number) => {
+        try {
+            await atualizarUserSaldo(saldo, user!.id_usuario);
+            alert("Saldo atualizado com sucesso!");
+            setShowModalConfigSaldo(false);
+
+        } catch (error: any) {
+            console.error("Erro ao atualizar saldo:", error.message);
+            alert("Erro ao atualizar saldo: " + error.message);
+        }
+    }
+
+    const fetchDadosUsuario = async () => {
+        if (!user?.id_usuario) return; 
+        try {
+            const data = await getUserData(user.id_usuario);
+            setUserData(data);
+        } catch (error) {
+            console.error("Erro ao buscar dados do usuário:", error);
+            setError("Erro ao buscar dados do usuário.");
+        }
+    };
+
+    useEffect(() => {
+        if (!user?.id_usuario) return;     // espera o user existir
+        fetchDadosUsuario();
+    }, [user?.id_usuario]);
+
+    const handleRefresh = async () => {
+        try {
+            setRefreshing(true);
+            await fetchDadosUsuario();
+        } finally {
+            setRefreshing(false);
+        }
+    };
     return (
         <ProtectedRoute>
             <View style={homeStyles.container}>
-                <ScrollView>
+                <ScrollView
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={() => {handleRefresh()}}
+                        />
+                    }
+                >
                     {/* Resumo */}
                     <View style={homeStyles.summaryBox}>
-                        <Text style={homeStyles.summaryText}>Saldo Atual: R$ {user?.saldo_atual || "0.00"}</Text>
-                        <Text style={homeStyles.summarySubText}>Perfil Financeiro: {user?.perfil_financeiro || "Moderado"}</Text>
+                        <Text style={homeStyles.summaryText}>Saldo Atual: R$ {userData?.saldo_atual}</Text>
+                        <Text style={homeStyles.summarySubText}>Perfil Financeiro: {userData?.perfil_financeiro}</Text>
+                        <View style={stylesGastosVariaveis.settingsContainer}>
+                            <TouchableOpacity onPress={handleConfigSaldoAtual}>
+                            <MaterialIcons
+                                style={stylesGastosVariaveis.settingsIcon} 
+                                name="settings" size={20} 
+                                color="black"/>
+                            </TouchableOpacity>
+                        </View>
                     </View>
 
                     {/* Gráficos */}
@@ -98,6 +169,12 @@ const Home: React.FC = () => {
                     </View>
                 </ScrollView>
             </View>
+
+            <ConfigSaldoAtualModal
+                visible={showModalConfigSaldo}
+                onClose={() => setShowModalConfigSaldo(false)}
+                onSave={(saldo) => saveConfigSaldoAtual(saldo)}
+            />
         </ProtectedRoute>
     );
 };

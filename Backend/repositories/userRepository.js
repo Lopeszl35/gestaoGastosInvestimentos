@@ -81,6 +81,54 @@ class UserRepository {
             throw error;
         }
     }
+
+    async getUserSaldo(userId) {
+        const sql = `
+            SELECT saldo_atual FROM Usuarios
+            WHERE id_usuario = ?;
+        `;
+
+        try {
+            const saldo = await this.Database.executaComando(sql, [userId]);
+            return saldo;
+        } catch (error) {
+            console.error("Erro no UserRepository.getUserSaldo:", error.message);
+            throw error;
+        }
+    }
+
+    async atualizarUserSaldo(userId, novoSaldo) {
+        const sql = `
+            UPDATE Usuarios
+            SET saldo_atual = ?
+            WHERE id_usuario = ?`
+        ;
+
+        try {
+            const resultado = await this.Database.executaComando(sql, [novoSaldo, userId]);
+            return resultado;
+        } catch (error) {
+            console.error("Erro no UserRepository.atualizarUserSaldo:", error.message);
+            throw error;
+        }
+    }
+
+    async getUserData(userId) {
+        const sql = `
+            SELECT id_usuario, nome, email, perfil_financeiro, salario_mensal, saldo_inicial, saldo_atual
+            FROM Usuarios
+            WHERE id_usuario = ?;
+        `;
+
+        try {
+            const userData = await this.Database.executaComando(sql, [userId]);
+            return userData[0];
+        } catch (error) {
+            console.error("Erro no UserRepository.getUserData:", error.message);
+            throw error;
+        }
+    }
+
 }
 
 export default UserRepository;

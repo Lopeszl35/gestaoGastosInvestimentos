@@ -12,10 +12,14 @@ import { styleNavBar } from "@/styles/NavBarStyles";
 import { useUser } from "@/context/UserContext";
 import { logoutUser } from "@/services/userServices";
 import { router } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const { width } = Dimensions.get("window");
 
+
 const NavBar: React.FC = () => {
+    const insets = useSafeAreaInsets();
+
     const { user } = useUser();
     const { setUser } = useUser();
     const [menuVisible, setMenuVisible] = React.useState(false);
@@ -61,7 +65,13 @@ const NavBar: React.FC = () => {
     return (
         <View>
             {/* Barra de navegação */}
-            <View style={styleNavBar.navBar}>
+            <View 
+                style={[
+                    styleNavBar.navBar,
+                    {
+                        paddingTop: Math.max(insets.top, 0),
+                    },
+                ]}>
                 <TouchableOpacity onPress={toggleMenu} style={styleNavBar.menuButton}>
                     <MaterialIcons name="menu" size={24} color="white" />
                 </TouchableOpacity>

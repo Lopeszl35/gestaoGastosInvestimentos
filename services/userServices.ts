@@ -58,3 +58,47 @@ export const logoutUser = async (): Promise<void> => {
     throw error;
   }
 };
+
+
+export const atualizarUserSaldo = async (saldo: number, userId: number): Promise<any> => {
+  try {
+    const response = await fetch(`${API_URL}/userSaldo`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ saldo, userId }),
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Erro ao atualizar saldo do usuário.");
+    }
+
+    return data;
+
+  } catch (error) {
+    throw new Error((error as Error).message || "Erro ao atualizar saldo do usuário.");
+  }
+}
+
+
+export const getUserData = async (userId: number): Promise<any> => {
+    try {
+      const response = await fetch(`${API_URL}/userData/${userId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        }
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Erro ao obter dados do usuário.");
+      }
+
+      return data;
+    } catch (error) {
+      throw new Error((error as Error).message || "Erro ao obter dados do usuário.");
+    }
+  };

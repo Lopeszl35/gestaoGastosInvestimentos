@@ -1,16 +1,16 @@
-import ErroSqlHandler from "../../../utils/ErroSqlHandler.js";
+import ErroSqlHandler from "../../../errors/ErroSqlHandler.js";
 
 export default class GastoMesModel {
     constructor(GastoMesRepository) {
         this.GastoMesRepository = GastoMesRepository;
     }
 
-    async configGastoLimiteMes(id_usuario, dataMes, connection) {
+    async configGastoLimiteMes(id_usuario, dadosMes, connection) {
         try {
-            return await this.GastoMesRepository.configGastoLimiteMes(id_usuario, dataMes, connection);
+            return await this.GastoMesRepository.configGastoLimiteMes(id_usuario, dadosMes, connection);
         } catch (error) {
             console.error("Erro no GastoMesModel.configGastoLimiteMes:", error.message);
-            ErroSqlHandler.tratarErroSql(error, 'gasto_mes');
+            ErroSqlHandler.tratarErroSql(error);
             throw error;
         }
     }
