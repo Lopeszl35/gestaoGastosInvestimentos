@@ -8,9 +8,12 @@ export default function validarEntradaGastoMes({ id_usuario, dadosMes }) {
   }
 
   if (!dadosMes || typeof dadosMes !== "object") {
-    erros.push("dadosMes inválido ou não informado");
+    erros.push("Informações fornecidas inválidas");
   } else {
-    if (dadosMes.limiteGastoMes === undefined || dadosMes.limiteGastoMes === null) {
+    if (
+      dadosMes.limiteGastoMes === undefined ||
+      dadosMes.limiteGastoMes === null
+    ) {
       erros.push("Informar limite de gasto do mês é obrigatório");
     } else if (isNaN(Number(dadosMes.limiteGastoMes))) {
       erros.push("Valor inválido para limite de gasto do mês");

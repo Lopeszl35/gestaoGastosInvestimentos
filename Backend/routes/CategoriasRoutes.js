@@ -1,30 +1,29 @@
-import express from 'express';
-import cors from 'cors';
+import express from "express";
+import cors from "cors";
 
 const router = express.Router();
 router.use(cors());
 
-
 export default (categoriasController) => {
-    router.post('/createCategorias', (req, res) => {
-        categoriasController.createCategorias(req, res);
-    });
+  router.post("/createCategorias", (req, res) => {
+    categoriasController.createCategorias(req, res);
+  });
 
-    router.post('/addGasto', (req, res) => {
-        categoriasController.addGasto(req, res);
-    });
+  router.post("/addGasto", (req, res, next) => {
+    categoriasController.addGasto(req, res, next);
+  });
 
-    router.get('/getCategorias', (req, res, next) => {
-        categoriasController.getCategorias(req, res, next);
-    });
+  router.get("/getCategorias", (req, res, next) => {
+    categoriasController.getCategorias(req, res, next);
+  });
 
-    router.delete('/deleteCategorias', (req, res) => {
-        categoriasController.deleteCategoria(req, res);
-    });
+  router.delete("/deleteCategorias", (req, res) => {
+    categoriasController.deleteCategoria(req, res);
+  });
 
-    router.patch('/updateCategoria', (req, res) => {
-        categoriasController.updateCategoria(req, res);
-    });
+  router.patch("/updateCategoria", (req, res) => {
+    categoriasController.updateCategoria(req, res);
+  });
 
-    return router;
+  return router;
 };
