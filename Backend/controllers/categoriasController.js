@@ -1,5 +1,5 @@
 import { validationResult } from "express-validator";
-import ValidarGastos from "../models/Entities/categoriasModel/ValidarGastos.js";
+import ValidaEntradas from "../utils/ValidaEntradas.js";
 
 class CategoriasController {
   constructor(CategoriasModel, TransactionUtil) {
@@ -124,7 +124,8 @@ class CategoriasController {
     const { id_usuario } = req.query;
 
     // Validar os campos obrigatórios usando a função validarEntradaGastos
-    ValidarGastos(id_usuario, gastos);
+    ValidaEntradas.ValidarGastos(id_usuario, gastos);
+
     try {
       const result = await this.TransactionUtil.executeTransaction(
         async (connection) => {

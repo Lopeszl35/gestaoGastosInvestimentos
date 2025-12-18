@@ -5,16 +5,7 @@ class GastoMesRepository {
     this.database = database;
   }
 
-  /**
-   * Cria ou atualiza a configuração mensal do usuário.
-   * Tabela agora tem 1 linha por usuário (UNIQUE(id_usuario)).
-   *
-   * Regra importante:
-   * - Se o usuário mudar (ano/mes), a gente zera gasto_atual_mes,
-   *   pra não carregar gasto do mês anterior.
-   */
   async configGastoLimiteMes(id_usuario, dadosMes, connection) {
-
     try {
       const { ano, mes, limiteGastoMes } = dadosMes;
 
@@ -50,11 +41,9 @@ class GastoMesRepository {
         ano: Number(ano),
         mes: Number(mes),
         limite_gasto_mes: Number(limiteGastoMes),
-        // result pode variar dependendo do seu executaComando
         result,
       };
     } catch (error) {
-      // Mantém o static para não mexer no resto do código
       ErroSqlHandler.tratarErroSql(error);
       throw error;
     }
@@ -90,10 +79,6 @@ class GastoMesRepository {
     }
   }
 
-  /**
-   * (Opcional) Atualiza somente o limite (sem trocar mês/ano)
-   * Útil se você quiser endpoint separado.
-   */
   async atualizarLimite(id_usuario, limite_gasto_mes, connection) {
     const conn = connection ?? this.database;
 
@@ -152,11 +137,20 @@ class GastoMesRepository {
         Number(id_usuario),
       ]);
 
-      return { mensagem: "Gasto atual do mês recalculado.", ano: cfg.ano, mes: cfg.mes, result };
+      return {
+        mensagem: "Gasto atual do mês recalculado.",
+        ano: cfg.ano,
+        mes: cfg.mes,
+        result,
+      };
     } catch (error) {
       ErroSqlHandler.tratarErroSql(error);
       throw error;
     }
+  }
+
+  async getGastosTotalDoMes(id_usuario, ano, mes) {
+    // implementar futuramente
   }
 }
 
