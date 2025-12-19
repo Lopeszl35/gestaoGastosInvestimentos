@@ -116,6 +116,10 @@ export default class CategoriasRepository {
   }
 
   async addGasto(gastos, id_usuario, connection) {
+    console.log(`Dados recebidos no Repository addGasto:`, {
+      "gastos": gastos,
+      "connection": connection ? "conexão válida" : "sem conexão"
+    });
     const sql = `
             INSERT INTO gastos (id_categoria, id_usuario, valor, data_gasto, descricao) 
             VALUES (?, ?, ?, ?, ?);
