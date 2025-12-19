@@ -149,7 +149,7 @@ class GastoMesRepository {
     }
   }
 
-  async getGastosTotaisPorCategoria(id_usuario) {
+  async getGastosTotaisPorCategoria(id_usuario, inicio, fim) {
     try {
       const sql = `
         SELECT g.*, cg.nome AS nome_categoria
