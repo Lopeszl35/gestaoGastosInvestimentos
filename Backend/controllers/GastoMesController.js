@@ -59,17 +59,33 @@ export default class GastoMesController {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { idUsuario } = req.query;
-    console.log("idUsuario recebido na controller:", idUsuario);
-    if (!idUsuario) {
-      return res.status(400).json({ message: "Id do usuário não informado" });
-    }
     try {
-      const result = await this.GastoMesModel.getGastosTotaisPorCategoria(idUsuario);
+      const { id_usuario, inicio, fim } = req.query;
+
+      if (!id_usuario) {
+        return res.status(400).json({ message: "Id do usuário não informado" });
+      }
+
+      // regra: ou manda as duas datas, ou nenhuma
+      if ((inicio && !fim) || (!inicio && fim)) {
+        return res.status(400).json({
+          message: "Período incompleto",
+          erros: ["Envie inicio e fim juntos, ou não envie nenhum."],
+          status: 400,
+        });
+      }
+
+      ValidaEntradas.validaDatas({ inicio, fim });
+
+      const result = await this.GastoMesModel.getGastosTotaisPorCategoria(
+        Number(id_usuario),
+        inicio || null,
+        fim || null
+      );
+
       return res.status(200).json(result);
     } catch (error) {
       next(error);
     }
-
   }
 }
