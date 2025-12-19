@@ -1,5 +1,5 @@
 import { validationResult } from "express-validator";
-import validarEntradaGastoMes from "../errors/validarEntradaGastos.js";
+import ValidaEntradas from "../utils/ValidaEntradas";
 
 export default class GastoMesController {
   constructor(GastoMesModel, TransactionUtil) {
@@ -12,7 +12,7 @@ export default class GastoMesController {
       const { dadosMes } = req.body;
       console.log("Dados recebidos na controller:", { id_usuario, dadosMes });
 
-      validarEntradaGastoMes({ id_usuario, dadosMes });
+      ValidaEntradas.validarEntradaLimiteGastoMes({ id_usuario, dadosMes });
 
       const result = await this.TransactionUtil.executeTransaction(
         async (connection) => {
@@ -53,12 +53,39 @@ export default class GastoMesController {
     }
   }
 
-  async getGastosTotalDoMes(req, res, next) {
+  async getGastosTotaisPorCategoria(req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { idUsuario, mes, ano } = req.query;
+    try {
+      const { id_usuario, inicio, fim } = req.query;
+
+      if (!id_usuario) {
+        return res.status(400).json({ message: "Id do usuário não informado" });
+      }
+
+      // regra: ou manda as duas datas, ou nenhuma
+      if ((inicio && !fim) || (!inicio && fim)) {
+        return res.status(400).json({
+          message: "Período incompleto",
+          erros: ["Envie inicio e fim juntos, ou não envie nenhum."],
+          status: 400,
+        });
+      }
+
+      ValidaEntradas.validaDatas({ inicio, fim });
+
+      const result = await this.GastoMesModel.getGastosTotaisPorCategoria(
+        Number(id_usuario),
+        inicio || null,
+        fim || null
+      );
+
+      return res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
   }
 }

@@ -149,8 +149,44 @@ class GastoMesRepository {
     }
   }
 
-  async getGastosTotalDoMes(id_usuario, ano, mes) {
-    // implementar futuramente
+  async getGastosTotaisPorCategoria({ idUsuario, inicio, fim }) {
+    const params = [idUsuario];
+
+    const filtroPeriodo =
+      inicio && fim ? "AND g.data_gasto BETWEEN ? AND ?" : "";
+
+    if (inicio && fim) {
+      params.push(inicio, fim);
+    }
+
+    // Observação: LEFT JOIN pra trazer categoria mesmo se não tiver gasto
+    const sql = `
+      SELECT
+        cg.id_categoria,
+        cg.nome,
+        CAST(IFNULL(SUM(g.valor), 0) AS DECIMAL(10,2)) AS totalGastosPeriodo,
+        COUNT(g.id_gasto) AS qtdLancamentos
+      FROM categorias_gastos cg
+      LEFT JOIN gastos g
+        ON g.id_categoria = cg.id_categoria
+       AND g.id_usuario = cg.id_usuario
+       ${filtroPeriodo}
+      WHERE cg.id_usuario = ?
+      GROUP BY cg.id_categoria, cg.nome
+      ORDER BY cg.nome ASC;
+    `;
+
+    // ⚠️ Repare: cg.id_usuario = ? precisa ser o último param
+    // mas params já começou com idUsuario. Então ajustamos:
+    // - coloco o WHERE cg.id_usuario = ? no final do SQL,
+    // - e passo o idUsuario no final do array.
+    // Mais simples: reordenar params:
+    const orderedParams =
+      inicio && fim
+        ? [idUsuario, inicio, fim, idUsuario]
+        : [idUsuario, idUsuario];
+
+    return this.database.executaComando(sql, orderedParams);
   }
 }
 
