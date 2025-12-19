@@ -11,7 +11,6 @@ export default class CategoriasModel {
             return result;
         } catch (error) {
             console.log("Erro ao criar categoria no modelo:", error.message);
-            ErroSqlHandler.tratarErroSql(error, 'categoria');
             throw error;
         }
     }
@@ -22,7 +21,6 @@ export default class CategoriasModel {
             return result;
         } catch (error) {
             console.log("Erro ao buscar categorias no modelo:", error.message);
-            ErroSqlHandler.tratarErroSql(error, 'categoria');
             throw error;
         }
     }
@@ -33,7 +31,6 @@ export default class CategoriasModel {
             return result;
         } catch (error) {
             console.log("Erro ao atualizar categoria no modelo:", error.message);
-            ErroSqlHandler.tratarErroSql(error, 'categoria');
             throw error;
         }
     }
@@ -44,7 +41,6 @@ export default class CategoriasModel {
             return result;
         } catch (error) {
             console.log("Erro ao deletar categoria no modelo:", error.message);
-            ErroSqlHandler.tratarErroSql(error, 'categoria');
             throw error;
         }
     }
@@ -55,8 +51,8 @@ export default class CategoriasModel {
             return result;
         } catch (error) {
             console.log("Erro ao adicionar gasto no modelo:", error.message);
-            ErroSqlHandler.tratarErroSql(error, 'categoria');
             throw error;
         }
     }
+
 }

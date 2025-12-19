@@ -1,5 +1,5 @@
 import { validationResult } from "express-validator";
-import validarEntradaGastoMes from "../errors/validarEntradaGastos.js";
+import ValidaEntradas from "../utils/ValidaEntradas.js";
 
 export default class GastoMesController {
   constructor(GastoMesModel, TransactionUtil) {
@@ -12,7 +12,7 @@ export default class GastoMesController {
       const { dadosMes } = req.body;
       console.log("Dados recebidos na controller:", { id_usuario, dadosMes });
 
-      validarEntradaGastoMes({ id_usuario, dadosMes });
+      ValidaEntradas.validarEntradaLimiteGastoMes({ id_usuario, dadosMes });
 
       const result = await this.TransactionUtil.executeTransaction(
         async (connection) => {
@@ -53,12 +53,23 @@ export default class GastoMesController {
     }
   }
 
-  async getGastosTotalDoMes(req, res, next) {
+  async getGastosTotaisPorCategoria(req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { idUsuario, mes, ano } = req.query;
+    const { idUsuario } = req.query;
+    console.log("idUsuario recebido na controller:", idUsuario);
+    if (!idUsuario) {
+      return res.status(400).json({ message: "Id do usuário não informado" });
+    }
+    try {
+      const result = await this.GastoMesModel.getGastosTotaisPorCategoria(idUsuario);
+      return res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+
   }
 }

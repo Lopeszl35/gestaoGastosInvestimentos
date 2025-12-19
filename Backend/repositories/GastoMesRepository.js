@@ -149,8 +149,23 @@ class GastoMesRepository {
     }
   }
 
-  async getGastosTotalDoMes(id_usuario, ano, mes) {
-    // implementar futuramente
+  async getGastosTotaisPorCategoria(id_usuario) {
+    try {
+      const sql = `
+        SELECT g.*, cg.nome AS nome_categoria
+        FROM gastos g
+        JOIN categorias_gastos cg ON cg.id_categoria = g.id_categoria
+        WHERE g.id_usuario = ?
+        ORDER BY g.data_gasto DESC;
+      `
+      const result = await this.database.executaComando(sql, [Number(id_usuario)]);
+      return result;
+
+
+    } catch (error) {
+      ErroSqlHandler.tratarErroSql(error);
+      throw error;
+    }
   }
 }
 

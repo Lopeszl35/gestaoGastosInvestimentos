@@ -121,6 +121,7 @@ class CategoriasController {
     }
 
     const gastos = req.body;
+    console.log("Gastos recebidos na controller:", gastos);
     const { id_usuario } = req.query;
 
     // Validar os campos obrigatórios usando a função validarEntradaGastos
