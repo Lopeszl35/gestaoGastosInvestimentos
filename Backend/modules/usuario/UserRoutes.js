@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { validateCreateUser, validateLoginUser } from '../middleware/validates/validateUsers.js';
+import { validateCreateUser, validateLoginUser } from './validateUsers.js';
 
 const router = express.Router();
 router.use(cors());

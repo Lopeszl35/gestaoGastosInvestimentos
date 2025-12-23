@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import ErroValidacao from '../errors/validationError.js';
+import ErroValidacao from '../errors/ValidationError.js';
 
 export default class Auth {
     static async senhaValida(password, senhaHash) {

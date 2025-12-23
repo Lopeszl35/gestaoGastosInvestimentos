@@ -69,7 +69,7 @@ const loadDependencies = async () => {
 
 
         // Registro de repositórios
-        const { default: UserRepository } = await import('./repositories/userRepository.js');
+        const { default: UserRepository } = await import('./modules/usuario/userRepository.js');
         DependencyInjector.register('UserRepository', new UserRepository(database));
         console.log('UserRepository registrado com sucesso.');
 
@@ -81,13 +81,14 @@ const loadDependencies = async () => {
         DependencyInjector.register('GastoMesRepository', new GastoMesRepository(database));
         console.log('GastoMesRepository registrado com sucesso.');
 
-        // Registro de models
-        const { default: UserModel } = await import('./services/users/UserService.js');
+        // Registro de Services
+        const { default: UserModel } = await import('./modules/usuario/UserService.js');
         DependencyInjector.register('UserModel', new UserModel(
             DependencyInjector.get('UserRepository')
         ));
-        console.log('UserModel registrado com sucesso.');
+        console.log('UserServiece registrado com sucesso.');
 
+        // Registro de models
         const { default: CategoriasModel } = await import('./models/Entities/categoriasModel/CategoriasModel.js');
         DependencyInjector.register('CategoriasModel', new CategoriasModel(
             DependencyInjector.get('CategoriasRepository')
@@ -101,7 +102,7 @@ const loadDependencies = async () => {
         console.log('GastoMesModel registrado com sucesso.');
 
         // Registro de controllers
-        const { default: UserController } = await import('./controllers/userController.js');
+        const { default: UserController } = await import('./modules/usuario/userController.js');
         DependencyInjector.register('UserController', new UserController(
             DependencyInjector.get('UserModel'),
             DependencyInjector.get('TransactionUtil')
@@ -134,7 +135,7 @@ const initializeServer = async () => {
         app.use(routerTest);
 
         // Registro das Rotas
-        const { default: UserRoutes } = await import('./routes/UserRoutes.js');
+        const { default: UserRoutes } = await import('./modules/usuario/UserRoutes.js');
         const userController = DependencyInjector.get('UserController');
 
         const { default: CategoriasRoutes } = await import('./routes/CategoriasRoutes.js');

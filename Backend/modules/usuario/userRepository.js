@@ -1,6 +1,4 @@
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
-import ErroSqlHandler from '../errors/ErroSqlHandler.js';
+import ErroSqlHandler from '../../errors/ErroSqlHandler.js';
 
 class UserRepository {
     constructor(Database) {

@@ -1,5 +1,5 @@
 import { body, validationResult } from 'express-validator';
-import ErroValidacao from '../../errors/validationError.js';
+import ErroValidacao from '../../errors/ValidationError.js';
 
 export const validateCreateUser = [
     body('nome')

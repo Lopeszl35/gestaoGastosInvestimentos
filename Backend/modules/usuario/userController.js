@@ -1,4 +1,5 @@
-import RequisicaoIncorreta from "../errors/RequisicaoIncorreta.js";
+import RequisicaoIncorreta from "../../errors/RequisicaoIncorreta.js";
+import UserPublicDTO from "./UserPublicDTO.js";
 
 class UserController {
   constructor(UserModel, TransactionUtil) {
@@ -13,20 +14,10 @@ class UserController {
       // Executa a lógica dentro de uma transação
       const response = await this.TransactionUtil.executeTransaction(
         async (connection) => {
-          const userModelo = {
-            nome: user.nome,
-            email: user.email,
-            senha_hash: user.senha_hash,
-            perfil_financeiro: user.perfil_financeiro,
-            salario_mensal: user.salario_mensal,
-            saldo_inicial: user.saldo_inicial,
-            saldo_atual: user.saldo_atual,
-          };
-
+          const userModelo = new UserPublicDTO(user);
           return await this.UserModel.createUser(userModelo, connection);
         }
       );
-
       res.status(200).json(response);
     } catch (error) {
       console.error("Erro ao criar o usuário:", error.message);

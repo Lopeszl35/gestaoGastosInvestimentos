@@ -2,7 +2,7 @@ import ErroSqlHandler from '../../errors/ErroSqlHandler.js';
 import NaoEncontrado from '../../errors/naoEncontrado.js';
 import { generateToken } from '../../auth/token.js';
 import Auth from '../../auth/auth.js';
-import AuthResponseDTO from '../../models/Entities/UserMoldels/AuthResponseDTO.js';
+import AuthResponseDTO from './AuthResponseDTO.js';
 
 class UserService {
     constructor(UserRepository) {
