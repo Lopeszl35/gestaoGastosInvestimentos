@@ -1,39 +1,12 @@
-import bycrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import ErroSqlHandler from '../../../errors/ErroSqlHandler.js';
+import ErroSqlHandler from '../../errors/ErroSqlHandler.js';
+import NaoEncontrado from '../../errors/naoEncontrado.js';
+import { generateToken } from '../../auth/token.js';
+import Auth from '../../auth/auth.js';
+import UserModelDTO from '../../models/Entities/UserMoldels/userModelDTO.js';
 
 class UserModel {
     constructor(UserRepository) {
         this.UserRepository = UserRepository;
-    }
-
-    async isValidUser(email, password) {
-        if(!email) {
-            throw new Error('E-mail obrigatório.');
-        } else if(!password) {
-            throw new Error('Senha obrigatória.');
-        }
-        try {
-            // Validação do e-mail
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regex para e-mail válido
-            if (!emailRegex.test(email)) {
-                throw new Error('E-mail inválido.');
-            }
-
-            // Validação da senha
-            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-            if (!passwordRegex.test(password)) {
-                throw new Error(
-                    'A senha deve conter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma letra minúscula, um número e um caractere especial.'
-                );
-            }
-
-            // Se ambos forem válidos, retorna true
-            return true;
-        } catch (error) {
-            console.log('Erro na validação do usuário:', error.message);
-            throw error;
-        }
     }
 
     async createUser(user, connection) {
@@ -50,19 +23,27 @@ class UserModel {
             }
             return response;
         } catch (error) {
-            console.log('Erro ao criar o usuário no modelo:', error.message);
-            ErroSqlHandler.tratarErroSql(error, 'usuario');
             throw error;
         }
     }
 
     async loginUser(email, password) {
         try {
-            const result = await this.UserRepository.loginUser(email, password);
-            if(!result) {
-                throw new Error("Nenhum usuário encontrado.");
+            const existeUser = await this.UserRepository.getUserByEmail(email);
+            if (!existeUser) {
+                throw new NaoEncontrado('Usuário nao encontrado');
+            } else {
+                const senhaValida = await Auth.senhaValida(password, existeUser.senha_hash);
+                if (!senhaValida) {
+                    throw new Error("Senha inválida.");
+                } else {
+                    const token = generateToken(existeUser.id_usuario);
+                    const result = await this.UserRepository.loginUser(email, password);
+                    const user = new UserModelDTO(result);
+                    user.token = token;
+                    return user;
+                }
             }
-            return result;
         } catch (error) {
             console.log("Erro ao logar o usuário no modelo:", error.message);
             ErroSqlHandler.tratarErroSql(error, 'usuario');
@@ -92,13 +73,12 @@ class UserModel {
         }
     }
 
-    async getUserData(userId) {
+    async getUser(userId) {
         try {
-            const userData = await this.UserRepository.getUserData(userId);
+            const userData = await this.UserRepository.getUser(userId);
             return userData;
         } catch (error) {
             console.log("Erro ao obter os dados do usuário no modelo:", error.message);
-            ErroSqlHandler.tratarErroSql(error, 'usuario');
             throw error;
         }
     }

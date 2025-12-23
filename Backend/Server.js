@@ -4,6 +4,7 @@ import morgan from 'morgan';
 import session from 'express-session';
 import dotenv from 'dotenv';
 import events from 'events';
+import manipulador404 from './middleware/manipulador404.js';
 /*
 import fs from 'fs';
 import http from 'http';
@@ -81,7 +82,7 @@ const loadDependencies = async () => {
         console.log('GastoMesRepository registrado com sucesso.');
 
         // Registro de models
-        const { default: UserModel } = await import('./models/Entities/userModel/UserModel.js');
+        const { default: UserModel } = await import('./services/users/UserService.js');
         DependencyInjector.register('UserModel', new UserModel(
             DependencyInjector.get('UserRepository')
         ));
@@ -147,6 +148,7 @@ const initializeServer = async () => {
         app.use(UserRoutes(userController));
         app.use(GastoMesRoutes(gastoMesController));
         app.use(manipuladorDeErros);
+        app.use(manipulador404);
         console.log('Rotas carregadas com sucesso!');
     } catch (error) {
         console.error('Erro ao inicializar o servidor:', error.message);

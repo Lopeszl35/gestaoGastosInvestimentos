@@ -150,7 +150,8 @@ class GastoMesRepository {
   }
 
   async getGastosTotaisPorCategoria({ idUsuario, inicio, fim }) {
-    const params = [idUsuario];
+    try {
+       const params = [idUsuario];
 
     const filtroPeriodo =
       inicio && fim ? "AND g.data_gasto BETWEEN ? AND ?" : "";
@@ -163,30 +164,38 @@ class GastoMesRepository {
     const sql = `
       SELECT
         cg.id_categoria,
-        cg.nome,
-        CAST(IFNULL(SUM(g.valor), 0) AS DECIMAL(10,2)) AS totalGastosPeriodo,
-        COUNT(g.id_gasto) AS qtdLancamentos
-      FROM categorias_gastos cg
-      LEFT JOIN gastos g
-        ON g.id_categoria = cg.id_categoria
-       AND g.id_usuario = cg.id_usuario
-       ${filtroPeriodo}
-      WHERE cg.id_usuario = ?
-      GROUP BY cg.id_categoria, cg.nome
-      ORDER BY cg.nome ASC;
+        cg.nome AS nomeCategoria,
+        g.id_gasto,
+        DATE_FORMAT(g.data_gasto, '%Y-%m-%d') AS data_gasto,
+        CAST(g.valor AS DECIMAL(10,2)) AS valor,
+        IFNULL(g.descricao, '') AS descricao
+      FROM gastos g
+      JOIN categorias_gastos cg
+        ON cg.id_categoria = g.id_categoria
+      AND cg.id_usuario   = g.id_usuario
+      WHERE g.id_usuario = 1
+      ${filtroPeriodo}
+      ORDER BY cg.nome, g.data_gasto, g.id_gasto;
     `;
 
     // ⚠️ Repare: cg.id_usuario = ? precisa ser o último param
     // mas params já começou com idUsuario. Então ajustamos:
     // - coloco o WHERE cg.id_usuario = ? no final do SQL,
     // - e passo o idUsuario no final do array.
+
     // Mais simples: reordenar params:
     const orderedParams =
       inicio && fim
-        ? [idUsuario, inicio, fim, idUsuario]
-        : [idUsuario, idUsuario];
+        ? [inicio, fim, idUsuario]
+        : [idUsuario];
 
-    return this.database.executaComando(sql, orderedParams);
+    const result = await this.database.executaComando(sql, orderedParams);
+    console.log("Gastos totais por categoria:", result);
+    return result;
+    } catch (error) {
+      ErroSqlHandler.tratarErroSql(error);
+      throw error;
+    }
   }
 }
 

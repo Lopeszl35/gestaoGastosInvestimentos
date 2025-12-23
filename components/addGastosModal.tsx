@@ -19,8 +19,6 @@ interface AddGastosModalProps {
 }
 
 const AddGastosModal: React.FC<AddGastosModalProps> = ({ visible, onClose, onSave, nomeCategoria, idCategoria}) => {
-    console.log("Nome da Categoria: ", nomeCategoria);
-    console.log("ID da Categoria: ", idCategoria);
     const [gastos, setGastos] = useState<string>("");
     const [dataGasto, setDataGasto] = useState<Date | null>(null);
     const [descricaoCategoria, setDescricaoCategoria] = useState<string>("");

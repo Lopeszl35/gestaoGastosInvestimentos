@@ -76,6 +76,7 @@ export default class GastoMesController {
       }
 
       ValidaEntradas.validaDatas({ inicio, fim });
+      
 
       const result = await this.GastoMesModel.getGastosTotaisPorCategoria(
         Number(id_usuario),

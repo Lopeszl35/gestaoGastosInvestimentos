@@ -1,4 +1,3 @@
-import { validationResult } from "express-validator";
 import RequisicaoIncorreta from "../errors/RequisicaoIncorreta.js";
 
 class UserController {
@@ -7,27 +6,10 @@ class UserController {
     this.TransactionUtil = TransactionUtil;
   }
 
-  async createUser(req, res) {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
+  async createUser(req, res, next) {
     const user = req.body;
     console.log("user recebido no controller: ", user);
-
     try {
-      // Validação do e-mail e senha
-      const isValid = await this.UserModel.isValidUser(
-        user.email,
-        user.senha_hash
-      );
-      if (!isValid) {
-        return res
-          .status(400)
-          .json({ message: "E-mail ou senha inválidos: " + isValid });
-      }
-
       // Executa a lógica dentro de uma transação
       const response = await this.TransactionUtil.executeTransaction(
         async (connection) => {
@@ -48,18 +30,11 @@ class UserController {
       res.status(200).json(response);
     } catch (error) {
       console.error("Erro ao criar o usuário:", error.message);
-      res
-        .status(400)
-        .json({ message: "Erro ao criar o usuário: " + error.message });
+      next(error);
     }
   }
 
-  async loginUser(req, res) {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
+  async loginUser(req, res, next) {
     const { email, password } = req.body;
 
     try {
@@ -67,10 +42,7 @@ class UserController {
       console.log("result: ", result);
       res.status(200).json(result);
     } catch (error) {
-      console.error("Erro ao logar o usuário:", error.message);
-      res
-        .status(400)
-        .json({ message: "Erro ao logar o usuário: " + error.message });
+      next(error);
     }
   }
 

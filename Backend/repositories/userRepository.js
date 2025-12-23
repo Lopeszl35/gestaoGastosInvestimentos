@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import ErroSqlHandler from '../errors/ErroSqlHandler.js';
 
 class UserRepository {
     constructor(Database) {
@@ -30,8 +31,7 @@ class UserRepository {
             const [result] = await connection.query(sql, params);
             return { insertId: result.insertId, result: result };
         } catch (error) {
-            console.error("Erro no UserRepository.createUser:", error.message);
-            throw error;
+            ErroSqlHandler.tratarErroSql(error);
         }
     }
 
@@ -41,44 +41,19 @@ class UserRepository {
      * @param {string} password - Senha do usuário.
      * @returns {Object} Dados do usuário e token JWT.
      */
-    async loginUser(email, password) {
+    async loginUser(email) {
         const sql = `
             SELECT * FROM Usuarios
             WHERE email = ?;
         `;
         try {
             const result = await this.Database.executaComando(sql, [email]);
-            if (result.length === 0) {
-                throw new Error("Nenhum usuário encontrado com este e-mail.");
-            }
-
             const user = result[0];
 
-            // Verifica se a senha é válida
-            const senhaValida = await bcrypt.compare(password, user.senha_hash);
-            if (!senhaValida) {
-                throw new Error("Senha inválida.");
-            }
-
-            // Gera um token JWT
-            const token = jwt.sign(
-                { id: user.id_usuario, email: user.email },
-                process.env.JWT_SECRET, // Segredo do JWT
-                { expiresIn: "1d" } // Expira em 1 dia
-            );
-
-            return {
-                id: user.id_usuario,
-                nome: user.nome,
-                email: user.email,
-                perfil_financeiro: user.perfil_financeiro,
-                salario_mensal: user.salario_mensal,
-                saldo_atual: user.saldo_atual,
-                token,
-            };
+            return user;
         } catch (error) {
             console.error("Erro no UserRepository.loginUser:", error.message);
-            throw error;
+            ErroSqlHandler.tratarErroSql(error);
         }
     }
 
@@ -93,7 +68,7 @@ class UserRepository {
             return saldo;
         } catch (error) {
             console.error("Erro no UserRepository.getUserSaldo:", error.message);
-            throw error;
+            ErroSqlHandler.tratarErroSql(error);
         }
     }
 
@@ -109,13 +84,13 @@ class UserRepository {
             return resultado;
         } catch (error) {
             console.error("Erro no UserRepository.atualizarUserSaldo:", error.message);
-            throw error;
+            ErroSqlHandler.tratarErroSql(error);
         }
     }
 
-    async getUserData(userId) {
+    async getUser(userId) {
         const sql = `
-            SELECT id_usuario, nome, email, perfil_financeiro, salario_mensal, saldo_inicial, saldo_atual
+            SELECT *
             FROM Usuarios
             WHERE id_usuario = ?;
         `;
@@ -125,7 +100,22 @@ class UserRepository {
             return userData[0];
         } catch (error) {
             console.error("Erro no UserRepository.getUserData:", error.message);
-            throw error;
+            ErroSqlHandler.tratarErroSql(error);
+        }
+    }
+
+    async getUserByEmail(email) {
+        const sql = `
+            SELECT *
+            FROM Usuarios
+            WHERE email = ?;
+        `;
+        try {
+            const userData = await this.Database.executaComando(sql, [email]);
+            return userData[0];
+        } catch (error) {
+            console.error("Erro no UserRepository.getUserData:", error.message);
+            ErroSqlHandler.tratarErroSql(error);
         }
     }
 

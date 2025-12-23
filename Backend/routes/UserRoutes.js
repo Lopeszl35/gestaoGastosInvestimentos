@@ -1,16 +1,17 @@
 import express from 'express';
 import cors from 'cors';
+import { validateCreateUser, validateLoginUser } from '../middleware/validates/validateUsers.js';
 
 const router = express.Router();
 router.use(cors());
 
 export default (userController) => {
-    router.post('/createUser', (req, res) => {
-        userController.createUser(req, res);
+    router.post('/createUser', validateCreateUser, (req, res, next) => {
+        userController.createUser(req, res, next);
     });
 
-    router.post('/loginUser', (req, res) => {
-        userController.loginUser(req, res);
+    router.post('/loginUser', validateLoginUser, (req, res, next) => {
+        userController.loginUser(req, res, next);
     })
 
     router.get('/userSaldo', (req, res) => {

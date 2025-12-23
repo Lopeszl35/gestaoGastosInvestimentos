@@ -13,11 +13,7 @@ export default class GastoMesModel {
         connection
       );
     } catch (error) {
-      console.error(
-        "Erro no GastoMesModel.configGastoLimiteMes:",
-        error.message
-      );
-      ErroSqlHandler.tratarErroSql(error);
+      console.error("Erro no GastoMesModel.configGastoLimiteMes:",error.message);
       throw error;
     }
   }
@@ -26,18 +22,20 @@ export default class GastoMesModel {
     try {
       return await this.GastoMesRepository.getLimiteGastosMes(id_usuario);
     } catch (error) {
-      console.error(
-        "Erro ao obter limite de gastos no model: " + error.message
-      );
-      ErroSqlHandler(error, "gasto_mes");
+      console.error("Erro ao obter limite de gastos no model: " + error.message);
+      throw error;
     }
   }
 
   async getGastosTotaisPorCategoria({ idUsuario, inicio, fim }) {
-    return this.GastoMesRepository.getGastosTotaisPorCategoria({
-      idUsuario,
-      inicio,
-      fim,
-    });
+    try {
+      return this.GastoMesRepository.getGastosTotaisPorCategoria({
+        idUsuario,
+        inicio,
+        fim,
+      });
+    } catch (error) {
+      
+    }
   }
 }

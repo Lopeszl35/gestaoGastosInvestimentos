@@ -94,34 +94,38 @@ export default class ValidaEntradas {
     }
   }
   
-  
-  static validarEntradaLimiteGastoMes({ id_usuario, dadosMes }) {
-    const erros = [];
-  
-    if (!id_usuario) {
-      erros.push("id do usuário não informado");
+  static validaDatas({ inicio, fim }) {
+    // se não mandou nenhuma, ok (relatório do período todo)
+    if (!inicio && !fim) return;
+
+    // se mandou só uma, erro
+    if ((inicio && !fim) || (!inicio && fim)) {
+      throw new RequisicaoIncorreta("Período incompleto", [
+        "Envie inicio e fim juntos, ou não envie nenhum.",
+      ]);
     }
-  
-    if (!dadosMes || typeof dadosMes !== "object") {
-      erros.push("Informações fornecidas inválidas");
-    } else {
-      if (
-        dadosMes.limiteGastoMes === undefined ||
-        dadosMes.limiteGastoMes === null
-      ) {
-        erros.push("Informar limite de gasto do mês é obrigatório");
-      } else if (isNaN(Number(dadosMes.limiteGastoMes))) {
-        erros.push("Valor inválido para limite de gasto do mês");
-      }
-  
-      if (!dadosMes.mes) {
-        erros.push("Mês atual inválido ou não informado");
-      }
+
+    const inicioDate = new Date(`${inicio}T00:00:00.000Z`);
+    const fimDate = new Date(`${fim}T23:59:59.999Z`);
+
+    if (Number.isNaN(inicioDate.getTime())) {
+      throw new RequisicaoIncorreta("Data em formato incorreto", [
+        "Campo inicio inválido (use YYYY-MM-DD).",
+      ]);
     }
-  
-    if (erros.length > 0) {
-      throw new RequisicaoIncorreta("Dados inválidos", erros);
+
+    if (Number.isNaN(fimDate.getTime())) {
+      throw new RequisicaoIncorreta("Data em formato incorreto", [
+        "Campo fim inválido (use YYYY-MM-DD).",
+      ]);
+    }
+
+    if (inicioDate > fimDate) {
+      throw new RequisicaoIncorreta("Período inválido", [
+        "A data inicio não pode ser maior que a data fim.",
+      ]);
     }
   }
+
 }
 
