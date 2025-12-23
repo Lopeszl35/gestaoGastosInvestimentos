@@ -41,22 +41,6 @@ class UserRepository {
      * @param {string} password - Senha do usuário.
      * @returns {Object} Dados do usuário e token JWT.
      */
-    async loginUser(email) {
-        const sql = `
-            SELECT * FROM Usuarios
-            WHERE email = ?;
-        `;
-        try {
-            const result = await this.Database.executaComando(sql, [email]);
-            const user = result[0];
-
-            return user;
-        } catch (error) {
-            console.error("Erro no UserRepository.loginUser:", error.message);
-            ErroSqlHandler.tratarErroSql(error);
-        }
-    }
-
     async getUserSaldo(userId) {
         const sql = `
             SELECT saldo_atual FROM Usuarios
@@ -88,7 +72,7 @@ class UserRepository {
         }
     }
 
-    async getUser(userId) {
+    async getUserById(userId) {
         const sql = `
             SELECT *
             FROM Usuarios

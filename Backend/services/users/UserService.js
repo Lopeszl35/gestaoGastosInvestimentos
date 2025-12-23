@@ -2,9 +2,9 @@ import ErroSqlHandler from '../../errors/ErroSqlHandler.js';
 import NaoEncontrado from '../../errors/naoEncontrado.js';
 import { generateToken } from '../../auth/token.js';
 import Auth from '../../auth/auth.js';
-import UserModelDTO from '../../models/Entities/UserMoldels/userModelDTO.js';
+import AuthResponseDTO from '../../models/Entities/UserMoldels/AuthResponseDTO.js';
 
-class UserModel {
+class UserService {
     constructor(UserRepository) {
         this.UserRepository = UserRepository;
     }
@@ -29,24 +29,17 @@ class UserModel {
 
     async loginUser(email, password) {
         try {
-            const existeUser = await this.UserRepository.getUserByEmail(email);
-            if (!existeUser) {
+            const user = await this.UserRepository.getUserByEmail(email);
+
+            if (!user) {
                 throw new NaoEncontrado('Usuário nao encontrado');
             } else {
-                const senhaValida = await Auth.senhaValida(password, existeUser.senha_hash);
-                if (!senhaValida) {
-                    throw new Error("Senha inválida.");
-                } else {
-                    const token = generateToken(existeUser.id_usuario);
-                    const result = await this.UserRepository.loginUser(email, password);
-                    const user = new UserModelDTO(result);
-                    user.token = token;
-                    return user;
-                }
+                await Auth.senhaValida(password, user.senha_hash);            
+                const token = generateToken(user);
+                return new AuthResponseDTO(user, token);
             }
         } catch (error) {
             console.log("Erro ao logar o usuário no modelo:", error.message);
-            ErroSqlHandler.tratarErroSql(error, 'usuario');
             throw error;
         }
     }
@@ -85,4 +78,4 @@ class UserModel {
 
 }
 
-export default UserModel;
+export default UserService;
