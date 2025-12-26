@@ -1,9 +1,9 @@
-import RequisicaoIncorreta from "../../errors/RequisicaoIncorreta.js";
 import UserPublicDTO from "./UserPublicDTO.js";
+import NaoEncontrado from "../../errors/naoEncontrado.js";
 
 class UserController {
-  constructor(UserModel, TransactionUtil) {
-    this.UserModel = UserModel;
+  constructor(UserService, TransactionUtil) {
+    this.UserService = UserService;
     this.TransactionUtil = TransactionUtil;
   }
 
@@ -14,8 +14,10 @@ class UserController {
       // Executa a lógica dentro de uma transação
       const response = await this.TransactionUtil.executeTransaction(
         async (connection) => {
-          const userModelo = new UserPublicDTO(user);
-          return await this.UserModel.createUser(userModelo, connection);
+          const response = await this.UserService.createUser(new UserPublicDTO(user), connection);
+          if (response.insertId) {
+            throw new Error('Erro ao criar o usuário: ' + response);
+          }
         }
       );
       res.status(200).json(response);
@@ -25,11 +27,15 @@ class UserController {
     }
   }
 
+  async atualizarUsuario(req, res, next) {
+
+  }
+
   async loginUser(req, res, next) {
     const { email, password } = req.body;
 
     try {
-      const result = await this.UserModel.loginUser(email, password);
+      const result = await this.UserService.loginUser(email, password);
       console.log("result: ", result);
       res.status(200).json(result);
     } catch (error) {
@@ -37,51 +43,24 @@ class UserController {
     }
   }
 
-  async getUserSaldo(req, res) {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
+  async getUserSaldo(req, res, next) {
     const { userId } = req.body;
-
     try {
-      const saldo = await this.UserModel.getUserSaldo(userId);
-      console.log("Saldo do usuário: ", saldo);
+      const saldo = await this.UserService.getUserSaldo(userId);
       res.status(200).json({ saldo });
     } catch (error) {
-      console.error("Erro ao obter o saldo do usuário:", error.message);
-      res
-        .status(400)
-        .json({
-          message: "Erro ao obter o saldo do usuário: " + error.message,
-        });
+      next(error);
     }
   }
 
   async atualizarUserSaldo(req, res, next) {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
       const { userId, saldo } = req.body;
       console.log("Saldo recebido no controller:", saldo);
-
-      // aqui bloqueia letras
-      const saldoNumber = Number(String(saldo).trim().replace(",", "."));
-      if (!Number.isFinite(saldoNumber)) {
-        throw new RequisicaoIncorreta(
-          "Saldo inválido: envie apenas números (ex: 1000.50)."
-        );
-      }
-
-      const result = await this.UserModel.atualizarUserSaldo(
+      const result = await this.UserService.atualizarUserSaldo(
         userId,
-        saldoNumber
+        saldo
       );
-
       res.status(200).json(result);
     } catch (erro) {
       next(erro);
@@ -90,12 +69,11 @@ class UserController {
 
   async getUserData(req, res, next) {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        throw new ErroValidacao(errors.array());
-      }
       const { userId } = req.params;
-      const userData = await this.UserModel.getUserData(userId);
+      const userData = await this.UserService.getUserData(userId);
+      if (!userData) {
+        throw new NaoEncontrado('Usuário não encontrado');
+      }
       res.status(200).json(userData);
     } catch (error) {
       next(error);

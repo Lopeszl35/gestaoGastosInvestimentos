@@ -3,6 +3,7 @@ import NaoEncontrado from '../../errors/naoEncontrado.js';
 import { generateToken } from '../../auth/token.js';
 import Auth from '../../auth/auth.js';
 import AuthResponseDTO from './AuthResponseDTO.js';
+import { hashPassword } from '../../auth/passwordHash.js';
 
 class UserService {
     constructor(UserRepository) {
@@ -10,17 +11,13 @@ class UserService {
     }
 
     async createUser(user, connection) {
+        console.log("UserService.createUser chamado com user:", user);
         try {
-            const salt = bycrypt.genSaltSync(10);
-            const passwordhash = bycrypt.hashSync(user.senha_hash, salt);
-
-            user.senha_hash = passwordhash;
-
+            // Hash da senha antes de salvar
+            user.senha_hash = await hashPassword(user.senha);
+            delete user.senha; // Remove a senha em texto plano
             // Chama o repositório para criar o usuário
             const response = await this.UserRepository.createUser(user, connection);
-            if(!response.insertId) {
-                throw new Error('Erro ao criar o usuário: ' + response);
-            }
             return response;
         } catch (error) {
             throw error;
@@ -50,7 +47,6 @@ class UserService {
             return saldo;
         } catch (error) {
             console.log("Erro ao obter o saldo do usuário no modelo:", error.message);
-            ErroSqlHandler.tratarErroSql(error, 'usuario');
             throw error;
         }
     }
@@ -61,7 +57,6 @@ class UserService {
             return novoSaldoAtualizado;
         } catch (error) {
             console.log("Erro ao atualizar o saldo do usuário no modelo:", error.message);
-            ErroSqlHandler.tratarErroSql(error, 'usuario');
             throw error;
         }
     }
@@ -69,6 +64,16 @@ class UserService {
     async getUser(userId) {
         try {
             const userData = await this.UserRepository.getUser(userId);
+            return userData;
+        } catch (error) {
+            console.log("Erro ao obter os dados do usuário no modelo:", error.message);
+            throw error;
+        }
+    }
+
+    async getUserData(userId) {
+        try {
+            const userData = await this.UserRepository.getUserById(userId);
             return userData;
         } catch (error) {
             console.log("Erro ao obter os dados do usuário no modelo:", error.message);

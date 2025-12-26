@@ -1,6 +1,11 @@
 import express from 'express';
 import cors from 'cors';
-import { validateCreateUser, validateLoginUser } from './validateUsers.js';
+import { 
+    validateCreateUser, 
+    validateLoginUser, 
+    validateGetUserSaldo, 
+    validateUserSaldo 
+} from './validateUsers.js';
 
 const router = express.Router();
 router.use(cors());
@@ -14,13 +19,17 @@ export default (userController) => {
         userController.loginUser(req, res, next);
     })
 
-    router.get('/userSaldo', (req, res) => {
-        userController.getUserSaldo(req, res);
+    router.get('/userSaldo', validateGetUserSaldo, (req, res, next) => {
+        userController.getUserSaldo(req, res, next);
     });
 
-    router.put('/userSaldo', (req, res, next) => {
+    router.put('/userSaldo', validateUserSaldo, (req, res, next) => {
         userController.atualizarUserSaldo(req, res, next);
     });
+
+    router.put('/atualizarUsuario', (req, res, next) => {
+        userController.atualizarUsuario(req, res, next);
+    })
 
     router.get('/userData/:userId', (req, res, next) => {
         userController.getUserData(req, res, next);

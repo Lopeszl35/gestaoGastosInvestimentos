@@ -1,5 +1,6 @@
 import { body, validationResult } from 'express-validator';
 import ErroValidacao from '../../errors/ValidationError.js';
+import RequisicaoIncorreta from '../../errors/RequisicaoIncorreta.js';
 
 export const validateCreateUser = [
     body('nome')
@@ -41,5 +42,35 @@ export const validateLoginUser = [
             return next(new ErroValidacao(errors.array()));
         }
         next();
+    }
+]
+
+export const validateGetUserSaldo = [
+    body('userId')
+    .trim().exists({ checkFalsy: true }).withMessage('ID do usuário não fornecido')
+    .isInt().withMessage('ID do usuário deve ser um número inteiro.'),
+    (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return next(new ErroValidacao(errors.array()));
+        }
+        next();
+    }
+]
+
+export const validateUserSaldo = [
+    body('userID')
+    .trim().exists({ checkFalsy: true }).withMessage("ID do usuário não fornecido")
+    .isInt().withMessage("ID do usuário deve ser um número inteiro."),
+
+    body('saldo')
+    .trim().exists({ checkFalsy: true }).withMessage("Saldo não fornecido")
+    .isFloat().withMessage("Saldo deve ser um número válido."),
+
+    (req, res, next) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return next(new RequisicaoIncorreta(errors.array()));
+        }
     }
 ]

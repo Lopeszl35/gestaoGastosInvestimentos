@@ -12,6 +12,7 @@ class UserRepository {
      * @returns {Object} Resultado da inserção.
      */
     async createUser(user, connection) {
+        console.log("UserRepository.createUser chamado com user:", user);
         const sql = `
             INSERT INTO Usuarios (nome, email, senha_hash, perfil_financeiro, salario_mensal, saldo_inicial, saldo_atual)
             VALUES (?, ?, ?, ?, ?, ?, ?);
