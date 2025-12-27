@@ -8,8 +8,8 @@ router.use(cors());
 export default (gastoMesController) => {
 
     // rota para obter a meta de limite imposta no mês pelo usuário
-    router.get('/getLimiteGastoMes' , (req, res) => {
-        gastoMesController.getGastoLimiteMes(req, res)
+    router.get('/getLimiteGastoMes' , (req, res, next) => {
+        gastoMesController.getGastoLimiteMes(req, res, next);
     });
 
     // rota para configurar a meta de limite de gastos do mês do usuário
@@ -21,6 +21,10 @@ export default (gastoMesController) => {
     router.get('/relatorioGastos', (req, res, next) => {
         gastoMesController.getGastosTotaisPorCategoria(req, res, next);
     })
+
+     router.post("/addGasto", (req, res, next) => {
+     gastoMesController.addGasto(req, res, next);
+  });
 
     return router;
 }

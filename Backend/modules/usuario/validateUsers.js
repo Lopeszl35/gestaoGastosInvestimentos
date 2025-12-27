@@ -1,6 +1,5 @@
 import { body, param, validationResult } from 'express-validator';
 import ErroValidacao from '../../errors/ValidationError.js';
-import RequisicaoIncorreta from '../../errors/RequisicaoIncorreta.js';
 
 // helper para encerrar com erros padronizados
 function handleValidation(req, _res, next) {

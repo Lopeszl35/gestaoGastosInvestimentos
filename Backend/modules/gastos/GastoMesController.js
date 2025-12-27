@@ -1,5 +1,5 @@
 import { validationResult } from "express-validator";
-import ValidaEntradas from "../../utils/ValidaEntradas.js";
+import ValidaEntradas from "./ValidaEntradasGastos.js";
 
 export default class GastoMesController {
   constructor(GastoMesModel, TransactionUtil) {
@@ -77,7 +77,6 @@ export default class GastoMesController {
 
       ValidaEntradas.validaDatas({ inicio, fim });
       
-
       const result = await this.GastoMesModel.getGastosTotaisPorCategoria(
         Number(id_usuario),
         inicio || null,
@@ -86,6 +85,36 @@ export default class GastoMesController {
 
       return res.status(200).json(result);
     } catch (error) {
+      next(error);
+    }
+  }
+
+  async addGasto(req, res, next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const gastos = req.body;
+    console.log("Gastos recebidos na controller:", gastos);
+    const { id_usuario } = req.query;
+
+    // Validar os campos obrigatórios usando a função validarEntradaGastos
+    ValidaEntradas.ValidarGastos(id_usuario, gastos);
+
+    try {
+      const result = await this.TransactionUtil.executeTransaction(
+        async (connection) => {
+          return await this.CategoriasModel.addGasto(
+            gastos,
+            id_usuario,
+            connection
+          );
+        }
+      );
+      res.status(200).json(result);
+    } catch (error) {
+      console.error("Erro ao adicionar gasto no modelo:", error.message);
       next(error);
     }
   }

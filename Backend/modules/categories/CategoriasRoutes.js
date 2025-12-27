@@ -9,10 +9,6 @@ export default (categoriasController) => {
     categoriasController.createCategorias(req, res);
   });
 
-  router.post("/addGasto", (req, res, next) => {
-    categoriasController.addGasto(req, res, next);
-  });
-
   router.get("/getCategorias", (req, res, next) => {
     categoriasController.getCategorias(req, res, next);
   });

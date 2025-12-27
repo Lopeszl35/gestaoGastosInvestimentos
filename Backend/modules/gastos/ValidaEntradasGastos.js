@@ -1,4 +1,4 @@
-import RequisicaoIncorreta from "../errors/RequisicaoIncorreta.js";
+import RequisicaoIncorreta from "../../errors/RequisicaoIncorreta.js";
 
 export default class ValidaEntradas {
   

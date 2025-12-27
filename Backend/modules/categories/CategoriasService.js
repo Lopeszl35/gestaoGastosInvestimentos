@@ -1,6 +1,5 @@
-import ErroSqlHandler from "../../../errors/ErroSqlHandler.js";
 
-export default class CategoriasModel {
+export default class CategoriasService {
     constructor(CategoriasRepoitory) {
         this.CategoriasRepoitory = CategoriasRepoitory;
     }
