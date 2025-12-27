@@ -1,4 +1,3 @@
-import ErroSqlHandler from "../../../errors/ErroSqlHandler.js";
 
 export default class GastoMesModel {
   constructor(GastoMesRepository) {

@@ -77,7 +77,7 @@ const loadDependencies = async () => {
         DependencyInjector.register('CategoriasRepository', new CategoriasRepository(database));
         console.log('CategoriasRepository registrado com sucesso.');
 
-        const { default: GastoMesRepository } = await import('./repositories/GastoMesRepository.js');
+        const { default: GastoMesRepository } = await import('./modules/gastos/GastoMesRepository.js');
         DependencyInjector.register('GastoMesRepository', new GastoMesRepository(database));
         console.log('GastoMesRepository registrado com sucesso.');
 
@@ -95,7 +95,7 @@ const loadDependencies = async () => {
         ));
         console.log('CategoriasModel registrado com sucesso.');
 
-        const { default: GastoMesModel } = await import('./models/Entities/gastoMesModel/GastoMesModel.js');
+        const { default: GastoMesModel } = await import('./modules/gastos/GastoMesModel.js');
         DependencyInjector.register('GastoMesModel', new GastoMesModel(
             DependencyInjector.get('GastoMesRepository')
         ));
@@ -112,7 +112,7 @@ const loadDependencies = async () => {
             DependencyInjector.get('CategoriasModel'),
             DependencyInjector.get('TransactionUtil')
         ));
-        const { default: GastoMesController } = await import('./controllers/GastoMesController.js');
+        const { default: GastoMesController } = await import('./modules/gastos/GastoMesController.js');
         DependencyInjector.register('GastoMesController', new GastoMesController(
             DependencyInjector.get('GastoMesModel'),
             DependencyInjector.get('TransactionUtil')
@@ -141,7 +141,7 @@ const initializeServer = async () => {
         const { default: CategoriasRoutes } = await import('./routes/CategoriasRoutes.js');
         const categoriasController = DependencyInjector.get('CategoriasController');
 
-        const { default: GastoMesRoutes } = await import('./routes/GastoMesRoutes.js');
+        const { default: GastoMesRoutes } = await import('./modules/gastos/GastoMesRoutes.js');
         const gastoMesController = DependencyInjector.get('GastoMesController');
 
         

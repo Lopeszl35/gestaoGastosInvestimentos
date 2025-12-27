@@ -1,4 +1,5 @@
 import ErroSqlHandler from '../../errors/ErroSqlHandler.js';
+import NaoEncontrado from '../../errors/naoEncontrado.js';
 
 class UserRepository {
     constructor(Database) {
@@ -11,8 +12,7 @@ class UserRepository {
      * @param {Object} connection - Conexão do banco de dados.
      * @returns {Object} Resultado da inserção.
      */
-    async createUser(user, connection) {
-        console.log("UserRepository.createUser chamado com user:", user);
+    async createUser(user) {
         const sql = `
             INSERT INTO Usuarios (nome, email, senha_hash, perfil_financeiro, salario_mensal, saldo_inicial, saldo_atual)
             VALUES (?, ?, ?, ?, ?, ?, ?);
@@ -23,16 +23,47 @@ class UserRepository {
             user.senha_hash,
             user.perfil_financeiro,
             user.salario_mensal,
-            user.saldo_inicial,
+            user.saldo_inicial ? user.saldo_inicial : 0,
             user.saldo_atual,
         ];
+        console.log("Parametros para criação do usuário:", params);
         try {
-            const [result] = await connection.query(sql, params);
+            const result = await this.Database.executaComando(sql, params);
             return { insertId: result.insertId, result: result };
         } catch (error) {
             ErroSqlHandler.tratarErroSql(error);
+            throw error;
         }
     }
+
+async atualizarUsuario(idUsuario, dadosParaAtualizacao) {
+    console.log("dadosParaAtualizacao:", dadosParaAtualizacao);
+    const colunasParaAtualizar = Object.keys(dadosParaAtualizacao);
+
+    const clausulaSet = colunasParaAtualizar
+        .map((nomeColuna) => `${nomeColuna} = ?`)
+        .join(", ");
+
+    const valoresParaAtualizacao = colunasParaAtualizar.map(
+        (nomeColuna) => dadosParaAtualizacao[nomeColuna]
+    );
+
+    valoresParaAtualizacao.push(idUsuario);
+
+    const sql = `
+        UPDATE Usuarios
+        SET ${clausulaSet}
+        WHERE id_usuario = ?;
+    `;
+
+    try {
+        const resultado = await this.Database.executaComando(sql, valoresParaAtualizacao);
+        return resultado;
+    } catch (erro) {
+        ErroSqlHandler.tratarErroSql(erro);
+        throw erro;
+    }
+}
 
     /**
      * Verifica as credenciais do usuário e retorna os dados do usuário.
@@ -98,6 +129,23 @@ class UserRepository {
             return userData[0];
         } catch (error) {
             console.error("Erro no UserRepository.getUserData:", error.message);
+            ErroSqlHandler.tratarErroSql(error);
+        }
+    }
+
+    async deleteUser(userId) {
+        const sql = `
+            DELETE FROM Usuarios
+            WHERE id_usuario = ?;
+        `;
+        try {
+            const result = await this.Database.executaComando(sql, [userId]);
+            if (result.affectedRows === 0) {
+                throw new NaoEncontrado('Usuário não encontrado ou já deletado.');
+            }
+            return result;
+        } catch (error) {
+            console.error("Erro no UserRepository.deleteUser:", error.message);
             ErroSqlHandler.tratarErroSql(error);
         }
     }

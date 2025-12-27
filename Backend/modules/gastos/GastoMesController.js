@@ -1,5 +1,5 @@
 import { validationResult } from "express-validator";
-import ValidaEntradas from "../utils/ValidaEntradas.js";
+import ValidaEntradas from "../../utils/ValidaEntradas.js";
 
 export default class GastoMesController {
   constructor(GastoMesModel, TransactionUtil) {

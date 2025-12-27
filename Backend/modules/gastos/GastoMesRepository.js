@@ -1,4 +1,4 @@
-import ErroSqlHandler from "../errors/ErroSqlHandler.js";
+import ErroSqlHandler from "../../errors/ErroSqlHandler.js";
 
 class GastoMesRepository {
   constructor(database) {

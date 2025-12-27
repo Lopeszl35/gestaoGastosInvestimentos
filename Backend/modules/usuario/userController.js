@@ -9,35 +9,58 @@ class UserController {
 
   async createUser(req, res, next) {
     const user = req.body;
-    console.log("user recebido no controller: ", user);
     try {
       // Executa a lógica dentro de uma transação
-      const response = await this.TransactionUtil.executeTransaction(
-        async (connection) => {
-          const response = await this.UserService.createUser(new UserPublicDTO(user), connection);
-          if (response.insertId) {
-            throw new Error('Erro ao criar o usuário: ' + response);
+      const response = await this.UserService.createUser(new UserPublicDTO(user));
+      if (!response.insertId) {
+            throw new Error('Erro ao criar o usuário: ' + JSON.stringify(response));
           }
-        }
-      );
-      res.status(200).json(response);
+      res.status(201).json({
+        message: 'Usuário criado com sucesso',
+        status: 201,
+        data: response,
+      });
     } catch (error) {
-      console.error("Erro ao criar o usuário:", error.message);
       next(error);
     }
   }
 
   async atualizarUsuario(req, res, next) {
+  try {
+    const { userId } = req.params;
+    const updates = req.body;
 
+    const result = await this.UserService.atualizarUsuario(Number(userId), updates);
+
+    res.status(200).json({
+      message: "Usuário atualizado com sucesso",
+      status: 200,
+      data: result,
+    });
+  } catch (error) {
+    next(error);
   }
+}
 
   async loginUser(req, res, next) {
-    const { email, password } = req.body;
+    const { email, senha } = req.body;
 
     try {
-      const result = await this.UserService.loginUser(email, password);
-      console.log("result: ", result);
+      const result = await this.UserService.loginUser(email, senha);
       res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteUser (req, res, next) {
+    const { userId } = req.params;
+    try {
+      const result = await this.UserService.deleteUser(userId);
+      res.status(200).json({
+        message: "Usuário deletado com sucesso",
+        status: 200,
+      });
     } catch (error) {
       next(error);
     }

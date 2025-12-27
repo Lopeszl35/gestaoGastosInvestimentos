@@ -4,7 +4,9 @@ import {
     validateCreateUser, 
     validateLoginUser, 
     validateGetUserSaldo, 
-    validateUserSaldo 
+    validateUserSaldo,
+    validateUpdateUser,
+    validateDeleteUser
 } from './validateUsers.js';
 
 const router = express.Router();
@@ -27,12 +29,16 @@ export default (userController) => {
         userController.atualizarUserSaldo(req, res, next);
     });
 
-    router.put('/atualizarUsuario', (req, res, next) => {
+    router.put('/atualizarUsuario/:userId', validateUpdateUser, (req, res, next) => {
         userController.atualizarUsuario(req, res, next);
     })
 
     router.get('/userData/:userId', (req, res, next) => {
         userController.getUserData(req, res, next);
+    })
+
+    router.delete('/deleteUser/:userId', validateDeleteUser, (req, res, next) => {
+        userController.deleteUser(req, res, next);
     })
 
     return router;
