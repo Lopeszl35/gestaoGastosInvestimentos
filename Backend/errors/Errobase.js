@@ -1,17 +1,13 @@
 class ErroBase extends Error {
-    constructor(menssagem = "Erro interno", status = 500, erros) {
-        super();
-        this.message = menssagem;
-        this.status = status;
+    constructor(message, statusCode = 500, code = 'INTERNAL_ERROR', erros = []) {
+        super(message);
+        this.name = this.constructor.name;
+        this.statusCode = statusCode;
+        this.code = code;
         this.erros = erros;
-    }
 
-    enviarResposta(res) {
-        res.status(this.status).send({
-            message: this.message,
-            status: this.status,
-            erros: this.erros
-        })
+        // Captura a pilha de chamadas (stack trace) correta, Mantém a referência ao construtor da classe
+        Error.captureStackTrace?.(this, this.constructor);
     }
 
 }

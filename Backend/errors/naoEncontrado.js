@@ -1,7 +1,7 @@
 import ErroBase from "./Errobase.js";
 
  export default class NaoEncontrado extends ErroBase {
-    constructor(mensagem = "Página não encontrada.") {
-        super(mensagem, 404);
+     constructor(message = 'Recurso não encontrado', details = null) {
+        super(message, 404, details, "NOT_FOUND");
     }
 }

@@ -44,14 +44,4 @@ export default class CategoriasService {
         }
     }
 
-    async addGasto(gastos, id_usuario, connection) {
-        try {
-            const result = await this.CategoriasRepoitory.addGasto(gastos, id_usuario, connection);
-            return result;
-        } catch (error) {
-            console.log("Erro ao adicionar gasto no modelo:", error.message);
-            throw error;
-        }
-    }
-
 }

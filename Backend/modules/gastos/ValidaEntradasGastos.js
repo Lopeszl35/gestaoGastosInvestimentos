@@ -1,3 +1,4 @@
+import ErroValidacao from "../../errors/ValidationError.js";
 import RequisicaoIncorreta from "../../errors/RequisicaoIncorreta.js";
 
 export default class ValidaEntradas {
@@ -23,45 +24,47 @@ export default class ValidaEntradas {
     return true;
   }
 
-  static ValidarGastos(id_usuario, { valor, data_gasto, id_categoria, descricao }) {
+   static ValidarGastos(id_usuario, gasto) {
     const erros = [];
-  
-    // id_usuario vem em formato string do req.query
+
     const idUsuario = Number(id_usuario);
-    if (!Number.isInteger(idUsuario) || idUsuario <= 0){
-      erros.push("id do usuário não fornecido ou invalído")
+    if (!Number.isInteger(idUsuario) || idUsuario <= 0) {
+      erros.push("Id do usuário inválido.");
     }
-  
-    const valorNum = valor
+
+    const valorNum = Number(gasto.valor);
     if (!Number.isFinite(valorNum)) {
-      erros.push("Valor não informado ou valor incorreto");
-    } else if (valorNum <= 0){
-      erros.push("valor deve ser maior que 0")
+      erros.push("Valor não informado ou inválido.");
+    } else if (valorNum <= 0) {
+      erros.push("Valor deve ser maior que zero.");
     }
-  
-   // Valores de data geralmente vem em formato de string do front
-   if (!data_gasto) {
-      erros.push("Data do gasto não informado")
-   } else {
-      const data = new Date(data_gasto);
+
+    if (!gasto.data_gasto) {
+      erros.push("Data do gasto não informada.");
+    } else {
+      const data = new Date(gasto.data_gasto);
       if (Number.isNaN(data.getTime())) {
-          erros.push("Data informada em formato incorreto")
+        erros.push("Data do gasto em formato inválido.");
       }
-   }
-  
-   if (id_categoria !== undefined) {
-      const idCatNum = Number(id_categoria);
-      if (!Number.isInteger(idCatNum) || idCatNum <= 0) {
-          erros.push("id da categoria não informado")
+    }
+
+    if (gasto.id_categoria !== undefined) {
+      const idCat = Number(gasto.id_categoria);
+      if (!Number.isInteger(idCat) || idCat <= 0) {
+        erros.push("Categoria inválida.");
       }
-   }
-  
-   if (typeof descricao !== "string") {
-      erros.push("Descrição em formato invalído")
-   }
-  
+    }
+
+    if (gasto.descricao !== undefined) {
+      if (typeof gasto.descricao !== "string") {
+        erros.push("Descrição deve ser texto.");
+      } else if (gasto.descricao.length > 255) {
+        erros.push("Descrição excede 255 caracteres.");
+      }
+    }
+
     if (erros.length > 0) {
-      throw new RequisicaoIncorreta("Dados invalídos", erros);
+      throw new ErroValidacao("Erro de validação do gasto", erros);
     }
   }
 
@@ -86,11 +89,19 @@ export default class ValidaEntradas {
   
       if (!dadosMes.mes) {
         erros.push("Mês atual inválido ou não informado");
+      } else if (isNaN(Number(dadosMes.mes)) || dadosMes.mes < 1 || dadosMes.mes > 12) {
+        erros.push("Mês inválido. Deve ser entre 1 e 12");
+      }
+
+      if( !dadosMes.ano ) {
+        erros.push("Ano atual inválido ou não informado");
+      } else if (isNaN(Number(dadosMes.ano)) || dadosMes.ano < 2000 ) {
+        erros.push("Ano inválido. Deve ser um número inteiro válido.");
       }
     }
-  
+    
     if (erros.length > 0) {
-      throw new RequisicaoIncorreta("Dados inválidos", erros);
+      throw new ErroValidacao("Requisição inválida", erros);
     }
   }
   

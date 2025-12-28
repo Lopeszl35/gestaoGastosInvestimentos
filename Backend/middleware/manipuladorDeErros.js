@@ -3,21 +3,22 @@ import RequisicaoIncorreta from "../errors/RequisicaoIncorreta.js";
 import ErroSqlHandler from "../errors/ErroSqlHandler.js";
 
 // eslint-disable-next-line no-unused-vars
-function manipuladorDeErros(erro, req, res, next) {
-  // 1) Erros da sua aplicação
-  if (erro instanceof ErroBase) {
-    return erro.enviarResposta(res);
-  }
+export default function manipuladorDeErros(err, req, res, next) {
+    if (err instanceof ErroBase) {
+        console.log('Erro tratado:', err);
+        return res.status(err.statusCode).json({
+            message: err.message,
+            code: err.code,
+            details: err.erros,
+        });
+    } 
 
-  // 2) Erros de requisição incorreta
-  if (erro instanceof RequisicaoIncorreta) {
-    return erro.enviarResposta(res);
-  }
+    // Erro desconhecido (programming error / bug / lib)
+    console.error('Erro não tratado:', err);
 
-
-  // 3) fallback
-  console.error("Erro não tratado:", erro);
-  return new ErroBase().enviarResposta(res);
+    return res.status(500).json({
+        message: 'Erro interno do servidor',
+        code: 'INTERNAL_SERVER_ERROR',
+        error: err,
+    });
 }
-
-export default manipuladorDeErros;

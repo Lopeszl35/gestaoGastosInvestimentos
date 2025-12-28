@@ -12,6 +12,9 @@ class ErroSqlHandler {
       case "ER_DUP_ENTRY":
         throw this.erroDuplicado(error);
 
+      case "ER_BAD_FIELD_ERROR":
+        throw this.erroCampoInvalido(error);
+
       case "ER_BAD_NULL_ERROR":
         throw this.erroCampoNulo(error);
 
@@ -23,6 +26,9 @@ class ErroSqlHandler {
 
       case "WARN_DATA_TRUNCATED":
         throw this.erroDadoTruncado(error);
+
+      case "ER_SIGNAL_EXCEPTION":
+        
 
       default:
         throw new ErroBase(

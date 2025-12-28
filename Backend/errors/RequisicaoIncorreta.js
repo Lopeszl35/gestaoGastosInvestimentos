@@ -1,8 +1,8 @@
 import ErroBase from "./Errobase.js";
 
 class RequisicaoIncorreta extends ErroBase {
-    constructor(mensagem = "Um ou mais dados fornecidos estão incorretos", erros){
-        super(mensagem, 400, erros);
+    constructor(message = 'Requisição inválida', erros = []) {
+        super(message, 400, "BAD_REQUEST", erros);
     }
 }
 

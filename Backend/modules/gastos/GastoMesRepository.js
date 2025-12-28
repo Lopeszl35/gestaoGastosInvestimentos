@@ -6,6 +6,10 @@ class GastoMesRepository {
   }
 
   async configGastoLimiteMes(id_usuario, dadosMes, connection) {
+    console.log("GastoMesRepository.configGastoLimiteMes chamado com:", {
+      id_usuario,
+      dadosMes,
+    });
     try {
       const { ano, mes, limiteGastoMes } = dadosMes;
 
@@ -13,17 +17,8 @@ class GastoMesRepository {
         INSERT INTO total_gastos_mes (id_usuario, ano, mes, limite_gasto_mes, gasto_atual_mes)
         VALUES (?, ?, ?, ?, 0.00)
         ON DUPLICATE KEY UPDATE
-          ano = VALUES(ano),
-          mes = VALUES(mes),
           limite_gasto_mes = VALUES(limite_gasto_mes),
-
-          -- Se mudar de mês/ano, zera o gasto atual do mês
-          gasto_atual_mes = CASE
-            WHEN ano <> VALUES(ano) OR mes <> VALUES(mes) THEN 0.00
-            ELSE gasto_atual_mes
-          END,
-
-          updated_at = CURRENT_TIMESTAMP
+          updated_at = CURRENT_TIMESTAMP;
       `;
 
       const params = [
@@ -32,8 +27,11 @@ class GastoMesRepository {
         Number(mes),
         Number(limiteGastoMes),
       ];
+      console.log("Executando SQL com params:", params);
 
       const result = await connection.query(sql, params);
+
+      console.log("Result:", result);
 
       return {
         mensagem: "Configuração mensal salva com sucesso.",
@@ -44,7 +42,6 @@ class GastoMesRepository {
         result,
       };
     } catch (error) {
-      ErroSqlHandler.tratarErroSql(error);
       throw error;
     }
   }
@@ -52,26 +49,30 @@ class GastoMesRepository {
   /**
    * Retorna a configuração mensal atual do usuário (linha única).
    */
-  async getLimiteGastosMes(id_usuario, connection) {
+  async getLimiteGastosMes(id_usuario, ano, mes, connection) {
     const conn = connection ?? this.database;
-
     try {
       const sql = `
         SELECT
-          id_total_gastos_mes,
-          id_usuario,
-          ano,
-          mes,
-          limite_gasto_mes,
-          gasto_atual_mes,
-          created_at,
-          updated_at
+          *
         FROM total_gastos_mes
         WHERE id_usuario = ?
+        AND ano = ?
+        AND mes = ?
         LIMIT 1
       `;
-
-      const rows = await conn.executaComando(sql, [Number(id_usuario)]);
+      
+      const params = [(Number(id_usuario)), Number(ano), Number(mes)];
+      const rows = await conn.executaComando(sql, params);
+      if (!rows || rows.length === 0) {
+        return {
+          mensagem: "Nenhuma configuração de gasto mensal encontrada para o usuário neste mês/ano.",
+          code: "NAO_ENCONTRADO",
+          id_usuario: Number(id_usuario),
+          ano: Number(ano),
+          mes: Number(mes),
+        };
+      }
       return rows?.[0] ?? null;
     } catch (error) {
       ErroSqlHandler.tratarErroSql(error);
@@ -192,6 +193,51 @@ class GastoMesRepository {
     const result = await this.database.executaComando(sql, orderedParams);
     console.log("Gastos totais por categoria:", result);
     return result;
+    } catch (error) {
+      ErroSqlHandler.tratarErroSql(error);
+      throw error;
+    }
+  }
+
+  async getSaldoAtual(id_usuario, connection) {
+    try {
+      const sql = `
+        SELECT saldo_atual FROM usuarios WHERE id_usuario = ?
+      `;
+      const [result] = await connection.query(sql, [id_usuario]);
+      return result[0]?.saldo_atual || 0;
+    } catch (error) {
+      console.log("Erro no GastoMesRepository.getSaldoAtual:", error.message);
+      ErroSqlHandler.tratarErroSql(error);
+      throw error;
+    }
+  }
+
+  async addGasto(gastos, id_usuario, connection) {
+    const sql = `
+            INSERT INTO gastos (id_categoria, id_usuario, valor, data_gasto, descricao) 
+            VALUES (?, ?, ?, ?, ?);
+        `;
+    const params = [
+      gastos.id_categoria,
+      id_usuario,
+      gastos.valor,
+      gastos.data_gasto,
+      gastos.descricao || null, // Campo opcional
+    ];
+
+    try {
+      const [result] = await connection.query(sql, params);
+      if (result.affectedRows === 1) {
+        return {
+          mensagem: "Gasto adicionado com sucesso.",
+        };
+      } else {
+        return {
+          mensagem: "Falha ao adicionar gasto.",
+          code: "FALHA_ADICAO_GASTO"
+        };
+      }
     } catch (error) {
       ErroSqlHandler.tratarErroSql(error);
       throw error;

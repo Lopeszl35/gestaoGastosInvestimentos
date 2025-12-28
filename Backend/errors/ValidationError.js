@@ -1,10 +1,7 @@
-import RequisicaoIncorreta from "./RequisicaoIncorreta.js";
+import ErroBase from "./Errobase.js";
 
-class ErroValidacao extends RequisicaoIncorreta {
-  constructor(errorsArray) {
-    const mensagens = errorsArray.map((e) => e.msg).join("; ");
-    super(`Os seguintes erros foram encontrados: ${mensagens}`);
+export default class ErroValidacao extends ErroBase {
+  constructor(erros = [], message = "Erro de validação") {
+    super(message, 400, "VALIDATION_ERROR", erros);
   }
 }
-
-export default ErroValidacao;

@@ -1,9 +1,10 @@
 import { validationResult } from "express-validator";
-import ValidaEntradas from "./ValidaEntradasGastos.js";
+import ValidaEntradasGastos from "./ValidaEntradasGastos.js";
+import NaoEncontrado from "../../errors/naoEncontrado.js";
 
 export default class GastoMesController {
-  constructor(GastoMesModel, TransactionUtil) {
-    this.GastoMesModel = GastoMesModel;
+  constructor(GastoMesService, TransactionUtil) {
+    this.GastoMesService = GastoMesService;
     this.TransactionUtil = TransactionUtil;
   }
   async configGastoLimiteMes(req, res, next) {
@@ -12,11 +13,11 @@ export default class GastoMesController {
       const { dadosMes } = req.body;
       console.log("Dados recebidos na controller:", { id_usuario, dadosMes });
 
-      ValidaEntradas.validarEntradaLimiteGastoMes({ id_usuario, dadosMes });
+      ValidaEntradasGastos.validarEntradaLimiteGastoMes({ id_usuario, dadosMes });
 
       const result = await this.TransactionUtil.executeTransaction(
         async (connection) => {
-          return this.GastoMesModel.configGastoLimiteMes(
+          return this.GastoMesService.configGastoLimiteMes(
             id_usuario,
             dadosMes,
             connection
@@ -24,60 +25,33 @@ export default class GastoMesController {
         }
       );
 
-      res.status(200).json(result);
+      res.status(200).json({
+        message: "Configuração de limite de gasto mensal atualizada com sucesso.",
+      });
     } catch (error) {
       next(error);
     }
   }
-  async getGastoLimiteMes(req, res) {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { id_usuario } = req.query;
-    if (!id_usuario) {
-      return res.status(400).json({ message: "Id do usuário não informado" });
-    }
+  async getGastoLimiteMes(req, res, next) {
+    const { id_usuario, ano, mes } = req.query;
     try {
-      const result = await this.GastoMesModel.getLimiteGastosMes(id_usuario);
+      const result = await this.GastoMesService.getLimiteGastosMes(id_usuario, ano, mes);
+      console.log("Resultado obtido na controller getGastoLimiteMes:", result);
+      
+      if (result && result.code === "NAO_ENCONTRADO") {
+        throw new NaoEncontrado(result.mensagem, 404);
+      }
       return res.status(200).json(result);
     } catch (error) {
-      console.error(
-        "Erro ao obter limite de gastos no mês do usuário " + error.message
-      );
-      res.status(400).json({
-        message:
-          "Erro ao obter limites de gastos no mês do usuário " + error.message,
-      });
+      next(error);
     }
   }
 
   async getGastosTotaisPorCategoria(req, res, next) {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
     try {
       const { id_usuario, inicio, fim } = req.query;
-
-      if (!id_usuario) {
-        return res.status(400).json({ message: "Id do usuário não informado" });
-      }
-
-      // regra: ou manda as duas datas, ou nenhuma
-      if ((inicio && !fim) || (!inicio && fim)) {
-        return res.status(400).json({
-          message: "Período incompleto",
-          erros: ["Envie inicio e fim juntos, ou não envie nenhum."],
-          status: 400,
-        });
-      }
-
-      ValidaEntradas.validaDatas({ inicio, fim });
       
-      const result = await this.GastoMesModel.getGastosTotaisPorCategoria(
+      const result = await this.GastoMesService.getGastosTotaisPorCategoria(
         Number(id_usuario),
         inicio || null,
         fim || null
@@ -90,31 +64,27 @@ export default class GastoMesController {
   }
 
   async addGasto(req, res, next) {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const gastos = req.body;
-    console.log("Gastos recebidos na controller:", gastos);
-    const { id_usuario } = req.query;
-
-    // Validar os campos obrigatórios usando a função validarEntradaGastos
-    ValidaEntradas.ValidarGastos(id_usuario, gastos);
+    const gasto = req.body.gastos; // desembrulha aqui
+    const idUsuario = Number(req.query.id_usuario);
 
     try {
       const result = await this.TransactionUtil.executeTransaction(
         async (connection) => {
-          return await this.CategoriasModel.addGasto(
-            gastos,
-            id_usuario,
+          return await this.GastoMesService.addGasto(
+            gasto,
+            idUsuario,
             connection
           );
         }
       );
-      res.status(200).json(result);
+      if (result && result.code === "FALHA_ADICAO_GASTO"  || result.code === "SALDO_INSUFICIENTE") {
+        return res.status(400).json({
+          message: result.mensagem,
+          code: result.code,
+        })
+      }
+      res.status(201).json(result);
     } catch (error) {
-      console.error("Erro ao adicionar gasto no modelo:", error.message);
       next(error);
     }
   }
