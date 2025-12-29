@@ -1,12 +1,19 @@
-
+import RequisicaoIncorreta from "../../errors/RequisicaoIncorreta.js";
+import { normalizarNomeCategoria } from "./categoriasValidade.js";
 export default class CategoriasService {
     constructor(CategoriasRepoitory) {
         this.CategoriasRepoitory = CategoriasRepoitory;
     }
 
-    async createCategoria(categoria, connection) {
+    async createCategoria(categoria, idUsuario, connection) {
         try {
-            const result = await this.CategoriasRepoitory.createCategoria(categoria, connection);
+            const nomeNormalizado = normalizarNomeCategoria(categoria.nome);
+            const categoriaExists = await this.CategoriasRepoitory.checkCategoriaExists(nomeNormalizado, idUsuario, connection);
+
+            if (categoriaExists) {
+                throw new RequisicaoIncorreta(`A categoria com nome '${categoria.nome}' já existe para este usuário.`);
+            }
+            const result = await this.CategoriasRepoitory.createCategoria({ ...categoria, nome: nomeNormalizado }, idUsuario, connection);
             return result;
         } catch (error) {
             console.log("Erro ao criar categoria no modelo:", error.message);

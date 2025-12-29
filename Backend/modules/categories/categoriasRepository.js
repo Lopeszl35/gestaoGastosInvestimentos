@@ -1,22 +1,53 @@
+import ErroSqlHandler from "../../errors/ErroSqlHandler.js";
+
 export default class CategoriasRepository {
   constructor(database) {
     this.database = database;
   }
 
-  async createCategoria(categoria) {
+  async createCategoria(categoria, idUsuario) {
+    console.log("CategoriasRepository.createCategoria chamado com:", {
+      categoria,
+      idUsuario,
+    });
     const sql = `
             INSERT INTO categorias_gastos (id_usuario,nome, limite) 
             VALUES (?, ?, ?);
         `;
-    const params = [categoria.id_usuario, categoria.nome, categoria.limite];
+    const params = [idUsuario, categoria.nome, categoria.limite];
     try {
       const result = await this.database.executaComandoNonQuery(sql, params);
-      return result;
+      if (result) {
+        return {
+          mensagem: "Categoria criada com sucesso.",
+        };
+      } else {
+        return {
+          mensagem: "Falha ao criar categoria.",
+          code: "FALHA_CRIACAO_CATEGORIA",
+        };
+      }
     } catch (error) {
-      console.error(
-        "Erro no CategoriasRepository.createCategoria:",
-        error.message
-      );
+      console.error("Erro no CategoriasRepository.createCategoria:",error.message);
+      ErroSqlHandler.tratarErroSql(error);
+      throw error;
+    }
+  }
+
+  async checkCategoriaExists(nomeCategoria, idUsuario) {
+    const sql = `
+            SELECT COUNT(*) AS count 
+            FROM categorias_gastos 
+            WHERE LOWER(TRIM(nome)) = LOWER(TRIM(?)) 
+            AND id_usuario = ?;
+        `;
+    const params = [nomeCategoria, idUsuario];
+    try {
+      const result = await this.database.executaComando(sql, params);
+      return result[0].count > 0;
+    } catch (error) {
+      console.error("Erro no CategoriasRepository.checkCategoriaExists:", error.message);
+      ErroSqlHandler.tratarErroSql(error);
       throw error;
     }
   }

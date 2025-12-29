@@ -1,4 +1,3 @@
-import { validationResult } from "express-validator";
 
 class CategoriasController {
   constructor(CategoriasModel, TransactionUtil) {
@@ -6,43 +5,33 @@ class CategoriasController {
     this.TransactionUtil = TransactionUtil;
   }
 
-  async createCategorias(req, res) {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
+  async createCategorias(req, res, next) {
     try {
-      // Destruturando categoria
-      const categoria = req.body;
-      // Verificando se os campos 'limite' e 'nome' foram preenchidos
-      if (!categoria.limite || !categoria.nome) {
-        return res.status(400).json({
-          message: "Os campos 'limite' e 'nome' devem ser preenchidos.",
-        });
-      }
+      const { idUsuario } = req.params;
+      const categoria = req.body.categoria;
       const result = await this.TransactionUtil.executeTransaction(
         async (connection) => {
           return await this.CategoriasModel.createCategoria(
             categoria,
+            idUsuario,
             connection
           );
         }
       );
+      if (result.code === "FALHA_CRIACAO_CATEGORIA") {
+        return res.status(400).json({
+          message: result.mensagem,
+          code: result.code,
+        });
+      }
       res.status(201).json(result);
     } catch (error) {
       console.error("Erro ao criar categoria:", error.message);
-      res
-        .status(400)
-        .json({ message: "Erro ao criar categoria: " + error.message });
+      next(error);
     }
   }
 
   async updateCategoria(req, res) {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
     const { id_categoria } = req.query;
     const categoria = req.body;
     if (!id_categoria) {
@@ -71,10 +60,6 @@ class CategoriasController {
   }
 
   async deleteCategoria(req, res) {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
     const { id_categoria } = req.query;
     if (!id_categoria) {
       return res
@@ -100,13 +85,10 @@ class CategoriasController {
   }
 
   async getCategorias(req, res, next) {
-    const errors = validationResult(req);
-    const id_usuario = req.query;
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
+    const { idUsuario } = req.query;
+    console.log("id_usuario recebido: ", idUsuario);
     try {
-      const result = await this.CategoriasModel.getCategorias(id_usuario);
+      const result = await this.CategoriasModel.getCategorias(idUsuario);
       res.status(200).json(result);
     } catch (error) {
       next(error);
