@@ -57,7 +57,7 @@ export const validateLoginUser = [
     .trim().exists({ checkFalsy: true }).withMessage('Email não fornecido')
     .isEmail().withMessage('O email deve ser um endereço de email válido.'),
 
-    body('senha')
+    body('senha_hash')
     .trim().exists({ checkFalsy: true }).withMessage('Senha não fornecida'),
     
     handleValidation

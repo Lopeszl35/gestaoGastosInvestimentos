@@ -64,7 +64,7 @@ class UserService {
                 return new AuthResponseDTO(user, token);
             }
         } catch (error) {
-            console.log("Erro ao logar o usuário no modelo:", error.message);
+            console.log("Erro ao logar o usuário no service:", error.message);
             throw error;
         }
     }

@@ -24,14 +24,14 @@ export const registerUser = async (user: UserCadastro): Promise<any> => {
   }
 };
 
-export const loginUser = async (email: string, password: string): Promise<any> => {
+export const loginUser = async (email: string, senha: string): Promise<any> => {
   try {
     const response = await fetch(`${API_URL}/loginUser`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, senha }),
     });
 
     const data = await response.json();

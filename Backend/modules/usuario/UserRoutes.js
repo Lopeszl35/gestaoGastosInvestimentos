@@ -17,7 +17,7 @@ export default (userController) => {
         userController.createUser(req, res, next);
     });
 
-    router.post('/loginUser', validateLoginUser, (req, res, next) => {
+    router.post('/loginUser', (req, res, next) => {
         userController.loginUser(req, res, next);
     })
 

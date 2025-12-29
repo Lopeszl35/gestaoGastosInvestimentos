@@ -43,6 +43,7 @@ class UserController {
 }
 
   async loginUser(req, res, next) {
+    console.log("Requisição de login recebida:", req.body);
     const { email, senha } = req.body;
 
     try {

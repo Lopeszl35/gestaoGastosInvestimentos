@@ -1,182 +1,217 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
-    View,
-    ScrollView,
-    Text,
-    Dimensions,
-    TouchableOpacity,
-    RefreshControl
+  ActivityIndicator,
+  Dimensions,
+  RefreshControl,
+  ScrollView,
+  Text,
+  View,
 } from "react-native";
-import { homeStyles } from "../styles/homeStyles";
+import { useRouter } from "expo-router";
+
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { useUser } from "@/context/UserContext";
-import { PieChart, BarChart } from "react-native-chart-kit";
-import { stylesGastosVariaveis } from "../styles/GastosVariaveisStyles";
-import { MaterialIcons } from "@expo/vector-icons";
 import ConfigSaldoAtualModal from "@/components/ConfigSaldoAtuaModal";
-import { 
-    atualizarUserSaldo,
-    getUserData
- } from "@/services/userServices";
+import { useUser } from "@/context/UserContext";
+import { atualizarUserSaldo, getUserData } from "@/services/userServices";
 
+import HomeHeader from "@/components/home/HomeHeader";
+import StatCardsRow from "@/components/home/StatCardsRow";
+import QuickActions from "@/components/home/QuickActions";
+import MonthlySummaryCard from "@/components/home/MonthlySummaryCard";
+import RecentTransactions from "@/components/home/RecentTransactions";
 
-
+import { homeStyles } from "../styles/homeStyles";
 
 const { width } = Dimensions.get("window");
 
+type UserData = {
+  saldo_atual?: number;
+  perfil_financeiro?: string;
+  nome?: string;
+};
+
 const Home: React.FC = () => {
-    const { user } = useUser();
-    const [loading, setLoading] = React.useState(false);
-    const [error, setError] = React.useState<string | null>(null);
-    const [refreshing, setRefreshing] = React.useState(false);
-    const [userData, setUserData] = React.useState<any>(null);
-    const [showModalConfigSaldo, setShowModalConfigSaldo] = React.useState(false);
+  const router = useRouter();
+  const { user } = useUser();
 
-    // Dados de exemplo
-    const gastosPorCategoria = [
-        { name: "Alimentação", valor: 500, color: "#FF6384", legendFontColor: "#7F7F7F", legendFontSize: 15 },
-        { name: "Transporte", valor: 300, color: "#36A2EB", legendFontColor: "#7F7F7F", legendFontSize: 15 },
-        { name: "Cartão", valor: 200, color: "#FFCE56", legendFontColor: "#7F7F7F", legendFontSize: 15 },
-    ];
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [showModalConfigSaldo, setShowModalConfigSaldo] = useState(false);
 
-    const gastosUltimosMeses = [
-        { label: "Out", valor: 1500 },
-        { label: "Nov", valor: 1200 },
-        { label: "Dez", valor: 1800 },
-    ];
+  // Mock (até integrar com seu módulo real)
+  const stats = useMemo(
+    () => ({
+      saldoTotal: Number(userData?.saldo_atual ?? 0),
+      receitasMes: 5120.75,
+      despesasMes: 2340.4,
+      investimentos: 25000,
+      deltaSaldo: 12.5,
+      deltaReceitas: 8.2,
+      deltaDespesas: 3.1,
+      deltaInvest: 15.8,
+    }),
+    [userData?.saldo_atual]
+  );
 
-    const handleConfigSaldoAtual = () => {
-        setShowModalConfigSaldo(true);
+  const recentTransactions = useMemo(
+    () => [
+      { id: "1", title: "Salário", category: "Trabalho • 27 de dez.", amount: 5000, type: "in" as const },
+      { id: "2", title: "Supermercado", category: "Alimentação • 26 de dez.", amount: 350.5, type: "out" as const },
+      { id: "3", title: "Dividendos PETR4", category: "Investimentos • 25 de dez.", amount: 120.75, type: "in" as const },
+      { id: "4", title: "Netflix", category: "Streaming • 24 de dez.", amount: 55.9, type: "out" as const },
+    ],
+    []
+  );
+
+  const firstName = useMemo(() => {
+    const nome = (userData?.nome || "").trim();
+    if (!nome) return "";
+    return nome.split(" ")[0];
+  }, [userData?.nome]);
+
+  const saldoFormatado = useMemo(() => {
+    const saldo = Number(userData?.saldo_atual ?? 0);
+    return saldo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  }, [userData?.saldo_atual]);
+
+  const fetchDadosUsuario = async () => {
+    if (!user?.id_usuario) return;
+    setError(null);
+    setLoading(true);
+    try {
+      const data = await getUserData(user.id_usuario);
+      setUserData(data);
+    } catch (e) {
+      console.error("Erro ao buscar dados do usuário:", e);
+      setError("Não foi possível carregar seus dados agora.");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    const saveConfigSaldoAtual = async (saldo: number) => {
-        try {
-            await atualizarUserSaldo(saldo, user!.id_usuario);
-            alert("Saldo atualizado com sucesso!");
-            setShowModalConfigSaldo(false);
+  useEffect(() => {
+    if (!user?.id_usuario) return;
+    fetchDadosUsuario();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id_usuario]);
 
-        } catch (error: any) {
-            console.error("Erro ao atualizar saldo:", error.message);
-            alert("Erro ao atualizar saldo: " + error.message);
-        }
+  const handleRefresh = async () => {
+    try {
+      setRefreshing(true);
+      await fetchDadosUsuario();
+    } finally {
+      setRefreshing(false);
     }
+  };
 
-    const fetchDadosUsuario = async () => {
-        if (!user?.id_usuario) return; 
-        try {
-            const data = await getUserData(user.id_usuario);
-            setUserData(data);
-        } catch (error) {
-            console.error("Erro ao buscar dados do usuário:", error);
-            setError("Erro ao buscar dados do usuário.");
-        }
-    };
+  const saveConfigSaldoAtual = async (saldo: number) => {
+    try {
+      if (!user?.id_usuario) return;
+      await atualizarUserSaldo(saldo, user.id_usuario);
+      setShowModalConfigSaldo(false);
+      await fetchDadosUsuario();
+    } catch (e: any) {
+      console.error("Erro ao atualizar saldo:", e?.message || e);
+      alert("Erro ao atualizar saldo: " + (e?.message || "tente novamente"));
+    }
+  };
 
-    useEffect(() => {
-        if (!user?.id_usuario) return;     // espera o user existir
-        fetchDadosUsuario();
-    }, [user?.id_usuario]);
+  return (
+    <ProtectedRoute>
+      <View style={homeStyles.container}>
+        <ScrollView
+          contentContainerStyle={homeStyles.scrollContent}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
+          showsVerticalScrollIndicator={false}
+        >
+          <HomeHeader
+            firstName={firstName}
+            perfil={userData?.perfil_financeiro || "Perfil"}
+            saldoLabel="Saldo Total"
+            saldoValue={loading ? "Carregando..." : saldoFormatado}
+            onPressSettings={() => setShowModalConfigSaldo(true)}
+            onSearchPress={() => alert("Em breve: busca global")}
+            onBellPress={() => alert("Em breve: notificações")}
+          />
 
-    const handleRefresh = async () => {
-        try {
-            setRefreshing(true);
-            await fetchDadosUsuario();
-        } finally {
-            setRefreshing(false);
-        }
-    };
-    return (
-        <ProtectedRoute>
-            <View style={homeStyles.container}>
-                <ScrollView
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={refreshing}
-                            onRefresh={() => {handleRefresh()}}
-                        />
-                    }
-                >
-                    {/* Resumo */}
-                    <View style={homeStyles.summaryBox}>
-                        <Text style={homeStyles.summaryText}>Saldo Atual: R$ {userData?.saldo_atual}</Text>
-                        <Text style={homeStyles.summarySubText}>Perfil Financeiro: {userData?.perfil_financeiro}</Text>
-                        <View style={stylesGastosVariaveis.settingsContainer}>
-                            <TouchableOpacity onPress={handleConfigSaldoAtual}>
-                            <MaterialIcons
-                                style={stylesGastosVariaveis.settingsIcon} 
-                                name="settings" size={20} 
-                                color="black"/>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
+          {!!error && <Text style={homeStyles.errorText}>{error}</Text>}
 
-                    {/* Gráficos */}
-                    <View style={homeStyles.chartContainerPizza}>
-                        <Text style={homeStyles.sectionTitle}>Gastos por Categoria</Text>
-                        <PieChart
-                            data={gastosPorCategoria}
-                            width={width * 0.9}
-                            height={150}
-                            chartConfig={{
-                                backgroundColor: "#1cc910",
-                                backgroundGradientFrom: "#eff3ff",
-                                backgroundGradientTo: "#efefef",
-                                decimalPlaces: 2,
-                                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                            }}
-                            accessor={"valor"}
-                            backgroundColor={"transparent"}
-                            paddingLeft={"0"}
-                            absolute
-                        />
-                    </View>
+          <StatCardsRow
+            stats={[
+              { title: "Saldo Total", value: saldoFormatado, delta: stats.deltaSaldo, variant: "success" },
+              { title: "Receitas do Mês", value: stats.receitasMes, delta: stats.deltaReceitas, variant: "success" },
+              { title: "Despesas do Mês", value: stats.despesasMes, delta: stats.deltaDespesas, variant: "danger" },
+              { title: "Investimentos", value: stats.investimentos, delta: stats.deltaInvest, variant: "info" },
+            ]}
+          />
 
-                    <View style={homeStyles.chartContainerBarra}>
-                        <Text style={homeStyles.sectionTitle}>Gastos dos Últimos Meses</Text>
-                        <BarChart
-                            data={{
-                                labels: gastosUltimosMeses.map((item) => item.label),
-                                datasets: [{ data: gastosUltimosMeses.map((item) => item.valor) }],
-                            }}
-                            width={width * 0.8}
-                            height={190}
-                            chartConfig={{
-                                backgroundColor: "#022173",
-                                backgroundGradientFrom: "#eff3ff",
-                                backgroundGradientTo: "#efefef",
-                                decimalPlaces: 2,
-                                color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                                labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                            }}
-                            yAxisLabel="R$"
-                            yAxisSuffix=""
-                            showValuesOnTopOfBars
-                        />
-                    </View>
-
-                    {/* Metas Financeiras */}
-                    <View style={homeStyles.goalsContainer}>
-                        <Text style={homeStyles.sectionTitle}>Metas Financeiras</Text>
-                        <View style={homeStyles.goalItem}>
-                            <Text style={homeStyles.goalText}>Economizar R$ 5.000</Text>
-                            <Text style={homeStyles.goalProgress}>50% concluído</Text>
-                        </View>
-                        <View style={homeStyles.goalItem}>
-                            <Text style={homeStyles.goalText}>Viagem: R$ 3.000</Text>
-                            <Text style={homeStyles.goalProgress}>30% concluído</Text>
-                        </View>
-                    </View>
-                </ScrollView>
-            </View>
-
-            <ConfigSaldoAtualModal
-                visible={showModalConfigSaldo}
-                onClose={() => setShowModalConfigSaldo(false)}
-                onSave={(saldo) => saveConfigSaldoAtual(saldo)}
+          <View style={homeStyles.grid2Cols}>
+            <MonthlySummaryCard
+              monthLabel="dezembro de 2025"
+              saldoMes={2780.35}
+              receitas={stats.receitasMes}
+              despesas={stats.despesasMes}
+              usoOrcamentoPercent={46}
             />
-        </ProtectedRoute>
-    );
+
+            <QuickActions
+              actions={[
+                {
+                  id: "add-in",
+                  title: "Nova Receita",
+                  subtitle: "Adicionar entrada",
+                  icon: "trending-up",
+                  variant: "success",
+                  onPress: () => alert("Em breve: nova receita"),
+                },
+                {
+                  id: "add-out",
+                  title: "Nova Despesa",
+                  subtitle: "Registrar gasto",
+                  icon: "trending-down",
+                  variant: "danger",
+                  onPress: () => router.push("/gastosVariaveis"),
+                },
+                {
+                  id: "invest",
+                  title: "Investir",
+                  subtitle: "Aplicar dinheiro",
+                  icon: "show-chart",
+                  variant: "info",
+                  onPress: () => alert("Em breve: investir"),
+                },
+                {
+                  id: "goal",
+                  title: "Nova Meta",
+                  subtitle: "Definir objetivo",
+                  icon: "target",
+                  variant: "warning",
+                  onPress: () => alert("Em breve: metas"),
+                },
+              ]}
+            />
+          </View>
+
+          <RecentTransactions
+            title="Transações Recentes"
+            subtitle="Últimos 7 dias"
+            items={recentTransactions}
+            onPressSeeMore={() => alert("Em breve: todas transações")}
+          />
+
+          <View style={{ height: 18 }} />
+        </ScrollView>
+      </View>
+
+      <ConfigSaldoAtualModal
+        visible={showModalConfigSaldo}
+        onClose={() => setShowModalConfigSaldo(false)}
+        onSave={(saldo) => saveConfigSaldoAtual(saldo)}
+      />
+    </ProtectedRoute>
+  );
 };
 
 export default Home;
