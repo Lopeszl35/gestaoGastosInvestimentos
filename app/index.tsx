@@ -67,6 +67,11 @@ const Login: React.FC = () => {
         id_usuario: data.id,
         nome: data.nome,
         email: data.email,
+        perfil_financeiro: data.perfil_financeiro,
+        salario_mensal: data.salario_mensal,
+        saldo_inicial: data.saldo_inicial,
+        saldo_atual: data.saldo_atual,
+        data_cadastro: data.data_cadastro,
       });
 
       setBoxError(false);
@@ -130,7 +135,11 @@ const Login: React.FC = () => {
               keyboardType="email-address"
               style={stylesGlobal.input}
             />
-            <MaterialIcons name="mail-outline" size={20} color={themes.colors.gray} />
+            <MaterialIcons
+              name="mail-outline"
+              size={20}
+              color={themes.colors.gray}
+            />
           </View>
 
           <Text style={stylesGlobal.titleInput}>SENHA</Text>
@@ -148,7 +157,10 @@ const Login: React.FC = () => {
             />
 
             {/* Ícone mantido (visibilidade da senha) */}
-            <TouchableOpacity onPress={togglePasswordVisibility} style={style.iconButton}>
+            <TouchableOpacity
+              onPress={togglePasswordVisibility}
+              style={style.iconButton}
+            >
               <MaterialIcons
                 name={isPasswordVisible ? "visibility" : "visibility-off"}
                 size={20}
