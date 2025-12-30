@@ -12,7 +12,7 @@ import { useRouter } from "expo-router";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import ConfigSaldoAtualModal from "@/components/ConfigSaldoAtuaModal";
 import { useUser } from "@/context/UserContext";
-import { atualizarUserSaldo, getUserData } from "@/services/userServices";
+import { getUserData } from "@/services/userServices";
 
 import HomeHeader from "@/components/home/HomeHeader";
 import StatCardsRow from "@/components/home/StatCardsRow";
@@ -57,10 +57,34 @@ const Home: React.FC = () => {
 
   const recentTransactions = useMemo(
     () => [
-      { id: "1", title: "Salário", category: "Trabalho • 27 de dez.", amount: 5000, type: "in" as const },
-      { id: "2", title: "Supermercado", category: "Alimentação • 26 de dez.", amount: 350.5, type: "out" as const },
-      { id: "3", title: "Dividendos PETR4", category: "Investimentos • 25 de dez.", amount: 120.75, type: "in" as const },
-      { id: "4", title: "Netflix", category: "Streaming • 24 de dez.", amount: 55.9, type: "out" as const },
+      {
+        id: "1",
+        title: "Salário",
+        category: "Trabalho • 27 de dez.",
+        amount: 5000,
+        type: "in" as const,
+      },
+      {
+        id: "2",
+        title: "Supermercado",
+        category: "Alimentação • 26 de dez.",
+        amount: 350.5,
+        type: "out" as const,
+      },
+      {
+        id: "3",
+        title: "Dividendos PETR4",
+        category: "Investimentos • 25 de dez.",
+        amount: 120.75,
+        type: "in" as const,
+      },
+      {
+        id: "4",
+        title: "Netflix",
+        category: "Streaming • 24 de dez.",
+        amount: 55.9,
+        type: "out" as const,
+      },
     ],
     []
   );
@@ -73,7 +97,10 @@ const Home: React.FC = () => {
 
   const saldoFormatado = useMemo(() => {
     const saldo = Number(userData?.saldo_atual ?? 0);
-    return saldo.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+    return saldo.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
   }, [userData?.saldo_atual]);
 
   const fetchDadosUsuario = async () => {
@@ -106,24 +133,14 @@ const Home: React.FC = () => {
     }
   };
 
-  const saveConfigSaldoAtual = async (saldo: number) => {
-    try {
-      if (!user?.id_usuario) return;
-      await atualizarUserSaldo(saldo, user.id_usuario);
-      setShowModalConfigSaldo(false);
-      await fetchDadosUsuario();
-    } catch (e: any) {
-      console.error("Erro ao atualizar saldo:", e?.message || e);
-      alert("Erro ao atualizar saldo: " + (e?.message || "tente novamente"));
-    }
-  };
-
   return (
     <ProtectedRoute>
       <View style={homeStyles.container}>
         <ScrollView
           contentContainerStyle={homeStyles.scrollContent}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+          }
           showsVerticalScrollIndicator={false}
         >
           <HomeHeader
@@ -140,10 +157,30 @@ const Home: React.FC = () => {
 
           <StatCardsRow
             stats={[
-              { title: "Saldo Total", value: saldoFormatado, delta: stats.deltaSaldo, variant: "success" },
-              { title: "Receitas do Mês", value: stats.receitasMes, delta: stats.deltaReceitas, variant: "success" },
-              { title: "Despesas do Mês", value: stats.despesasMes, delta: stats.deltaDespesas, variant: "danger" },
-              { title: "Investimentos", value: stats.investimentos, delta: stats.deltaInvest, variant: "info" },
+              {
+                title: "Saldo Total",
+                value: saldoFormatado,
+                delta: stats.deltaSaldo,
+                variant: "success",
+              },
+              {
+                title: "Receitas do Mês",
+                value: stats.receitasMes,
+                delta: stats.deltaReceitas,
+                variant: "success",
+              },
+              {
+                title: "Despesas do Mês",
+                value: stats.despesasMes,
+                delta: stats.deltaDespesas,
+                variant: "danger",
+              },
+              {
+                title: "Investimentos",
+                value: stats.investimentos,
+                delta: stats.deltaInvest,
+                variant: "info",
+              },
             ]}
           />
 
@@ -204,12 +241,6 @@ const Home: React.FC = () => {
           <View style={{ height: 18 }} />
         </ScrollView>
       </View>
-
-      <ConfigSaldoAtualModal
-        visible={showModalConfigSaldo}
-        onClose={() => setShowModalConfigSaldo(false)}
-        onSave={(saldo) => saveConfigSaldoAtual(saldo)}
-      />
     </ProtectedRoute>
   );
 };

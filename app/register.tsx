@@ -11,7 +11,6 @@ import {
   Platform,
 } from "react-native";
 import { style } from "../styles/styleRegister";
-import { stylesGlobal } from "@/styles/stylesGlobal";
 import { Picker } from "@react-native-picker/picker";
 import { Link } from "expo-router";
 import { themes } from "@/global/themes";
@@ -30,7 +29,8 @@ const Register: React.FC = () => {
   const [saldoAtual, setSaldoAtual] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [messageError, setMessageError] = useState<string>("");
-  const {isPasswordVisible, togglePasswordVisibility} = useTogglePasswordVisibility();
+  const { isPasswordVisible, togglePasswordVisibility } =
+    useTogglePasswordVisibility();
 
   async function handleRegister() {
     setLoading(true);
@@ -43,11 +43,10 @@ const Register: React.FC = () => {
     } else if (password.length < 8) {
       setMessageError("A senha deve ter pelo menos 8 caracteres");
       setLoading(false);
-    } 
+    }
     setMessageError("");
-    
-    try {
 
+    try {
       const user: UserCadastro = {
         nome: name,
         email: email,
@@ -69,62 +68,78 @@ const Register: React.FC = () => {
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={style.container}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
+        contentContainerStyle={style.keyboard}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={style.titleContainer}>
-          <Text style={style.title}>
+        {/* Decor */}
+        <View style={style.bgCircleOne} />
+        <View style={style.bgCircleTwo} />
+
+        {/* Hero */}
+        <View style={style.hero}>
+          <Text style={style.heroTitle}>
             Você está mais próximo de conquistar seus objetivos
           </Text>
+          <Text style={style.heroSubtitle}>
+            Crie sua conta e comece a organizar seus gastos e investimentos.
+          </Text>
         </View>
-        <View style={style.container}>
-          <Text style={style.subTitle}>Cadastro</Text>
 
-          <View style={stylesGlobal.boxInput}> 
+        {/* Card */}
+        <View style={style.card}>
+          <Text style={style.cardTitle}>Cadastro</Text>
+
+          <View style={style.boxInput}>
             <TextInput
-              style={stylesGlobal.input}
+              style={style.input}
               placeholder="Nome completo"
+              placeholderTextColor="rgba(234,240,255,0.55)"
               value={name}
               onChangeText={setName}
             />
-
           </View>
-          <View style={stylesGlobal.boxInput}>
+
+          <View style={style.boxInput}>
             <TextInput
-              style={stylesGlobal.input}
+              style={style.input}
               placeholder="E-mail"
+              placeholderTextColor="rgba(234,240,255,0.55)"
               keyboardType="email-address"
+              autoCapitalize="none"
               value={email}
               onChangeText={setEmail}
             />
             <MaterialIcons
               name="email"
               size={20}
-              color={themes.colors.gray}
+              color="rgba(234,240,255,0.70)"
             />
           </View>
-          <View style={stylesGlobal.boxInput}>
+
+          <View style={style.boxInput}>
             <TextInput
-              style={stylesGlobal.input}
+              style={style.input}
               placeholder="Senha"
+              placeholderTextColor="rgba(234,240,255,0.55)"
               secureTextEntry={!isPasswordVisible}
               value={password}
               onChangeText={setPassword}
             />
+            {/* ✅ mantém o ícone já usado no login */}
             <TouchableOpacity onPress={togglePasswordVisibility}>
               <MaterialIcons
                 name={isPasswordVisible ? "visibility" : "visibility-off"}
                 size={20}
-                color={themes.colors.gray}
+                color="rgba(234,240,255,0.70)"
               />
             </TouchableOpacity>
           </View>
 
-          <Text style={style.label}>Perfil Financeiro:</Text>
+          <Text style={style.label}>Perfil Financeiro</Text>
           <View style={style.pickerContainer}>
             <Picker
               selectedValue={perfilFinanceiro}
@@ -136,50 +151,66 @@ const Register: React.FC = () => {
               <Picker.Item label="Arrojado" value="arrojado" />
             </Picker>
           </View>
-          <View style={stylesGlobal.boxInput}>
+
+          <View style={style.boxInput}>
             <TextInput
-              style={stylesGlobal.input}
+              style={style.input}
               placeholder="Salário Mensal (R$)"
+              placeholderTextColor="rgba(234,240,255,0.55)"
               keyboardType="numeric"
               value={salarioMensal}
               onChangeText={setSalarioMensal}
             />
           </View>
-          <View style={stylesGlobal.boxInput}>
+
+          <View style={style.boxInput}>
             <TextInput
-              style={stylesGlobal.input}
+              style={style.input}
               placeholder="Saldo Inicial (R$)"
+              placeholderTextColor="rgba(234,240,255,0.55)"
               keyboardType="numeric"
               value={saldoInicial}
               onChangeText={setSaldoInicial}
             />
           </View>
-          <View style={stylesGlobal.boxInput}>
+
+          <View style={style.boxInput}>
             <TextInput
-              style={stylesGlobal.input}
+              style={style.input}
               placeholder="Saldo Atual (R$)"
+              placeholderTextColor="rgba(234,240,255,0.55)"
               keyboardType="numeric"
               value={saldoAtual}
               onChangeText={setSaldoAtual}
             />
           </View>
 
-          {messageError ? (
-            <Text style={style.errorText}>{messageError}</Text>
-          ) : null}
+          {!!messageError && (
+            <View style={style.errorBanner}>
+              <MaterialIcons name="error-outline" size={18} color="#FF6B6B" />
+              <Text style={style.errorText}>{messageError}</Text>
+            </View>
+          )}
 
-          <TouchableOpacity style={style.button} onPress={handleRegister}>
+          <TouchableOpacity
+            style={[style.button, loading && style.buttonDisabled]}
+            onPress={handleRegister}
+            disabled={loading}
+          >
             {loading ? (
-              <ActivityIndicator color="#FFFFFF" size={"small"} />
+              <View style={style.buttonLoadingRow}>
+                <ActivityIndicator color="#FFFFFF" size="small" />
+                <Text style={style.buttonText}>Criando conta...</Text>
+              </View>
             ) : (
-              <Text style={stylesGlobal.textButton}>CADASTRAR</Text>
+              <Text style={style.buttonText}>CADASTRAR</Text>
             )}
           </TouchableOpacity>
 
-          <View style={style.textBottomCadastroContainer}>
-            <Text style={style.textBottom}>Já tem uma conta? </Text>
+          <View style={style.bottomRow}>
+            <Text style={style.bottomText}>Já tem uma conta?</Text>
             <Link href="/">
-              <Text style={{ color: themes.colors.primary }}>Faça login</Text>
+              <Text style={style.bottomLink}>Faça login</Text>
             </Link>
           </View>
         </View>
