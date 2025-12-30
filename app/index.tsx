@@ -1,136 +1,192 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
-  Text,
-  View,
+  ActivityIndicator,
+  Alert,
   Image,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  Text,
   TextInput,
   TouchableOpacity,
-  ActivityIndicator,
-  Alert
+  View,
 } from "react-native";
-import { style } from "../styles/stylesIndex";
-import Logo from "../assets/images/logo.png";
+
 import { MaterialIcons } from "@expo/vector-icons";
-import { themes } from "../global/themes";
 import { Link, useRouter } from "expo-router";
+
+import Logo from "../assets/images/logo.png";
+import { themes } from "../global/themes";
+
+import { style } from "../styles/stylesIndex";
 import { stylesGlobal } from "@/styles/stylesGlobal";
+
 import { useTogglePasswordVisibility } from "@/hooks/useTogglePasswordVisibility";
 import { loginUser } from "@/services/userServices";
 import { useUser } from "@/context/UserContext";
 
-
 const Login: React.FC = () => {
   const router = useRouter();
   const { setUser } = useUser();
+
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+
   const [loading, setLoading] = useState<boolean>(false);
   const [messageError, setMessageError] = useState<string>("");
   const [boxError, setBoxError] = useState<boolean>(false);
-  const {isPasswordVisible, togglePasswordVisibility} = useTogglePasswordVisibility();
+
+  const { isPasswordVisible, togglePasswordVisibility } =
+    useTogglePasswordVisibility();
+
+  const isFormValid = useMemo(() => {
+    // Regra mínima para UX (sem acoplar em regra de negócio)
+    return email.trim().length > 0 && password.trim().length > 0;
+  }, [email, password]);
 
   async function getLogin() {
     setLoading(true);
+
     try {
       if (!email || !password) {
         setBoxError(true);
         setMessageError("Preencha todos os campos");
-        setLoading(false);
-      } else if (!email.includes("@") || !email.includes(".com")) {
+        return;
+      }
+
+      if (!email.includes("@") || !email.includes(".com")) {
         setBoxError(true);
         setMessageError("Email inválido");
-        setLoading(false);
-      } 
+        return;
+      }
 
       const data = await loginUser(email, password);
+
       // Atualiza o contexto do usuário com os dados retornados do backend
       setUser({
         id_usuario: data.id,
         nome: data.nome,
         email: data.email,
-        perfil_financeiro: data.perfil_financeiro,
-        salario_mensal: data.salario_mensal,
-        saldo_inicial: data.saldo_inicial,
-        saldo_atual: data.saldo_atual,
-        data_cadastro: data.data_cadastro,
       });
-      
-      router.push("/home");
-      setLoading(false);
-      
+
+      setBoxError(false);
+      setMessageError("");
+
+      router.replace("/home");
     } catch (error: any) {
-      console.log(error.message);
       setBoxError(true);
-      setMessageError(error.message || "Erro ao logar");
+      setMessageError(error?.message || "Não foi possível entrar agora.");
+      Alert.alert("Erro", error?.message || "Não foi possível entrar agora.");
+    } finally {
       setLoading(false);
     }
   }
 
   return (
-    <View style={style.container}>
-      <View style={style.boxTop}>
-        <Image source={Logo} style={style.logo} resizeMode="contain" />
-        <Text style={style.text}>
-          Gerencie suas finanças e conquiste seus objetivos!
-        </Text>
-      </View>
+    <SafeAreaView style={style.container}>
+      {/* Elementos decorativos (somente UI) */}
+      <View style={style.bgCircleOne} />
+      <View style={style.bgCircleTwo} />
 
-      <View style={style.boxMid}>
-        <Text style={stylesGlobal.titleInput}>ENDEREÇO E-MAIL</Text>
-        <View style={stylesGlobal.boxInput}>
-          <TextInput
-            style={stylesGlobal.input}
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-            placeholder="Digite seu e-mail"
-          />
-          <MaterialIcons
-            name="email"
-            size={20}
-            color={themes.colors.gray}
-          />
+      <KeyboardAvoidingView
+        style={style.keyboard}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        {/* HERO */}
+        <View style={style.hero}>
+          <View style={style.logoWrap}>
+            <Image source={Logo} style={style.logo} resizeMode="contain" />
+          </View>
+
+          <Text style={style.heroTitle}>Bem-vindo</Text>
+          <Text style={style.heroSubtitle}>
+            Gerencie seus gastos e evolua com clareza, mês após mês.
+          </Text>
         </View>
-        <Text style={stylesGlobal.titleInput}>SENHA</Text>
-        <View style={stylesGlobal.boxInput}>
-          <TextInput
-            style={stylesGlobal.input}
-            value={password}
-            onChangeText={(text) => setPassword(text)}
-            secureTextEntry={!isPasswordVisible}
-            placeholder="Digite sua senha"
-          />
-          <TouchableOpacity onPress={togglePasswordVisibility}>
-            <MaterialIcons
-              name={isPasswordVisible ? "visibility" : "visibility-off"}
-              size={20}
-              color={themes.colors.gray}
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
 
-      {boxError && <Text style={style.errorText}>{messageError}</Text>}
+        {/* CARD */}
+        <View style={style.card}>
+          <Text style={style.cardTitle}>Entrar</Text>
 
-      <View style={style.boxBottom}>
-        <TouchableOpacity style={style.button} onPress={getLogin}>
-          {loading ? (
-            <ActivityIndicator
-              color={themes.colors.secondary}
-              size={"small"}
-            />
-          ) : (
-            <Text style={stylesGlobal.textButton}>ENTRAR</Text>
+          {/* Banner de erro */}
+          {boxError && !!messageError && (
+            <View style={style.errorBanner}>
+              <MaterialIcons name="error-outline" size={18} color="#7A1B1B" />
+              <Text style={style.errorBannerText}>{messageError}</Text>
+            </View>
           )}
-        </TouchableOpacity>
-      </View>
 
-      <View style={style.textBottomCadastroContainer}>
-        <Text style={style.textBottom}>Não possui uma conta? </Text>
-        <Link href="/register">
-          <Text style={{ color: themes.colors.primary }}>Cadastre-se</Text>
-        </Link>
-      </View>
-    </View>
+          <Text style={stylesGlobal.titleInput}>ENDEREÇO E-MAIL</Text>
+          <View style={stylesGlobal.boxInput}>
+            <TextInput
+              value={email}
+              onChangeText={(text) => {
+                setEmail(text);
+                if (boxError) setBoxError(false);
+              }}
+              placeholder="ex: voce@email.com"
+              placeholderTextColor={themes.colors.gray}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              style={stylesGlobal.input}
+            />
+            <MaterialIcons name="mail-outline" size={20} color={themes.colors.gray} />
+          </View>
+
+          <Text style={stylesGlobal.titleInput}>SENHA</Text>
+          <View style={stylesGlobal.boxInput}>
+            <TextInput
+              value={password}
+              onChangeText={(text) => {
+                setPassword(text);
+                if (boxError) setBoxError(false);
+              }}
+              placeholder="Sua senha"
+              placeholderTextColor={themes.colors.gray}
+              secureTextEntry={!isPasswordVisible}
+              style={stylesGlobal.input}
+            />
+
+            {/* Ícone mantido (visibilidade da senha) */}
+            <TouchableOpacity onPress={togglePasswordVisibility} style={style.iconButton}>
+              <MaterialIcons
+                name={isPasswordVisible ? "visibility" : "visibility-off"}
+                size={20}
+                color={themes.colors.gray}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            style={[
+              style.button,
+              (!isFormValid || loading) && style.buttonDisabled,
+            ]}
+            onPress={getLogin}
+            disabled={!isFormValid || loading}
+            activeOpacity={0.88}
+          >
+            {loading ? (
+              <View style={style.buttonLoadingRow}>
+                <ActivityIndicator color={themes.colors.white} />
+                <Text style={style.buttonText}>Entrando...</Text>
+              </View>
+            ) : (
+              <Text style={style.buttonText}>Entrar</Text>
+            )}
+          </TouchableOpacity>
+
+          <View style={style.bottomRow}>
+            <Text style={style.bottomText}>Não possui uma conta? </Text>
+            <Link href="/register" asChild>
+              <TouchableOpacity>
+                <Text style={style.bottomLink}>Cadastre-se</Text>
+              </TouchableOpacity>
+            </Link>
+          </View>
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
