@@ -30,7 +30,10 @@ const NavBar: React.FC = () => {
   const animation = useRef(new Animated.Value(-MENU_WIDTH)).current;
 
   const displayName = useMemo(() => user?.nome || "Usuário", [user?.nome]);
-  const displayEmail = useMemo(() => (user as any)?.email || "usuario@email.com", [user]);
+  const displayEmail = useMemo(
+    () => (user as any)?.email || "usuario@email.com",
+    [user]
+  );
 
   const toggleSubMenu = () => setSubMenuVisible((prev) => !prev);
 
@@ -155,22 +158,35 @@ const NavBar: React.FC = () => {
             <Text style={styleNavBar.menuText}>Home</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styleNavBar.menuItem} onPress={() => alert("Em breve: Perfil")}>
+          <TouchableOpacity
+            style={styleNavBar.menuItem}
+            onPress={() => alert("Em breve: Perfil")}
+          >
             <MaterialIcons name="person" size={20} color="#EAF0FF" />
             <Text style={styleNavBar.menuText}>Perfil</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={subMenuVisible ? styleNavBar.menuItemActive : styleNavBar.menuItem}
+            style={
+              subMenuVisible ? styleNavBar.menuItemActive : styleNavBar.menuItem
+            }
             onPress={toggleSubMenu}
           >
             <MaterialIcons name="category" size={20} color="#EAF0FF" />
-            <Text style={subMenuVisible ? styleNavBar.menuTextActive : styleNavBar.menuText}>
+            <Text
+              style={
+                subMenuVisible
+                  ? styleNavBar.menuTextActive
+                  : styleNavBar.menuText
+              }
+            >
               Categoria Gastos
             </Text>
             <View style={{ flex: 1 }} />
             <MaterialIcons
-              name={subMenuVisible ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+              name={
+                subMenuVisible ? "keyboard-arrow-up" : "keyboard-arrow-down"
+              }
               size={22}
               color="#EAF0FF"
             />
@@ -180,9 +196,13 @@ const NavBar: React.FC = () => {
             <View style={styleNavBar.subMenu}>
               <TouchableOpacity
                 style={styleNavBar.subMenuItem}
-                onPress={() => alert("Em breve: Gastos Fixos")}
+                onPress={() => navigateAndCloseMenu("/gastosFixos")}
               >
-                <MaterialIcons name="check-circle-outline" size={18} color="rgba(234,240,255,0.75)" />
+                <MaterialIcons
+                  name="check-circle-outline"
+                  size={18}
+                  color="rgba(234,240,255,0.75)"
+                />
                 <Text style={styleNavBar.subMenuText}>Gastos Fixos</Text>
               </TouchableOpacity>
 
@@ -190,7 +210,11 @@ const NavBar: React.FC = () => {
                 style={styleNavBar.subMenuItem}
                 onPress={() => navigateAndCloseMenu("/gastosVariaveis")}
               >
-                <MaterialIcons name="receipt-long" size={18} color="rgba(234,240,255,0.75)" />
+                <MaterialIcons
+                  name="receipt-long"
+                  size={18}
+                  color="rgba(234,240,255,0.75)"
+                />
                 <Text style={styleNavBar.subMenuText}>Gastos Variáveis</Text>
               </TouchableOpacity>
             </View>
@@ -214,7 +238,9 @@ const NavBar: React.FC = () => {
 
           {/* Footer */}
           <View style={styleNavBar.footer}>
-            <Text style={styleNavBar.footerText}>v1.0 • Gestão Inteligente</Text>
+            <Text style={styleNavBar.footerText}>
+              v1.0 • Gestão Inteligente
+            </Text>
           </View>
         </Animated.View>
       )}

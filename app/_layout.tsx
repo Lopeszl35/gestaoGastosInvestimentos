@@ -63,8 +63,24 @@ export default function Layout() {
               headerShown: false, // Oculta o cabeçalho
             }}
           />
+
+          {/* Tela de Gastos Fixos */}
+          <Stack.Screen
+            name="gastosFixos"
+            options={{
+              headerShown: false, // Oculta o cabeçalho
+            }}
+          />
+
+          {/* Tela de Cartão */}
+          <Stack.Screen
+            name="cartao/[cardId]"
+            options={{
+              headerShown: false, // Oculta o cabeçalho
+            }}
+          />
         </Stack>
       </UserProvider>
-  </SafeAreaProvider>
+    </SafeAreaProvider>
   );
 }
