@@ -1,12 +1,9 @@
 import { fetchWithToken } from "./apiService";
 
+
 export const getCategorias = async (id_usuario?: number): Promise<any> => {
-    let endpoint = `getCategorias?id_usuario=${id_usuario}`;
-    if (!id_usuario) {
-        endpoint = `getCategorias`;
-    }
     try {
-        const response = await fetchWithToken(`${endpoint}`, {
+        const response = await fetchWithToken(`getCategorias/${id_usuario}`, {
             method: "GET",
         });
 

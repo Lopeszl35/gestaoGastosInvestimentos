@@ -1,164 +1,105 @@
-import { StyleSheet, Dimensions } from "react-native";
-import { themes } from "@/global/themes";
+import { StyleSheet, Platform } from "react-native";
 
-const { width } = Dimensions.get("window");
+const shadow = Platform.select({
+  ios: {
+    shadowColor: "#000",
+    shadowOpacity: 0.10,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 8 },
+  },
+  android: { elevation: 5 },
+});
 
-export const stylesGastosVariaveis = StyleSheet.create({
-    titleContainer: {
-        marginVertical: 10,
-        paddingHorizontal: 15,
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: "bold",
-        color: themes.colors.black,
-    },
-    summaryBox: {
-        backgroundColor: "#ffffff",
-        padding: 15,
-        marginHorizontal: 15,
-        marginVertical: 10,
-        borderRadius: 10,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    summaryText: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: themes.colors.black,
-        marginBottom: 5,
-    },
-    summarySubText: {
-        fontSize: 14,
-        color: themes.colors.gray,
-    },
-    settingsContainer: {
-        width: "100%",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        alignItems: "flex-end",
-    },
-    settingsIcon: {
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 10,
-        backgroundColor: themes.colors.white,
-        borderRadius: 30, // Torna o ícone redondo
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 2,
-        elevation: 3, // Sombra no Android
-    },
-    alertText: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: themes.colors.alertExcedido,
-    },
-    chartContainer: {
-        marginVertical: 15,
-        paddingHorizontal: 15,
-        backgroundColor: themes.colors.white,
-        borderRadius: 10,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    chartTitle: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: themes.colors.primary,
-        marginBottom: 10,
-    },
-    // Estilo dos cards de resumo
-    cardsContainer: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        justifyContent: "space-between",
-        paddingHorizontal: 15,
-    },
-    card: {
-        width: "48%",
-        backgroundColor: themes.colors.white,
-        padding: 15,
-        marginBottom: 15,
-        borderRadius: 10,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    cardSelected: {
-        width: "48%",
-        backgroundColor: themes.colors.white,
-        padding: 15,
-        marginBottom: 15,
-        borderRadius: 10,
-        borderColor: themes.colors.primary,
-        borderWidth: 1,
-        shadowColor: themes.colors.primary,
-        shadowOffset: { width: 4, height: 4 },
-        shadowOpacity: 0.5,
-        shadowRadius: 14,
-        elevation: 10,
-    },
-    cardExceeded: {
-        backgroundColor: themes.colors.alert, // Vermelho para alertas de gastos excedidos
-    },
-    cardTitle: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: themes.colors.primary,
-        marginBottom: 5,
-    },
-    cardDetail: {
-        fontSize: 14,
-        color: themes.colors.gray,
-        marginBottom: 5,
-    },
-    cardAlert: {
-        fontSize: 14,
-        fontWeight: "bold",
-        color: themes.colors.white,
-    },
-    addButtonContainer: {
-        justifyContent: "center",
-        alignItems: "center",
-        width: width,
-    },
-    addButton: {
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 15,
-        paddingVertical: 30,
-        paddingRight: 40,
-    },
-    optionIcon: {
-        position: "absolute",
-        width: 50,
-        height: 50,
-        backgroundColor: "#ffffff",
-        borderRadius: 25,
-        justifyContent: "center",
-        alignItems: "center",
-        elevation: 5,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-    },
-    overlay: {
-        position: "absolute",
-        zIndex: 1,
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        top: "50%",
-        left: "55%",
-        transform: [{ translateX: -25 }, { translateY: -25 }],
-    },
+export const gvStyles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#0B1220" },
+
+  content: { padding: 16, paddingBottom: 110 },
+
+  headerCard: {
+    borderRadius: 18,
+    padding: 16,
+    backgroundColor: "#111A2E",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.06)",
+    ...shadow,
+  },
+
+  headerTopRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  headerTitle: { color: "#EAF0FF", fontSize: 18, fontWeight: "900" },
+  headerSub: { color: "rgba(234,240,255,0.70)", marginTop: 2, fontSize: 12 },
+
+  headerNumbersRow: { flexDirection: "row", gap: 14, marginTop: 14 },
+  metricBox: {
+    flex: 1,
+    borderRadius: 14,
+    padding: 12,
+    backgroundColor: "rgba(255,255,255,0.04)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.06)",
+  },
+  metricLabel: { color: "rgba(234,240,255,0.70)", fontSize: 12 },
+  metricValue: { color: "#EAF0FF", fontSize: 16, fontWeight: "900", marginTop: 6 },
+
+  progressWrap: { marginTop: 14 },
+  progressBarBg: {
+    height: 10,
+    borderRadius: 999,
+    backgroundColor: "rgba(255,255,255,0.08)",
+    overflow: "hidden",
+  },
+  progressBarFill: {
+    height: 10,
+    borderRadius: 999,
+    backgroundColor: "#2BE080",
+  },
+  alertText: { marginTop: 10, color: "#FF6B6B", fontWeight: "800", fontSize: 12 },
+
+  sectionHeaderRow: { marginTop: 18, marginBottom: 10, flexDirection: "row", justifyContent: "space-between" },
+  sectionTitle: { color: "#EAF0FF", fontSize: 16, fontWeight: "900" },
+  sectionAction: { color: "#2BE080", fontSize: 12, fontWeight: "800" },
+
+  card: {
+    borderRadius: 16,
+    padding: 14,
+    backgroundColor: "#0F1830",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.06)",
+    marginBottom: 12,
+    ...shadow,
+  },
+  cardRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  cardTitle: { color: "#EAF0FF", fontSize: 14, fontWeight: "900" },
+  cardSub: { color: "rgba(234,240,255,0.70)", marginTop: 6, fontSize: 12 },
+
+  pill: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: "rgba(43,224,128,0.14)",
+    borderWidth: 1,
+    borderColor: "rgba(43,224,128,0.30)",
+  },
+  pillText: { color: "#2BE080", fontSize: 12, fontWeight: "900" },
+
+  fab: {
+    position: "absolute",
+    right: 16,
+    bottom: 18,
+    width: 56,
+    height: 56,
+    borderRadius: 18,
+    backgroundColor: "#2BE080",
+    alignItems: "center",
+    justifyContent: "center",
+    ...shadow,
+  },
+
+  emptyBox: {
+    padding: 16,
+    borderRadius: 16,
+    backgroundColor: "rgba(255,255,255,0.04)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.06)",
+  },
+  emptyText: { color: "rgba(234,240,255,0.75)", fontSize: 13 },
 });

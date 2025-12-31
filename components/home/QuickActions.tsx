@@ -37,6 +37,8 @@ export default function QuickActions({ actions }: { actions: Action[] }) {
             <TouchableOpacity
               key={a.id}
               activeOpacity={0.9}
+              hitSlop={{ top: 10, left: 10, right: 10, bottom: 10 }}
+              pressRetentionOffset={{ top: 20, left: 20, right: 20, bottom: 20 }}
               onPress={async () => {
                 await Haptics.selectionAsync();
                 a.onPress();

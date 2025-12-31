@@ -10,7 +10,6 @@ import {
 import { useRouter } from "expo-router";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
-import ConfigSaldoAtualModal from "@/components/ConfigSaldoAtuaModal";
 import { useUser } from "@/context/UserContext";
 import { atualizarUserSaldo, getUserData } from "@/services/userServices";
 
@@ -131,7 +130,6 @@ const Home: React.FC = () => {
             perfil={userData?.perfil_financeiro || "Perfil"}
             saldoLabel="Saldo Total"
             saldoValue={loading ? "Carregando..." : saldoFormatado}
-            onPressSettings={() => setShowModalConfigSaldo(true)}
             onSearchPress={() => alert("Em breve: busca global")}
             onBellPress={() => alert("Em breve: notificações")}
           />
@@ -204,12 +202,6 @@ const Home: React.FC = () => {
           <View style={{ height: 18 }} />
         </ScrollView>
       </View>
-
-      <ConfigSaldoAtualModal
-        visible={showModalConfigSaldo}
-        onClose={() => setShowModalConfigSaldo(false)}
-        onSave={(saldo) => saveConfigSaldoAtual(saldo)}
-      />
     </ProtectedRoute>
   );
 };

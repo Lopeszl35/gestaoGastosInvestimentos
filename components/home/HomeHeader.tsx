@@ -9,7 +9,6 @@ type Props = {
   perfil: string;
   saldoLabel: string;
   saldoValue: string;
-  onPressSettings: () => void;
   onSearchPress: () => void;
   onBellPress: () => void;
 };
@@ -19,7 +18,6 @@ export default function HomeHeader({
   perfil,
   saldoLabel,
   saldoValue,
-  onPressSettings,
   onSearchPress,
   onBellPress,
 }: Props) {
@@ -45,15 +43,6 @@ export default function HomeHeader({
             Bem-vindo de volta{firstName ? `, ${firstName}` : ""}. Aqui está seu resumo financeiro.
           </Text>
         </View>
-
-        <TouchableOpacity onPress={onPressSettings} style={{
-          width: 40, height: 40, borderRadius: 14,
-          backgroundColor: "rgba(255,255,255,0.06)",
-          borderWidth: 1, borderColor: "rgba(255,255,255,0.10)",
-          alignItems: "center", justifyContent: "center"
-        }}>
-          <MaterialIcons name="settings" size={18} color={homeColors.text} />
-        </TouchableOpacity>
       </View>
 
       <View style={{
