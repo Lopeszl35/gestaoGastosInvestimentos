@@ -6,14 +6,14 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
-  Alert
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
 } from "react-native";
 import { style } from "../styles/stylesIndex";
 import Logo from "../assets/images/logo.png";
 import { MaterialIcons } from "@expo/vector-icons";
-import { themes } from "../global/themes";
 import { Link, useRouter } from "expo-router";
-import { stylesGlobal } from "@/styles/stylesGlobal";
 import { useTogglePasswordVisibility } from "@/hooks/useTogglePasswordVisibility";
 import { loginUser } from "@/services/userServices";
 import { useUser } from "@/context/UserContext";
@@ -67,70 +67,97 @@ const Login: React.FC = () => {
   }
 
   return (
-    <View style={style.container}>
-      <View style={style.boxTop}>
-        <Image source={Logo} style={style.logo} resizeMode="contain" />
-        <Text style={style.text}>
-          Gerencie suas finanças e conquiste seus objetivos!
-        </Text>
-      </View>
+    <KeyboardAvoidingView
+      style={style.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <ScrollView
+        contentContainerStyle={style.keyboard}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Decor */}
+        <View style={style.bgCircleOne} />
+        <View style={style.bgCircleTwo} />
 
-      <View style={style.boxMid}>
-        <Text style={stylesGlobal.titleInput}>ENDEREÇO E-MAIL</Text>
-        <View style={stylesGlobal.boxInput}>
-          <TextInput
-            style={stylesGlobal.input}
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-            placeholder="Digite seu e-mail"
-          />
-          <MaterialIcons
-            name="email"
-            size={20}
-            color={themes.colors.gray}
-          />
+        {/* Hero */}
+        <View style={style.hero}>
+          <View style={style.logoWrap}>
+            <Image source={Logo} style={style.logo} resizeMode="contain" />
+          </View>
+          <Text style={style.heroTitle}>Bem-vindo de volta</Text>
+          <Text style={style.heroSubtitle}>
+            Gerencie suas finanças e conquiste seus objetivos.
+          </Text>
         </View>
-        <Text style={stylesGlobal.titleInput}>SENHA</Text>
-        <View style={stylesGlobal.boxInput}>
-          <TextInput
-            style={stylesGlobal.input}
-            value={password}
-            onChangeText={(text) => setPassword(text)}
-            secureTextEntry={!isPasswordVisible}
-            placeholder="Digite sua senha"
-          />
-          <TouchableOpacity onPress={togglePasswordVisibility}>
-            <MaterialIcons
-              name={isPasswordVisible ? "visibility" : "visibility-off"}
-              size={20}
-              color={themes.colors.gray}
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
 
-      {boxError && <Text style={style.errorText}>{messageError}</Text>}
-
-      <View style={style.boxBottom}>
-        <TouchableOpacity style={style.button} onPress={getLogin}>
-          {loading ? (
-            <ActivityIndicator
-              color={themes.colors.secondary}
-              size={"small"}
+        {/* Card */}
+        <View style={style.card}>
+          <Text style={style.titleInput}>ENDEREÇO E-MAIL</Text>
+          <View style={style.boxInput}>
+            <TextInput
+              style={style.input}
+              value={email}
+              onChangeText={(text) => setEmail(text)}
+              placeholder="Digite seu e-mail"
+              placeholderTextColor="rgba(234,240,255,0.55)"
+              autoCapitalize="none"
+              keyboardType="email-address"
             />
-          ) : (
-            <Text style={stylesGlobal.textButton}>ENTRAR</Text>
+            <MaterialIcons name="email" size={20} color="rgba(234,240,255,0.70)" />
+          </View>
+
+          <Text style={style.titleInput}>SENHA</Text>
+          <View style={style.boxInput}>
+            <TextInput
+              style={style.input}
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+              secureTextEntry={!isPasswordVisible}
+              placeholder="Digite sua senha"
+              placeholderTextColor="rgba(234,240,255,0.55)"
+            />
+            {/* ✅ mantém o ícone já colocado no login */}
+            <TouchableOpacity onPress={togglePasswordVisibility} style={{ paddingLeft: 8, paddingVertical: 6 }}>
+              <MaterialIcons
+                name={isPasswordVisible ? "visibility" : "visibility-off"}
+                size={20}
+                color="rgba(234,240,255,0.70)"
+              />
+            </TouchableOpacity>
+          </View>
+
+          {boxError && (
+            <View style={style.errorBanner}>
+              <MaterialIcons name="error-outline" size={18} color="#FF6B6B" />
+              <Text style={style.errorText}>{messageError}</Text>
+            </View>
           )}
-        </TouchableOpacity>
-      </View>
 
-      <View style={style.textBottomCadastroContainer}>
-        <Text style={style.textBottom}>Não possui uma conta? </Text>
-        <Link href="/register">
-          <Text style={{ color: themes.colors.primary }}>Cadastre-se</Text>
-        </Link>
-      </View>
-    </View>
+          <TouchableOpacity
+            style={[style.button, loading && style.buttonDisabled]}
+            onPress={getLogin}
+            disabled={loading}
+          >
+            {loading ? (
+              <View style={style.buttonLoadingRow}>
+                <ActivityIndicator color="#FFFFFF" size="small" />
+                <Text style={style.buttonText}>Entrando...</Text>
+              </View>
+            ) : (
+              <Text style={style.buttonText}>ENTRAR</Text>
+            )}
+          </TouchableOpacity>
+
+          <View style={style.bottomRow}>
+            <Text style={style.bottomText}>Não possui uma conta?</Text>
+            <Link href="/register">
+              <Text style={style.bottomLink}>Cadastre-se</Text>
+            </Link>
+          </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
