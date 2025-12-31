@@ -1,3 +1,9 @@
+## License
+
+This project is licensed under a proprietary license.
+Unauthorized use, copying, modification, or distribution is strictly prohibited.
+See the LICENSE file for details.
+
 # Welcome to your Expo app 👋
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
