@@ -1,127 +1,188 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
-    View,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    Modal,
-    Platform,
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Modal,
+  Platform,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { MaterialIcons } from "@expo/vector-icons";
 import { ModaGlobalStyles } from "@/styles/ModaGlobalStyles";
 
 interface AddGastosModalProps {
-    visible: boolean;
-    onClose: () => void;
-    onSave: (data: { idCategoria: number; valor: number; descricaoCategoria: string; dataGasto: string }) => void;
-    nomeCategoria: string;
-    idCategoria: number
+  visible: boolean;
+  onClose: () => void;
+  onSave: (data: {
+    idCategoria: number;
+    valor: number;
+    descricaoCategoria: string;
+    dataGasto: string;
+  }) => void;
+  nomeCategoria: string;
+  idCategoria: number;
 }
 
-const AddGastosModal: React.FC<AddGastosModalProps> = ({ visible, onClose, onSave, nomeCategoria, idCategoria}) => {
-    const [gastos, setGastos] = useState<string>("");
-    const [dataGasto, setDataGasto] = useState<Date | null>(null);
-    const [descricaoCategoria, setDescricaoCategoria] = useState<string>("");
-    const [showDatePicker, setShowDatePicker] = useState(false);
+/**
+ * 📍 Arquivo: components/addGastosModal.tsx
+ * Modal para adicionar gasto em uma categoria.
+ * Mantém a lógica/props; melhora o layout e a experiência de data.
+ */
+const AddGastosModal: React.FC<AddGastosModalProps> = ({
+  visible,
+  onClose,
+  onSave,
+  nomeCategoria,
+  idCategoria,
+}) => {
+  const [gastos, setGastos] = useState("");
+  const [descricaoCategoria, setDescricaoCategoria] = useState("");
+  const [dataGasto, setDataGasto] = useState<Date | null>(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
-    const handleDateChange = (event: any, selectedDate?: Date) => {
-        setShowDatePicker(false); // Fecha o seletor de data
-        if (selectedDate) {
-            setDataGasto(selectedDate); // Atualiza a data
-        }
-    };
+  const dataLabel = useMemo(() => {
+    const d = dataGasto ?? new Date();
+    return d.toLocaleDateString("pt-BR");
+  }, [dataGasto]);
 
-    const formatDate = (date: Date): string => {
-        return date.toLocaleDateString("pt-BR"); // Formata para "DD/MM/AAAA"
-    };
+  const canSave = useMemo(
+    () => gastos.trim().length > 0 && !!dataGasto,
+    [gastos, dataGasto]
+  );
 
-    const handleSave = () => {
-        if (!gastos || !dataGasto) {
-            alert("Por favor, preencha todos os campos obrigatórios.");
-            return;
-        }
+  const handleSave = () => {
+    if (!gastos || !dataGasto) {
+      alert("Por favor, preencha todos os campos obrigatórios.");
+      return;
+    }
 
-        onSave({
-            idCategoria, // Certifique-se de que está passando o ID correto
-            valor: parseFloat(gastos), // Converte para número
-            descricaoCategoria,
-            dataGasto: dataGasto.toISOString().split("T")[0], // Formata a data para "YYYY-MM-DD"
-        });
+    onSave({
+      idCategoria,
+      valor: parseFloat(gastos),
+      descricaoCategoria,
+      dataGasto: dataGasto.toISOString().split("T")[0],
+    });
 
-        setGastos("");
-        setDataGasto(null);
-        setDescricaoCategoria("");
-        onClose();
-    };
+    setGastos("");
+    setDataGasto(new Date());
+    setDescricaoCategoria("");
+    onClose();
+  };
 
+  const onChangeDate = (_: any, selectedDate?: Date) => {
+    if (Platform.OS === "android") setShowDatePicker(false);
+    if (selectedDate) setDataGasto(selectedDate);
+  };
 
-    return (
-        <Modal
-            visible={visible}
-            transparent={true}
-            animationType="slide"
-            onRequestClose={onClose}
-        >
-            <View style={ModaGlobalStyles.modalContainer}>
-                <View style={ModaGlobalStyles.modalContent}>
-                    <Text style={ModaGlobalStyles.modalTitle}>Adicionar Gastos a Categoria {nomeCategoria}</Text>
+  return (
+    <Modal
+      visible={visible}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+    >
+      <View style={ModaGlobalStyles.modalContainer}>
+        <View style={ModaGlobalStyles.modalContent}>
+          <View style={ModaGlobalStyles.headerRow}>
+            <Text style={ModaGlobalStyles.modalTitle}>Adicionar gasto</Text>
+            <TouchableOpacity
+              style={ModaGlobalStyles.closeButton}
+              onPress={onClose}
+              accessibilityLabel="Fechar modal"
+            >
+              <MaterialIcons name="close" size={18} color="#EAF0FF" />
+            </TouchableOpacity>
+          </View>
 
-                    {/* Data Picker */}
-                    <View style={ModaGlobalStyles.inputContainer}>
-                        <Text style={ModaGlobalStyles.inputLabel}>Data do Gasto:</Text>
-                        <TouchableOpacity
-                            style={ModaGlobalStyles.dateInput}
-                            onPress={() => setShowDatePicker(true)}
-                        >
-                            <Text>
-                                {dataGasto ? formatDate(dataGasto) : "Selecione a data"}
-                            </Text>
-                        </TouchableOpacity>
-                        {showDatePicker && (
-                            <DateTimePicker
-                                value={dataGasto || new Date()}
-                                mode="date"
-                                display={Platform.OS === "ios" ? "inline" : "default"}
-                                onChange={handleDateChange}
-                            />
-                        )}
-                    </View>
+          <Text style={ModaGlobalStyles.modalMessage}>
+            Categoria:{" "}
+            <Text style={{ fontWeight: "900", color: "#EAF0FF" }}>
+              {nomeCategoria}
+            </Text>
+          </Text>
 
-                    {/* Campo de valor gasto */}
-                    <View style={ModaGlobalStyles.inputContainer}>
-                        <Text style={ModaGlobalStyles.inputLabel}>Valor do Gasto:</Text>
-                        <TextInput
-                            style={ModaGlobalStyles.input}
-                            placeholder="Valor do Gasto (R$)"
-                            keyboardType="numeric"
-                            value={gastos}
-                            onChangeText={setGastos}
-                        />
-                    </View>
+          <View style={ModaGlobalStyles.inputContainer}>
+            <Text style={ModaGlobalStyles.inputLabel}>Valor (R$)</Text>
+            <TextInput
+              style={ModaGlobalStyles.input}
+              placeholder="Ex: 45.90"
+              placeholderTextColor="rgba(234,240,255,0.45)"
+              value={gastos}
+              onChangeText={setGastos}
+              keyboardType="numeric"
+            />
+          </View>
 
-                       <View style={ModaGlobalStyles.inputContainer}>
-                            <Text style={ModaGlobalStyles.inputLabel}> Descrição</Text>
-                                <TextInput
-                                    style={ModaGlobalStyles.input}
-                                    placeholder="Descrição (opcional)"
-                                    value={descricaoCategoria}
-                                    onChangeText={setDescricaoCategoria}
-                                />
-                        </View>
+          <View style={ModaGlobalStyles.inputContainer}>
+            <Text style={ModaGlobalStyles.inputLabel}>
+              Descrição (opcional)
+            </Text>
+            <TextInput
+              style={ModaGlobalStyles.input}
+              placeholder="Ex: mercado, lanche..."
+              placeholderTextColor="rgba(234,240,255,0.45)"
+              value={descricaoCategoria}
+              onChangeText={setDescricaoCategoria}
+            />
+          </View>
 
-                    {/* Botões */}
-                    <View style={ModaGlobalStyles.buttonContainer}>
-                        <TouchableOpacity style={ModaGlobalStyles.buttonSucess} onPress={handleSave}>
-                            <Text style={ModaGlobalStyles.buttonText}>Salvar</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={ModaGlobalStyles.buttonCancelar} onPress={onClose}>
-                            <Text style={ModaGlobalStyles.buttonText}>Cancelar</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </View>
-        </Modal>
-    );
+          <View style={ModaGlobalStyles.inputContainer}>
+            <Text style={ModaGlobalStyles.inputLabel}>Data do gasto</Text>
+            <TouchableOpacity
+              style={[
+                ModaGlobalStyles.dateInput,
+                {
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                },
+              ]}
+              onPress={() => setShowDatePicker(true)}
+            >
+              <Text style={{ color: "#EAF0FF", fontWeight: "900" }}>
+                {dataLabel}
+              </Text>
+              <MaterialIcons
+                name="calendar-today"
+                size={18}
+                color="rgba(234,240,255,0.75)"
+              />
+            </TouchableOpacity>
+          </View>
+
+          {showDatePicker && (
+            <DateTimePicker
+              value={dataGasto ?? new Date()}
+              mode="date"
+              display={Platform.OS === "ios" ? "spinner" : "default"}
+              onChange={onChangeDate}
+            />
+          )}
+
+          <View style={ModaGlobalStyles.buttonContainer}>
+            <TouchableOpacity
+              onPress={handleSave}
+              style={[
+                ModaGlobalStyles.buttonSucess,
+                !canSave && ModaGlobalStyles.buttonDisabled,
+              ]}
+              disabled={!canSave}
+            >
+              <Text style={ModaGlobalStyles.buttonText}>Salvar</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={onClose}
+              style={ModaGlobalStyles.buttonCancelar}
+            >
+              <Text style={ModaGlobalStyles.buttonTextLight}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
 };
 
 export default AddGastosModal;
