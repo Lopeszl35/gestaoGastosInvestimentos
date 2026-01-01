@@ -1,7 +1,5 @@
-import ErroBase from "../errors/Errobase.js";
+import NaoEncontrado from "../errors/naoEncontrado.js";
 
-export default class NaoEncontrado extends ErroBase {
-  constructor(message = "Recurso não encontrado", details = []) {
-    super(message, 404, "NOT_FOUND", details);
-  }
+export default function manipulador404(req, res, next) {
+  next(new NaoEncontrado('Recurso não encontrado', {caminho: req.originalUrl}, 404));
 }

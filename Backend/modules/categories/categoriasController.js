@@ -85,10 +85,10 @@ class CategoriasController {
   }
 
   async getCategorias(req, res, next) {
-    const { idUsuario } = req.query;
-    console.log("id_usuario recebido: ", idUsuario);
+    const { id_usuario } = req.params;
+    console.log("id_usuario recebido: ", id_usuario);
     try {
-      const result = await this.CategoriasModel.getCategorias(idUsuario);
+      const result = await this.CategoriasModel.getCategorias(id_usuario);
       res.status(200).json(result);
     } catch (error) {
       next(error);

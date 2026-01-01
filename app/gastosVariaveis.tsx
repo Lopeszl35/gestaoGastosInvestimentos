@@ -1,20 +1,16 @@
 import React, { useMemo, useState } from "react";
 import { View, Text, FlatList, RefreshControl, TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-
 import ProtectedRoute from "@/components/ProtectedRoute";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import LoadingOverlay from "@/components/LoadingOverlay";
-
 import AddModal from "@/components/AddModal";
 import ConfigGastoMesModal from "@/components/ConfigGastoMesModal";
 import ConfigGastoCategoriaModal from "@/components/ConfigGastoCategoriaModal";
 import AddGastosModal from "@/components/addGastosModal";
 import ConfirmDelete from "@/components/ConfirmDelete";
-
 import { gvStyles } from "@/styles/GastosVariaveisStyles";
 import { useGastosVariaveis } from "@/hooks/useGastosVariaveis";
-
 import { createCategoria, deleteCategoria, addGasto, updateCategoria } from "@/services/categoriasService";
 import { configLimiteGastoMes } from "@/services/GastosMesService";
 
@@ -40,7 +36,6 @@ const GastosVariaveis: React.FC = () => {
   } = useGastosVariaveis();
 
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<any | null>(null);
-
   const [showModalAddCategoria, setShowModalAddCategoria] = useState(false);
   const [showModalConfigGastoMes, setShowModalConfigGastoMes] = useState(false);
   const [showModalConfigCategoria, setShowModalConfigCategoria] = useState(false);

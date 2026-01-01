@@ -19,6 +19,7 @@ import { loginUser } from "@/services/userServices";
 import { useUser } from "@/context/UserContext";
 
 
+
 const Login: React.FC = () => {
   const router = useRouter();
   const { setUser } = useUser();
@@ -43,17 +44,9 @@ const Login: React.FC = () => {
       } 
 
       const data = await loginUser(email, password);
+      console.log("Dados do usuário logado:", data);
       // Atualiza o contexto do usuário com os dados retornados do backend
-      setUser({
-        id_usuario: data.id,
-        nome: data.nome,
-        email: data.email,
-        perfil_financeiro: data.perfil_financeiro,
-        salario_mensal: data.salario_mensal,
-        saldo_inicial: data.saldo_inicial,
-        saldo_atual: data.saldo_atual,
-        data_cadastro: data.data_cadastro,
-      });
+      setUser(data.user);
       
       router.push("/home");
       setLoading(false);

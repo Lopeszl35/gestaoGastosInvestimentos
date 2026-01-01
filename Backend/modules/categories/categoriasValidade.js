@@ -36,7 +36,7 @@ export const validateCreateCategoria = [
 ];
 
 export const validateGetCategorias = [
-    query('id_usuario').exists().withMessage('Id do usuário obrigatório')
+    param('id_usuario').exists().withMessage('Id do usuário obrigatório')
     .isInt({ gt: 0 }).withMessage('Id do usuário deve ser um número inteiro positivo.')
     .notEmpty().withMessage('Id do usuário não pode ser vazio.'),
 

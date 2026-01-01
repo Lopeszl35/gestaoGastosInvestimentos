@@ -1,11 +1,12 @@
 import { fetchWithToken } from "./apiService";
 
 
-export const getCategorias = async (id_usuario?: number): Promise<any> => {
+export const getCategorias = async (idUsuario?: number): Promise<any> => {
     try {
-        const response = await fetchWithToken(`getCategorias/${id_usuario}`, {
+        const response = await fetchWithToken(`getCategorias/${idUsuario}`, {
             method: "GET",
         });
+        console.log("response: ", response);
 
         if (!response.ok) {
             const ErrorData = await response.json();

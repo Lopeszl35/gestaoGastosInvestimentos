@@ -148,8 +148,8 @@ const initializeServer = async () => {
         app.use(CategoriasRoutes(categoriasController));
         app.use(UserRoutes(userController));
         app.use(GastoMesRoutes(gastoMesController));
-        app.use(manipuladorDeErros);
         app.use(manipulador404);
+        app.use(manipuladorDeErros);
         console.log('Rotas carregadas com sucesso!');
     } catch (error) {
         console.error('Erro ao inicializar o servidor:', error.message);

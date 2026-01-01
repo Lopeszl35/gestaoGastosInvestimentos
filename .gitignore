@@ -31,6 +31,11 @@ yarn-error.*
 
 # local env files
 .env*.local
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
 
 # typescript
 *.tsbuildinfo
@@ -39,3 +44,5 @@ yarn-error.*
 *.zip
 
 app-example
+
+expo-env.d.ts

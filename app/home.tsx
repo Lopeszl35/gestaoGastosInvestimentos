@@ -221,7 +221,7 @@ const Home: React.FC = () => {
                   id: "goal",
                   title: "Nova Meta",
                   subtitle: "Definir objetivo",
-                  icon: "target",
+                  icon: "flag",
                   variant: "warning",
                   onPress: () => alert("Em breve: metas"),
                 },

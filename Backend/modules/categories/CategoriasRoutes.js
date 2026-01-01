@@ -13,7 +13,7 @@ export default (categoriasController) => {
     categoriasController.createCategorias(req, res, next);
   });
 
-  router.get("/getCategorias/:idUsuario", validateGetCategorias, (req, res, next) => {
+  router.get("/getCategorias/:id_usuario", validateGetCategorias, (req, res, next) => {
     categoriasController.getCategorias(req, res, next);
   });
 
