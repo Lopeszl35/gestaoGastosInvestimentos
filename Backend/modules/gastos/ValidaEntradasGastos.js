@@ -69,6 +69,7 @@ export default class ValidaEntradas {
   }
 
   static validarEntradaLimiteGastoMes({ id_usuario, dadosMes }) {
+    console.log("ValidarEntradaLimiteGastoMes chamado com:", { id_usuario, dadosMes });
     const erros = [];
   
     if (!id_usuario) {

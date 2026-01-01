@@ -38,9 +38,9 @@ export const validateConfigGastoLimiteMes = [
         return true;
     }),
 
-    body('dadosMes').custom((dadosmes, { req }) => {
+    body('dadosMes').custom((dadosMes, { req }) => {
         const id_usuario = req.params.id_usuario;
-        ValidaEntradas.validarEntradaLimiteGastoMes({ id_usuario, dadosMes: dadosmes });
+        ValidaEntradas.validarEntradaLimiteGastoMes({ id_usuario, dadosMes });
         return true;
     }),
 

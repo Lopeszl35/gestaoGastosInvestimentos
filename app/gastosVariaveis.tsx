@@ -72,7 +72,7 @@ const GastosVariaveis: React.FC = () => {
 
   const handleSalvarGastoMes = async (data: {
     limiteGastoMes: number;
-    mes: string;
+    mes: number;
     ano: number;
   }) => {
     try {

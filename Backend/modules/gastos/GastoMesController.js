@@ -10,10 +10,8 @@ export default class GastoMesController {
   async configGastoLimiteMes(req, res, next) {
     try {
       const { id_usuario } = req.params;
-      const { dadosMes } = req.body;
+      const  dadosMes  = req.body.dadosMes;
       console.log("Dados recebidos na controller:", { id_usuario, dadosMes });
-
-      ValidaEntradasGastos.validarEntradaLimiteGastoMes({ id_usuario, dadosMes });
 
       const result = await this.TransactionUtil.executeTransaction(
         async (connection) => {

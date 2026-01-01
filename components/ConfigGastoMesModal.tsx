@@ -6,7 +6,7 @@ import { ModaGlobalStyles } from "@/styles/ModaGlobalStyles";
 interface ConfigGastoMesModalProps {
   visible: boolean;
   onClose: () => void;
-  onSave: (data: { limiteGastoMes: number; mes: string; ano: number }) => void;
+  onSave: (data: { limiteGastoMes: number; mes: number; ano: number }) => void;
 }
 
 /**
@@ -22,10 +22,7 @@ const ConfigGastoMesModal: React.FC<ConfigGastoMesModalProps> = ({
   const [limiteGastoMes, setLimiteGastoMes] = useState("");
 
   const mes = useMemo(
-    () =>
-      new Date()
-        .toLocaleString("default", { month: "long" })
-        .replace(/^./, (m) => m.toUpperCase()),
+    () => new Date().getMonth() + 1,
     []
   );
   const ano = useMemo(() => new Date().getFullYear(), []);
