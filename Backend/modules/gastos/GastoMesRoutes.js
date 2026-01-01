@@ -29,7 +29,7 @@ export default (gastoMesController) => {
         gastoMesController.getGastosTotaisPorCategoria(req, res, next);
     })
 
-     router.post("/addGasto", validateAddGasto, (req, res, next) => {
+     router.post("/addGasto", (req, res, next) => {
      gastoMesController.addGasto(req, res, next);
   });
 

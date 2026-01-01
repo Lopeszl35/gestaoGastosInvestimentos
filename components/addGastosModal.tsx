@@ -17,7 +17,7 @@ interface AddGastosModalProps {
   onSave: (data: {
     idCategoria: number;
     valor: number;
-    descricaoCategoria: string;
+    descricao: string;
     dataGasto: string;
   }) => void;
   nomeCategoria: string;
@@ -37,7 +37,7 @@ const AddGastosModal: React.FC<AddGastosModalProps> = ({
   idCategoria,
 }) => {
   const [gastos, setGastos] = useState("");
-  const [descricaoCategoria, setDescricaoCategoria] = useState("");
+  const [descricao, setDescricao] = useState("");
   const [dataGasto, setDataGasto] = useState<Date | null>(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
 
@@ -60,13 +60,13 @@ const AddGastosModal: React.FC<AddGastosModalProps> = ({
     onSave({
       idCategoria,
       valor: parseFloat(gastos),
-      descricaoCategoria,
+      descricao,
       dataGasto: dataGasto.toISOString().split("T")[0],
     });
 
     setGastos("");
     setDataGasto(new Date());
-    setDescricaoCategoria("");
+    setDescricao("");
     onClose();
   };
 
@@ -122,8 +122,8 @@ const AddGastosModal: React.FC<AddGastosModalProps> = ({
               style={ModaGlobalStyles.input}
               placeholder="Ex: mercado, lanche..."
               placeholderTextColor="rgba(234,240,255,0.45)"
-              value={descricaoCategoria}
-              onChangeText={setDescricaoCategoria}
+              value={descricao}
+              onChangeText={setDescricao}
             />
           </View>
 

@@ -5,18 +5,20 @@ export default class CategoriasService {
         this.CategoriasRepoitory = CategoriasRepoitory;
     }
 
-    async createCategoria(categoria, idUsuario, connection) {
+    async createCategoria(categoria, id_usuario, connection) {
+        console.log("CategoriasService.createCategoria chamado com:", { categoria, id_usuario });
         try {
             const nomeNormalizado = normalizarNomeCategoria(categoria.nome);
-            const categoriaExists = await this.CategoriasRepoitory.checkCategoriaExists(nomeNormalizado, idUsuario, connection);
+            console.log("nomeNormalizado: ", nomeNormalizado);
+            const categoriaExists = await this.CategoriasRepoitory.checkCategoriaExists(nomeNormalizado, id_usuario, connection);
 
             if (categoriaExists) {
                 throw new RequisicaoIncorreta(`A categoria com nome '${categoria.nome}' já existe para este usuário.`);
             }
-            const result = await this.CategoriasRepoitory.createCategoria({ ...categoria, nome: nomeNormalizado }, idUsuario, connection);
+            const result = await this.CategoriasRepoitory.createCategoria({ ...categoria, nome: nomeNormalizado }, id_usuario, connection);
             return result;
         } catch (error) {
-            console.log("Erro ao criar categoria no modelo:", error.message);
+            console.log("Erro ao criar categoria no Service:", error.message);
             throw error;
         }
     }

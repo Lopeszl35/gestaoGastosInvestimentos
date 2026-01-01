@@ -7,13 +7,14 @@ class CategoriasController {
 
   async createCategorias(req, res, next) {
     try {
-      const { idUsuario } = req.params;
+      const { id_usuario } = req.params;
       const categoria = req.body.categoria;
+      console.log("Categoria recebida: ", categoria);
       const result = await this.TransactionUtil.executeTransaction(
         async (connection) => {
           return await this.CategoriasModel.createCategoria(
             categoria,
-            idUsuario,
+            id_usuario,
             connection
           );
         }

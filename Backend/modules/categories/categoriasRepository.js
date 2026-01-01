@@ -5,16 +5,12 @@ export default class CategoriasRepository {
     this.database = database;
   }
 
-  async createCategoria(categoria, idUsuario) {
-    console.log("CategoriasRepository.createCategoria chamado com:", {
-      categoria,
-      idUsuario,
-    });
+  async createCategoria(categoria, id_usuario) {
     const sql = `
-            INSERT INTO categorias_gastos (id_usuario,nome, limite) 
+            INSERT INTO categorias_gastos (id_usuario, nome, limite) 
             VALUES (?, ?, ?);
         `;
-    const params = [idUsuario, categoria.nome, categoria.limite];
+    const params = [id_usuario, categoria.nome, categoria.limite];
     try {
       const result = await this.database.executaComandoNonQuery(sql, params);
       if (result) {
@@ -34,14 +30,14 @@ export default class CategoriasRepository {
     }
   }
 
-  async checkCategoriaExists(nomeCategoria, idUsuario) {
+  async checkCategoriaExists(nomeCategoria, id_usuario) {
     const sql = `
             SELECT COUNT(*) AS count 
             FROM categorias_gastos 
             WHERE LOWER(TRIM(nome)) = LOWER(TRIM(?)) 
             AND id_usuario = ?;
         `;
-    const params = [nomeCategoria, idUsuario];
+    const params = [nomeCategoria, id_usuario];
     try {
       const result = await this.database.executaComando(sql, params);
       return result[0].count > 0;
@@ -86,26 +82,19 @@ export default class CategoriasRepository {
         `;
 
     const params = [];
-
-    console.log("id_usuario recebido: ", id_usuario);
-
     // Filtra as categorias pelo id_usuario, se fornecido
     if (typeof id_usuario === "number" && id_usuario > 0) {
       sql += " WHERE cg.id_usuario = ?";
       params.push(id_usuario);
     }
 
-    console.log("SQL executado: ", sql, "com parâmetros:", params);
-
     try {
       const result = await this.database.executaComando(sql, params);
       console.log("result: ", result);
       return result;
     } catch (error) {
-      console.error(
-        "Erro no CategoriasRepository.getCategorias:",
-        error.message
-      );
+      console.error("Erro no CategoriasRepository.getCategorias:", error.message);
+      ErroSqlHandler.tratarErroSql(error);
       throw error;
     }
   }
@@ -121,10 +110,8 @@ export default class CategoriasRepository {
       const result = await this.database.executaComandoNonQuery(sql, params);
       return result;
     } catch (error) {
-      console.error(
-        "Erro no CategoriasRepository.updateCategoria:",
-        error.message
-      );
+      console.error("Erro no CategoriasRepository.updateCategoria:", error.message);
+      ErroSqlHandler.tratarErroSql(error);
       throw error;
     }
   }
@@ -138,10 +125,8 @@ export default class CategoriasRepository {
       const result = await connection.query(sql, params);
       return result;
     } catch (error) {
-      console.error(
-        "Erro no CategoriasRepository.deleteCategoria:",
-        error.message
-      );
+      console.error("Erro no CategoriasRepository.deleteCategoria:", error.message);
+      ErroSqlHandler.tratarErroSql(error);
       throw error;
     }
   }

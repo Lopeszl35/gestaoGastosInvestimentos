@@ -9,11 +9,6 @@ interface AddModalProps {
   onSave: (data: { nome: string; limite: number }) => void;
 }
 
-/**
- * 📍 Arquivo: components/AddModal.tsx
- * Modal para criar categoria.
- * Mantém as funções/props existentes; muda apenas o design para o padrão premium/dark.
- */
 const AddModal: React.FC<AddModalProps> = ({ visible, onClose, onSave }) => {
   const [nome, setNome] = useState("");
   const [limite, setLimite] = useState("");

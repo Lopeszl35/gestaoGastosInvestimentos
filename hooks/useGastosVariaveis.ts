@@ -41,7 +41,6 @@ export function useGastosVariaveis() {
       if (showOverlay) setOverlayLoading(true);
 
       const data = await getCategorias(user?.id_usuario);
-      console.log("User ID:", user?.id_usuario, "e user completo:", user);
 
       // ✅ garante array sempre
       const categoriasArray = Array.isArray(data) ? data : [];

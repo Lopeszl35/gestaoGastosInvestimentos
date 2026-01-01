@@ -89,5 +89,14 @@ export const validateAddGasto = [
     return true;
   }),
 
+  body("gastos.descricao")
+  .optional()
+  .trim()
+  .isString()
+  .withMessage("O campo 'descricao' deve ser uma string.")
+  .isLength({ max: 100 })
+  .withMessage("O campo 'descricao' deve conter no máximo 100 caracteres."),
+
+
   handleValidation,
 ];

@@ -23,12 +23,12 @@ export const getCategorias = async (idUsuario?: number): Promise<any> => {
 
 export const createCategoria =async (categoria: any): Promise<any> => {
     try {
-        const response = await fetchWithToken(`createCategorias`, {
+        const response = await fetchWithToken(`criarCategoria/${categoria.id_usuario}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(categoria),
+            body: JSON.stringify({categoria}),
         });
 
         if (!response.ok) {
@@ -74,7 +74,7 @@ export const addGasto =  async (gastos: any, id_usuario: number): Promise<any> =
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(gastos),
+            body: JSON.stringify({gastos}),
         });
 
         if (!response.ok) {

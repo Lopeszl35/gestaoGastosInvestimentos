@@ -9,7 +9,7 @@ const router = express.Router();
 router.use(cors());
 
 export default (categoriasController) => {
-  router.post("/criarCategoria/:idUsuario", validateCreateCategoria, (req, res, next) => {
+  router.post("/criarCategoria/:id_usuario", (req, res, next) => {
     categoriasController.createCategorias(req, res, next);
   });
 

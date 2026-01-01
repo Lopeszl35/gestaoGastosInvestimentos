@@ -121,15 +121,22 @@ const GastosVariaveis: React.FC = () => {
     }
   };
 
-  const handleSalvarGasto = async (
-    idCategoria: number,
-    dataGasto: string,
-    valor: number,
-    descricao: string
+  const handleSalvarGasto = async ( data: {
+    idCategoria: number;
+    dataGasto: string;
+    valor: number;
+    descricao: string;
+  }
   ) => {
     try {
+      const gastos = {
+        id_categoria: data.idCategoria,
+        data_gasto: data.dataGasto,
+        valor: data.valor,
+        descricao: data.descricao
+      }
       await addGasto(
-        { id_categoria: idCategoria, data_gasto: dataGasto, valor, descricao },
+        gastos,
         user!.id_usuario
       );
       setShowModalAddGastos(false);
@@ -394,14 +401,7 @@ const GastosVariaveis: React.FC = () => {
         <AddGastosModal
           visible={showModalAddGastos}
           onClose={() => setShowModalAddGastos(false)}
-          onSave={(data) =>
-            handleSalvarGasto(
-              data.idCategoria,
-              data.dataGasto,
-              data.valor,
-              data.descricaoCategoria
-            )
-          }
+          onSave={handleSalvarGasto}
           nomeCategoria={categoriaSelecionada?.nome || ""}
           idCategoria={categoriaSelecionada?.id_categoria || 0}
         />

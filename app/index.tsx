@@ -44,7 +44,6 @@ const Login: React.FC = () => {
       } 
 
       const data = await loginUser(email, password);
-      console.log("Dados do usuário logado:", data);
       // Atualiza o contexto do usuário com os dados retornados do backend
       setUser(data.user);
       
