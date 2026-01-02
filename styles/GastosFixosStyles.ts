@@ -1,168 +1,156 @@
-import { StyleSheet, Platform } from "react-native";
+import { StyleSheet, Platform, Dimensions } from "react-native";
+const { width } = Dimensions.get("window");
+const isWide = width >= 900;
 
 const shadow = Platform.select({
   ios: {
     shadowColor: "#000",
-    shadowOpacity: 0.22,
+    shadowOpacity: 0.25,
     shadowRadius: 18,
     shadowOffset: { width: 0, height: 10 },
   },
   android: { elevation: 10 },
 });
 
-export const gfColors = {
-  bg: "#0B1220",
-  card: "rgba(255,255,255,0.06)",
-  card2: "rgba(255,255,255,0.08)",
-  stroke: "rgba(255,255,255,0.10)",
-  text: "#EAF0FF",
-  text2: "rgba(234,240,255,0.72)",
-  text3: "rgba(234,240,255,0.55)",
-  green: "#22C55E",
-  red: "#F87171",
-  blue: "#38BDF8",
-  yellow: "#FBBF24",
-};
+export const GastosFixosStyles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: "#0B1220" },
+  container: { flex: 1, padding: 16, paddingTop: 10 },
 
-export const gfStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: gfColors.bg,
-  },
-  content: {
-    padding: 16,
-    paddingBottom: 120,
-  },
-
-  headerCard: {
-    borderRadius: 22,
-    padding: 16,
-    backgroundColor: gfColors.card,
-    borderWidth: 1,
-    borderColor: gfColors.stroke,
-    ...shadow,
-  },
-  headerTitle: {
-    color: gfColors.text,
-    fontSize: 22,
-    fontWeight: "900",
-  },
-  headerSub: {
-    marginTop: 6,
-    color: gfColors.text2,
-    fontSize: 13,
-    lineHeight: 18,
-  },
-
-  sectionHeaderRow: {
-    marginTop: 16,
-    marginBottom: 10,
+  headerRow: {
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-between",
+    alignItems: "flex-start",
+    gap: 12,
   },
-  sectionTitle: {
-    color: gfColors.text,
-    fontSize: 16,
-    fontWeight: "900",
-  },
-  sectionAction: {
-    color: gfColors.green,
-    fontWeight: "900",
-  },
+  headerLeft: { flex: 1 },
+  h1: { color: "#EAF0FF", fontSize: 22, fontWeight: "900" },
+  h2: { color: "rgba(234,240,255,0.65)", marginTop: 4 },
 
-  chipsRow: {
-    flexDirection: "row",
-    gap: 10,
-  },
-  chip: {
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 999,
-    backgroundColor: "rgba(255,255,255,0.06)",
+  headerRight: { width: isWide ? 380 : 160, gap: 10, alignItems: "flex-end" },
+  search: {
+    width: "100%",
+    borderRadius: 14,
+    backgroundColor: "rgba(255,255,255,0.04)",
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.08)",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    color: "#EAF0FF",
   },
-  chipActive: {
-    backgroundColor: "rgba(34,197,94,0.16)",
-    borderColor: "rgba(34,197,94,0.30)",
+
+  btnPrimary: {
+    marginTop: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 14,
+    backgroundColor: "#2BE080",
   },
-  chipText: {
-    color: gfColors.text2,
+  btnPrimaryText: { color: "#0B1220", fontWeight: "900" },
+
+  cardsTop: {
+    marginTop: 14,
+    flexDirection: isWide ? "row" : "column",
+    gap: 12,
+  },
+  metric: {
+    flex: 1,
+    borderRadius: 18,
+    padding: 14,
+    backgroundColor: "#0F1A2E",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.06)",
+    ...shadow,
+  },
+  metricLabel: {
+    color: "rgba(234,240,255,0.60)",
     fontWeight: "800",
     fontSize: 12,
   },
-  chipTextActive: {
-    color: gfColors.text,
+  metricValue: {
+    color: "#EAF0FF",
+    fontWeight: "900",
+    fontSize: 22,
+    marginTop: 6,
   },
+  metricSub: { color: "rgba(234,240,255,0.50)", marginTop: 4, fontSize: 12 },
 
-  listGap: { height: 12 },
-
-  card: {
+  panel: {
+    marginTop: 12,
     borderRadius: 18,
     padding: 14,
-    backgroundColor: gfColors.card2,
+    backgroundColor: "#0F1A2E",
     borderWidth: 1,
-    borderColor: gfColors.stroke,
+    borderColor: "rgba(255,255,255,0.06)",
     ...shadow,
   },
+  panelTitle: { color: "#EAF0FF", fontWeight: "900" },
 
-  cardRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 12,
-  },
-  cardTitle: {
-    color: gfColors.text,
-    fontWeight: "900",
-    fontSize: 15,
-  },
-  cardSub: {
-    marginTop: 6,
-    color: gfColors.text2,
-    fontSize: 12,
-    lineHeight: 16,
-  },
-
-  pill: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-    backgroundColor: "rgba(56,189,248,0.16)",
+  catRow: { marginTop: 12, flexDirection: isWide ? "row" : "column", gap: 10 },
+  catPill: {
+    flex: 1,
+    borderRadius: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: "rgba(255,255,255,0.04)",
     borderWidth: 1,
-    borderColor: "rgba(56,189,248,0.30)",
+    borderColor: "rgba(255,255,255,0.06)",
   },
-  pillText: {
-    color: gfColors.text,
-    fontWeight: "900",
-    fontSize: 12,
-  },
+  catName: { color: "rgba(234,240,255,0.60)", fontWeight: "800", fontSize: 12 },
+  catValue: { color: "#EAF0FF", fontWeight: "900", marginTop: 6 },
 
-  progressBarBg: {
-    height: 10,
-    borderRadius: 999,
-    backgroundColor: "rgba(255,255,255,0.08)",
-    overflow: "hidden",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.10)",
-  },
-  progressBarFill: {
-    height: "100%",
-    borderRadius: 999,
-    backgroundColor: gfColors.green,
-  },
-
-  emptyBox: {
+  grid: { marginTop: 12, flexDirection: "row", flexWrap: "wrap", gap: 12 },
+  item: {
+    width: isWide ? "32%" : "100%",
     borderRadius: 18,
-    padding: 14,
-    backgroundColor: "rgba(255,255,255,0.05)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.08)",
+    overflow: "hidden",
+    ...shadow,
   },
-  emptyText: {
-    color: gfColors.text2,
-    fontWeight: "700",
-    lineHeight: 18,
+  itemInner: { padding: 14 },
+  itemTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+
+  iconCircle: {
+    width: 34,
+    height: 34,
+    borderRadius: 99,
+    backgroundColor: "rgba(0,0,0,0.25)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  itemTitle: { color: "#EAF0FF", fontWeight: "900", marginTop: 10 },
+  tag: {
+    marginTop: 4,
+    alignSelf: "flex-start",
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderRadius: 999,
+    backgroundColor: "rgba(0,0,0,0.25)",
+  },
+  tagText: { color: "rgba(234,240,255,0.85)", fontWeight: "900", fontSize: 11 },
+
+  itemValue: {
+    color: "#EAF0FF",
+    fontWeight: "900",
+    fontSize: 20,
+    marginTop: 10,
+  },
+  itemDue: { color: "rgba(234,240,255,0.55)", marginTop: 4, fontSize: 12 },
+
+  switch: {
+    width: 46,
+    height: 26,
+    borderRadius: 99,
+    backgroundColor: "rgba(0,0,0,0.25)",
+    justifyContent: "center",
+  },
+  knobOn: {
+    width: 22,
+    height: 22,
+    borderRadius: 99,
+    backgroundColor: "#2BE080",
+    marginLeft: 22,
   },
 });
