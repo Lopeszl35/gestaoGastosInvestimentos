@@ -31,7 +31,67 @@ export const gfStyles = StyleSheet.create({
   },
   content: {
     padding: 16,
-    paddingBottom: 120,
+    // Espaço extra pra não ficar "grudado" com FAB e barra de navegação
+    paddingBottom: 140,
+  },
+
+  // --- Shared "detail" helpers (Cartão / Financiamento) ---
+  headerNumbersRow: {
+    marginTop: 10,
+    flexDirection: "row",
+    gap: 12,
+  },
+  metricBox: {
+    flex: 1,
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    backgroundColor: "rgba(255,255,255,0.05)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+  },
+  metricLabel: {
+    color: gfColors.text3,
+    fontWeight: "800",
+    fontSize: 11,
+  },
+  metricValue: {
+    marginTop: 6,
+    color: gfColors.text,
+    fontWeight: "900",
+    fontSize: 14,
+  },
+
+  paginationRow: {
+    marginTop: 14,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 10,
+  },
+  pageBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 999,
+    backgroundColor: "rgba(255,255,255,0.06)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.10)",
+  },
+  pageBtnDisabled: {
+    opacity: 0.45,
+  },
+  pageBtnText: {
+    color: gfColors.text,
+    fontWeight: "900",
+    fontSize: 12,
+  },
+  pageLabel: {
+    color: gfColors.text2,
+    fontWeight: "800",
+    fontSize: 12,
   },
 
   headerCard: {
@@ -44,7 +104,7 @@ export const gfStyles = StyleSheet.create({
   },
   headerTitle: {
     color: gfColors.text,
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "900",
   },
   headerSub: {
@@ -75,6 +135,45 @@ export const gfStyles = StyleSheet.create({
     flexDirection: "row",
     gap: 10,
   },
+
+  // --- Tabela/Seletor mensal horizontal (Cartões) ---
+  monthRow: {
+    flexDirection: "row",
+    paddingTop: 12,
+    paddingBottom: 8,
+  },
+  monthCell: {
+    minWidth: 108,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 18,
+    backgroundColor: "rgba(255,255,255,0.05)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+    marginRight: 12,
+  },
+  monthCellActive: {
+    backgroundColor: "rgba(56,189,248,0.16)",
+    borderColor: "rgba(56,189,248,0.35)",
+  },
+  monthCellLabel: {
+    color: gfColors.text3,
+    fontWeight: "900",
+    fontSize: 11,
+    textTransform: "capitalize",
+  },
+  monthCellValue: {
+    marginTop: 6,
+    color: gfColors.text,
+    fontWeight: "900",
+    fontSize: 13,
+  },
+  monthCellMeta: {
+    marginTop: 4,
+    color: gfColors.text2,
+    fontWeight: "800",
+    fontSize: 11,
+  },
   chip: {
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -96,7 +195,8 @@ export const gfStyles = StyleSheet.create({
     color: gfColors.text,
   },
 
-  listGap: { height: 12 },
+  // Mais respiro visual entre os blocos (evita sensação de "apertado")
+  listGap: { height: 18 },
 
   card: {
     borderRadius: 18,
@@ -164,5 +264,21 @@ export const gfStyles = StyleSheet.create({
     color: gfColors.text2,
     fontWeight: "700",
     lineHeight: 18,
+  },
+
+  // Floating Action Button (para futuros cadastros)
+  fab: {
+    position: "absolute",
+    right: 18,
+    bottom: 22,
+    width: 54,
+    height: 54,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: gfColors.blue,
+    borderWidth: 1,
+    borderColor: "rgba(56,189,248,0.35)",
+    ...shadow,
   },
 });

@@ -68,8 +68,8 @@ export default function QuickActions({ actions }: { actions: Action[] }) {
               </Text>
             </TouchableOpacity>
           );
-              })}
-            </View>
+        })}
+      </View>
     </View>
   );
 }

@@ -25,6 +25,7 @@ import {
   updateCategoria,
 } from "@/services/categoriasService";
 import { configLimiteGastoMes } from "@/services/GastosMesService";
+import type { PaymentMethod } from "@/domain/payment";
 
 const GastosVariaveis: React.FC = () => {
   const {
@@ -72,7 +73,7 @@ const GastosVariaveis: React.FC = () => {
 
   const handleSalvarGastoMes = async (data: {
     limiteGastoMes: number;
-    mes: string;
+    mes: number;
     ano: number;
   }) => {
     try {
@@ -126,14 +127,21 @@ const GastosVariaveis: React.FC = () => {
     dataGasto: string;
     valor: number;
     descricao: string;
-  }
-  ) => {
+
+    // 🔥 NOVO
+    formaPagamento: PaymentMethod;
+    idCartao?: number | null;
+  }) => {
     try {
       const gastos = {
         id_categoria: data.idCategoria,
         data_gasto: data.dataGasto,
         valor: data.valor,
-        descricao: data.descricao
+        descricao: data.descricao,
+
+        // 🔥 NOVO
+        forma_pagamento: data.formaPagamento,
+        id_cartao: data.formaPagamento === "CREDITO" ? data.idCartao : null,
       }
       await addGasto(
         gastos,

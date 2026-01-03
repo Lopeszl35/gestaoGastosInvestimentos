@@ -1,0 +1,204 @@
+Nexor — Meu Gestor Inteligente & LumenIA
+
+Versão: 0.1 (Construção)
+Data: 2026-01-01
+Autor: Rafael Amaro Lopes (Founder/Dev)
+Status: Em desenvolvimento (Build in Public)
+
+1. Objetivo deste documento
+
+Este documento descreve, de forma autoral e técnica, a concepção dos produtos desenvolvidos no ecossistema Nexor, incluindo visão, escopo, arquitetura conceitual, diferenciação de módulos e evolução planejada.
+O objetivo é consolidar a base do projeto, servir como guia de implementação e apoiar registros formais futuros (direito autoral, software e marca).
+
+2. Visão geral da Nexor (projeto em construção)
+
+A Nexor é um projeto de tecnologia orientado a dados, em desenvolvimento, voltado a construir produtos e plataformas capazes de transformar dados reais de uso em decisões, eficiência e evolução contínua.
+
+O ecossistema inicial contempla dois produtos independentes:
+
+Meu Gestor Inteligente (B2C) — Gerenciador de gastos e investimentos para usuários finais, com uma IA própria integrada ao app.
+
+LumenIA (B2B / Plataforma) — Inteligência estratégica conectável a bancos de dados de produtos/empresas para varredura de dados, geração de insights estratégicos e oportunidades de evolução (features e novos produtos), exibidas em um dashboard web.
+
+Importante: as IAs são distintas e independentes — a IA do Meu Gestor Inteligente é focada no usuário final; a LumenIA é focada no dono do produto/empresa.
+
+3. Produto 1 — Meu Gestor Inteligente (B2C)
+3.1 Propósito
+
+O Meu Gestor Inteligente é um aplicativo de gestão de gastos e investimentos com foco em clareza financeira, controle e organização.
+O app tem como objetivo permitir que o usuário registre e acompanhe sua vida financeira incluindo despesas variáveis, despesas fixas, cartões de crédito com parcelamentos, financiamentos e visão consolidada por períodos.
+
+3.2 Público-alvo
+
+Usuários finais que desejam controlar gastos e evoluir hábitos financeiros
+
+Pessoas que precisam de visões mensais e controle por categorias
+
+Usuários que utilizam cartão, parcelamentos e têm compromissos recorrentes
+
+3.3 Principais capacidades (presentes e planejadas)
+
+Capacidades-base (MVP e evolução):
+
+Registro e categorização de gastos
+
+Visão mensal consolidada (total, categorias, tendências)
+
+Controle de limites por categoria e limite geral
+
+Gastos fixos (contas/assinaturas) com recorrência
+
+Cartões de crédito: limite, fechamento, vencimento, lançamentos parcelados
+
+Faturas e status (aberta/fechada/paga)
+
+Financiamentos: parcelas, status mensal, histórico de pagamento
+
+Camada inteligente (IA própria do app) — evolução planejada:
+
+Assistência contextual ao usuário (orientação e alertas)
+
+Detecção de padrões pessoais (comportamento do usuário)
+
+Sugestões de organização e ajustes com base no histórico do próprio usuário
+
+Alertas preventivos (ex.: aproximação de limites, sazonalidade de gastos)
+
+Observação: a IA integrada do app é focada em ajudar o usuário final e não se confunde com a LumenIA.
+
+3.4 Dados e estrutura (base conceitual)
+
+A concepção do app prevê uma base de dados com entidades representando:
+
+usuários, gastos, categorias, saldo, total mensal
+
+cartões de crédito e seus lançamentos/parcelamentos
+
+faturas mensais
+
+gastos fixos com recorrência
+
+financiamentos e controle mensal de parcelas
+
+(O detalhamento físico do banco e evolução de tabelas/triggers é documentado no repositório técnico e scripts SQL.)
+
+4. Produto 2 — LumenIA (B2B / Plataforma estratégica)
+4.1 Propósito
+
+A LumenIA é uma plataforma de inteligência estratégica que se conecta ao banco de dados de um produto ou empresa, executa varredura e análise de dados operacionais e de uso, e transforma essas informações em insights voltados à tomada de decisão do dono do negócio.
+
+4.2 Público-alvo
+
+Donos de aplicativos e produtos digitais
+
+Empresas que desejam entender uso real, retenção e padrões
+
+Gestores e product owners que precisam decidir roadmap baseado em dados
+
+4.3 Capacidades principais (planejadas)
+
+Conexão segura com bases de dados (configurada pelo dono do produto)
+
+Varredura e análise de dados de uso e comportamento
+
+Detecção de:
+
+padrões recorrentes
+
+gargalos / fricções
+
+oportunidades de melhoria
+
+anomalias
+
+segmentação por perfis
+
+Geração de:
+
+insights acionáveis (o que fazer e por quê)
+
+sugestões de novas features (incluindo oportunidades de monetização)
+
+oportunidades de novos produtos/apps com base em necessidades latentes detectadas
+
+4.4 Dashboard Web (interface da LumenIA)
+
+A LumenIA terá um dashboard web onde o dono do produto poderá visualizar:
+
+métricas e KPIs essenciais
+
+gráficos e comparações temporais
+
+segmentos de usuários
+
+insights textuais explicados
+
+recomendações priorizadas (impacto estimado / urgência)
+
+Importante: a LumenIA não é focada em finanças; ela é aplicável a qualquer produto com dados.
+
+5. Diferenciação entre as IAs (regra central)
+IA do Meu Gestor Inteligente (B2C)
+
+Assistente do usuário final
+
+Orientação contextual e preventiva
+
+Personalizada ao histórico do usuário
+
+LumenIA (B2B)
+
+Inteligência estratégica de produto/negócio
+
+Varredura de banco e geração de oportunidades
+
+Focada no dono do app/empresa
+
+6. Estado atual do projeto
+
+Projeto em construção (build in public)
+
+MVP do Meu Gestor Inteligente em desenvolvimento
+
+LumenIA em concepção e planejamento de arquitetura e dashboard
+
+Identidade visual “Dark Tech” e comunicação pública pela página @nexor.tech.br
+
+7. Roadmap (alto nível)
+Fase 1 — MVP (Meu Gestor Inteligente)
+
+funcionalidades essenciais de gestão e visão mensal
+
+consistência de dados e logs mínimos
+
+Fase 2 — Inteligência interna (Meu Gestor Inteligente)
+
+alertas inteligentes baseados em regras
+
+evolução gradual para modelos mais robustos
+
+Fase 3 — LumenIA v1
+
+conexão e leitura de dados
+
+KPIs e dashboard inicial
+
+insights básicos (regras + heurísticas)
+
+Fase 4 — LumenIA avançada
+
+análise por perfil, correlações, oportunidades
+
+recomendações de features/monetização e novos produtos
+
+8. Propriedade intelectual e autoria
+
+Este documento é autoral e descreve a concepção funcional e técnica do ecossistema Nexor.
+A evolução do projeto é registrada por controle de versão (Git) e documentação técnica associada.
+Registros formais (direito autoral, software e marca) serão realizados conforme maturidade do projeto.
+
+9. Contato do autor
+
+Rafael Amaro Lopes
+Projeto: Nexor (em construção)
+Página: @nexor.tech.br

@@ -24,7 +24,6 @@ const NavBar: React.FC = () => {
   const { user, setUser } = useUser();
 
   const [menuVisible, setMenuVisible] = useState(false);
-  const [subMenuVisible, setSubMenuVisible] = useState(false);
 
   // Drawer começa escondido à esquerda
   const animation = useRef(new Animated.Value(-MENU_WIDTH)).current;
@@ -34,8 +33,6 @@ const NavBar: React.FC = () => {
     () => (user as any)?.email || "usuario@email.com",
     [user]
   );
-
-  const toggleSubMenu = () => setSubMenuVisible((prev) => !prev);
 
   const openMenu = () => {
     setMenuVisible(true);
@@ -166,59 +163,40 @@ const NavBar: React.FC = () => {
             <Text style={styleNavBar.menuText}>Perfil</Text>
           </TouchableOpacity>
 
+          {/* SECTION: GASTOS */}
+          <Text style={styleNavBar.sectionLabel}>GASTOS</Text>
+
           <TouchableOpacity
-            style={
-              subMenuVisible ? styleNavBar.menuItemActive : styleNavBar.menuItem
-            }
-            onPress={toggleSubMenu}
+            style={styleNavBar.menuItem}
+            onPress={() => navigateAndCloseMenu("/gastosVariaveis")}
           >
-            <MaterialIcons name="category" size={20} color="#EAF0FF" />
-            <Text
-              style={
-                subMenuVisible
-                  ? styleNavBar.menuTextActive
-                  : styleNavBar.menuText
-              }
-            >
-              Categoria Gastos
-            </Text>
-            <View style={{ flex: 1 }} />
-            <MaterialIcons
-              name={
-                subMenuVisible ? "keyboard-arrow-up" : "keyboard-arrow-down"
-              }
-              size={22}
-              color="#EAF0FF"
-            />
+            <MaterialIcons name="receipt-long" size={20} color="#EAF0FF" />
+            <Text style={styleNavBar.menuText}>Gastos Variáveis</Text>
           </TouchableOpacity>
 
-          {subMenuVisible && (
-            <View style={styleNavBar.subMenu}>
-              <TouchableOpacity
-                style={styleNavBar.subMenuItem}
-                onPress={() => navigateAndCloseMenu("/gastosFixos")}
-              >
-                <MaterialIcons
-                  name="check-circle-outline"
-                  size={18}
-                  color="rgba(234,240,255,0.75)"
-                />
-                <Text style={styleNavBar.subMenuText}>Gastos Fixos</Text>
-              </TouchableOpacity>
+          <TouchableOpacity
+            style={styleNavBar.menuItem}
+            onPress={() => navigateAndCloseMenu("/gastosFixos")}
+          >
+            <MaterialIcons name="check-circle-outline" size={20} color="#EAF0FF" />
+            <Text style={styleNavBar.menuText}>Gastos Fixos</Text>
+          </TouchableOpacity>
 
-              <TouchableOpacity
-                style={styleNavBar.subMenuItem}
-                onPress={() => navigateAndCloseMenu("/gastosVariaveis")}
-              >
-                <MaterialIcons
-                  name="receipt-long"
-                  size={18}
-                  color="rgba(234,240,255,0.75)"
-                />
-                <Text style={styleNavBar.subMenuText}>Gastos Variáveis</Text>
-              </TouchableOpacity>
-            </View>
-          )}
+          <TouchableOpacity
+            style={styleNavBar.menuItem}
+            onPress={() => navigateAndCloseMenu("/cartoes")}
+          >
+            <MaterialIcons name="credit-card" size={20} color="#EAF0FF" />
+            <Text style={styleNavBar.menuText}>Cartões de Crédito</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styleNavBar.menuItem}
+            onPress={() => navigateAndCloseMenu("/financiamentos")}
+          >
+            <MaterialIcons name="account-balance" size={20} color="#EAF0FF" />
+            <Text style={styleNavBar.menuText}>Financiamentos</Text>
+          </TouchableOpacity>
 
           {/* SECTION: SUPORTE */}
           <Text style={styleNavBar.sectionLabel}>SUPORTE</Text>
