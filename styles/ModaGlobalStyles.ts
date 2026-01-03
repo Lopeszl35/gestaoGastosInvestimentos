@@ -145,4 +145,10 @@ export const ModaGlobalStyles = StyleSheet.create({
     fontWeight: "900",
     color: "#EAF0FF",
   },
+
+  helperText: {
+    marginTop: 2,
+    fontSize: 12,
+    color: "rgba(234,240,255,0.55)",
+  },
 });

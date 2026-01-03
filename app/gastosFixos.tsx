@@ -1,199 +1,231 @@
-import React, { useMemo } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
-  FlatList,
-  RefreshControl,
+  TextInput,
+  ScrollView,
+  Pressable,
+  Modal,
   TouchableOpacity,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
 
-import ProtectedRoute from "@/components/ProtectedRoute";
-import { gfStyles, gfColors } from "@/styles/GastosFixosStyles";
-import {
-  useGastosFixos,
-  FixedExpenseType,
-  CreditCard,
-  FixedBill,
-} from "@/hooks/useGastosFixos";
+import { GastosFixosStyles as s } from "@/styles/GastosFixosStyles";
+import { ModaGlobalStyles } from "@/styles/ModaGlobalStyles";
+import { useGastosFixosScreen } from "@/hooks/gastosFixos/useGastosFixosScreen";
 
-const typeLabel: Record<FixedExpenseType, string> = {
-  cartao: "Cartão de crédito",
-  financiamento: "Financiamento",
-  contas: "Contas",
-  outros: "Outros",
-};
-
-function formatBRL(value: number) {
-  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+function brl(v: number) {
+  return v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
-const GastosFixos: React.FC = () => {
-  const router = useRouter();
-  const {
-    selectedType,
-    setSelectedType,
-    creditCards,
-    filteredBills,
-    refreshing,
-    refresh,
-  } = useGastosFixos();
+function iconName(type: string) {
+  switch (type) {
+    case "bolt":
+      return "bolt";
+    case "water":
+      return "water-drop";
+    case "wifi":
+      return "wifi";
+    case "movie":
+      return "movie";
+    case "music":
+      return "music-note";
+    case "fitness":
+      return "fitness-center";
+    default:
+      return "receipt-long";
+  }
+}
 
-  const headerSubtitle = useMemo(() => {
-    if (selectedType === "cartao") {
-      return "Cadastre seus cartões e acompanhe parcelas, recorrências e totais por mês.";
-    }
-    return "Organize seus gastos recorrentes: contas, financiamentos e assinaturas.";
-  }, [selectedType]);
-
-  const renderTypeChip = (t: FixedExpenseType, icon: any) => {
-    const active = selectedType === t;
-    return (
-      <TouchableOpacity
-        key={t}
-        onPress={() => setSelectedType(t)}
-        style={[gfStyles.chip, active && gfStyles.chipActive]}
-      >
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-          <MaterialIcons
-            name={icon}
-            size={18}
-            color={active ? gfColors.text : gfColors.text2}
-          />
-          <Text style={[gfStyles.chipText, active && gfStyles.chipTextActive]}>
-            {typeLabel[t]}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
-  const renderCard = ({ item }: { item: CreditCard }) => {
-    const pct =
-      item.limite > 0 ? Math.min(item.gastoMesAtual / item.limite, 1) : 0;
-    return (
-      <TouchableOpacity
-        style={gfStyles.card}
-        onPress={() =>
-          router.push({
-            pathname: "/cartao/[cardId]",
-            params: { cardId: item.id },
-          } as any)
-        }
-      >
-        <View style={gfStyles.cardRow}>
-          <Text style={gfStyles.cardTitle}>{item.nome}</Text>
-          <View style={gfStyles.pill}>
-            <Text style={gfStyles.pillText}>
-              {formatBRL(item.gastoMesAtual)}
-            </Text>
-          </View>
-        </View>
-
-        <Text style={gfStyles.cardSub}>
-          {item.bandeira ? `${item.bandeira} • ` : ""}Fechamento dia{" "}
-          {item.fechamentoDia} • Vencimento dia {item.vencimentoDia}
-        </Text>
-
-        <View style={{ marginTop: 10 }}>
-          <View style={gfStyles.progressBarBg}>
-            <View
-              style={[gfStyles.progressBarFill, { width: `${pct * 100}%` }]}
-            />
-          </View>
-          <Text style={[gfStyles.cardSub, { marginTop: 8 }]}>
-            Limite: {formatBRL(item.limite)} • Uso: {Math.round(pct * 100)}%
-          </Text>
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
-  const renderBill = ({ item }: { item: FixedBill }) => (
-    <View style={gfStyles.card}>
-      <View style={gfStyles.cardRow}>
-        <Text style={gfStyles.cardTitle}>{item.titulo}</Text>
-        <View style={gfStyles.pill}>
-          <Text style={gfStyles.pillText}>{formatBRL(item.valorMensal)}</Text>
-        </View>
-      </View>
-      <Text style={gfStyles.cardSub}>
-        {item.descricao} • Vence dia {item.vencimentoDia}
-      </Text>
-    </View>
-  );
-
-  const data = selectedType === "cartao" ? creditCards : filteredBills;
+export default function GastosFixos() {
+  const { loading, error, data } = useGastosFixosScreen();
+  const [open, setOpen] = useState(false);
 
   return (
-    <View style={gfStyles.container}>
-      <FlatList
-        data={data as any[]}
-        keyExtractor={(item: any) => String(item.id)}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={refresh}
-            tintColor={gfColors.text}
-          />
-        }
-        contentContainerStyle={gfStyles.content}
-        ItemSeparatorComponent={() => <View style={gfStyles.listGap} />}
-        ListHeaderComponent={
-          <>
-            <View style={gfStyles.headerCard}>
-              <Text style={gfStyles.headerTitle}>Gastos Fixos</Text>
-              <Text style={gfStyles.headerSub}>{headerSubtitle}</Text>
+    <View style={s.screen}>
+      <ScrollView
+        style={s.container}
+        contentContainerStyle={{ paddingBottom: 26 }}
+      >
+        <View style={s.headerRow}>
+          <View style={s.headerLeft}>
+            <Text style={s.h1}>Gastos Fixos</Text>
+            <Text style={s.h2}>Gerencie suas despesas recorrentes mensais</Text>
+          </View>
 
-              <View style={{ marginTop: 14 }}>
-                <Text style={[gfStyles.sectionTitle, { fontSize: 14 }]}>
-                  Tipo
-                </Text>
-                <View style={{ marginTop: 10 }}>
-                  <View style={gfStyles.chipsRow}>
-                    {renderTypeChip("cartao", "credit-card")}
-                    {renderTypeChip("contas", "receipt-long")}
-                  </View>
-                  <View style={{ height: 10 }} />
-                  <View style={gfStyles.chipsRow}>
-                    {renderTypeChip("financiamento", "payments")}
-                    {renderTypeChip("outros", "more-horiz")}
-                  </View>
-                </View>
+          <View style={s.headerRight}>
+            <TextInput
+              placeholder="Buscar..."
+              placeholderTextColor="rgba(234,240,255,0.35)"
+              style={s.search}
+            />
+            <Pressable style={s.btnPrimary} onPress={() => setOpen(true)}>
+              <Text style={s.btnPrimaryText}>+ Novo Gasto Fixo</Text>
+            </Pressable>
+          </View>
+        </View>
+
+        {loading && (
+          <Text style={{ color: "#EAF0FF", marginTop: 10 }}>Carregando...</Text>
+        )}
+        {!!error && (
+          <Text style={{ color: "#F87171", marginTop: 10, fontWeight: "900" }}>
+            {error}
+          </Text>
+        )}
+
+        {!loading && !error && data && (
+          <>
+            {/* Cards topo (3) igual imagem */}
+            <View style={s.cardsTop}>
+              <View style={s.metric}>
+                <Text style={s.metricLabel}>Total Mensal</Text>
+                <Text style={s.metricValue}>{brl(data.totalMensal)}</Text>
+                <Text style={s.metricSub}>9 despesas ativas</Text>
+              </View>
+
+              <View style={s.metric}>
+                <Text style={s.metricLabel}>Total Anual</Text>
+                <Text style={s.metricValue}>{brl(data.totalAnual)}</Text>
+                <Text style={s.metricSub}>Projeção para 12 meses</Text>
+              </View>
+
+              <View style={s.metric}>
+                <Text style={s.metricLabel}>Próximos 7 dias</Text>
+                <Text style={s.metricValue}>{brl(data.proximos7dias)}</Text>
+                <Text style={s.metricSub}>4 vencimentos</Text>
               </View>
             </View>
 
-            <View style={gfStyles.sectionHeaderRow}>
-              <Text style={gfStyles.sectionTitle}>
-                {selectedType === "cartao"
-                  ? "Seus cartões"
-                  : "Seus gastos fixos"}
+            {/* Painel categoria igual imagem */}
+            <View style={s.panel}>
+              <Text style={s.panelTitle}>Gastos por Categoria</Text>
+              <View style={s.catRow}>
+                {data.porCategoria.map((c: any) => (
+                  <View key={c.label} style={s.catPill}>
+                    <Text style={s.catName}>{c.label}</Text>
+                    <Text style={s.catValue}>{brl(c.value)}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            {/* Grid cards igual imagem */}
+            <View style={s.grid}>
+              {data.items.map((i: any) => (
+                <LinearGradient
+                  key={i.id}
+                  colors={i.gradient}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={s.item}
+                >
+                  <View style={s.itemInner}>
+                    <View style={s.itemTop}>
+                      <View style={s.iconCircle}>
+                        <MaterialIcons
+                          name={iconName(i.icon) as any}
+                          size={18}
+                          color="#EAF0FF"
+                        />
+                      </View>
+
+                      <View style={s.switch}>
+                        <View style={s.knobOn} />
+                      </View>
+                    </View>
+
+                    <Text style={s.itemTitle}>{i.nome}</Text>
+                    <View style={s.tag}>
+                      <Text style={s.tagText}>{i.categoria}</Text>
+                    </View>
+
+                    <Text style={s.itemValue}>{brl(i.valor)}</Text>
+                    <Text style={s.itemDue}>Vence dia {i.vencimentoDia}</Text>
+                  </View>
+                </LinearGradient>
+              ))}
+            </View>
+          </>
+        )}
+      </ScrollView>
+
+      {/* Modal igual imagem: Adicionar Gasto Fixo */}
+      <Modal
+        visible={open}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setOpen(false)}
+      >
+        <Pressable
+          style={ModaGlobalStyles.modalContainer}
+          onPress={() => setOpen(false)}
+        >
+          <Pressable style={ModaGlobalStyles.modalContent} onPress={() => {}}>
+            <View style={ModaGlobalStyles.headerRow}>
+              <Text style={ModaGlobalStyles.modalTitle}>
+                Adicionar Gasto Fixo
               </Text>
               <TouchableOpacity
-                onPress={() => alert("Em breve: adicionar gasto fixo / cartão")}
+                style={ModaGlobalStyles.closeButton}
+                onPress={() => setOpen(false)}
               >
-                <Text style={gfStyles.sectionAction}>+ Adicionar</Text>
+                <MaterialIcons name="close" size={18} color="#EAF0FF" />
               </TouchableOpacity>
             </View>
 
-            {data.length === 0 && (
-              <View style={gfStyles.emptyBox}>
-                <Text style={gfStyles.emptyText}>
-                  {selectedType === "cartao"
-                    ? "Nenhum cartão cadastrado ainda. Toque em “Adicionar” para cadastrar seu primeiro cartão."
-                    : "Nenhum gasto fixo encontrado para este tipo. Toque em “Adicionar” para cadastrar um gasto fixo."}
-                </Text>
+            <View style={ModaGlobalStyles.inputContainer}>
+              <Text style={ModaGlobalStyles.inputLabel}>Nome</Text>
+              <TextInput
+                style={ModaGlobalStyles.input}
+                placeholder="Ex: Conta de Luz, Netflix..."
+                placeholderTextColor="rgba(234,240,255,0.35)"
+              />
+            </View>
+
+            <View style={ModaGlobalStyles.inputContainer}>
+              <Text style={ModaGlobalStyles.inputLabel}>Categoria</Text>
+              <TextInput
+                style={ModaGlobalStyles.input}
+                placeholder="Utilidades (Luz, Água, Gás)"
+                placeholderTextColor="rgba(234,240,255,0.35)"
+              />
+            </View>
+
+            <View style={{ flexDirection: "row", gap: 10 }}>
+              <View style={[ModaGlobalStyles.inputContainer, { flex: 1 }]}>
+                <Text style={ModaGlobalStyles.inputLabel}>Valor Mensal</Text>
+                <TextInput
+                  style={ModaGlobalStyles.input}
+                  placeholder="150,00"
+                  placeholderTextColor="rgba(234,240,255,0.35)"
+                  keyboardType="decimal-pad"
+                />
               </View>
-            )}
-          </>
-        }
-        renderItem={
-          selectedType === "cartao" ? (renderCard as any) : (renderBill as any)
-        }
-      />
+
+              <View style={[ModaGlobalStyles.inputContainer, { flex: 1 }]}>
+                <Text style={ModaGlobalStyles.inputLabel}>
+                  Dia do Vencimento
+                </Text>
+                <TextInput
+                  style={ModaGlobalStyles.input}
+                  placeholder="10"
+                  placeholderTextColor="rgba(234,240,255,0.35)"
+                  keyboardType="numeric"
+                />
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={ModaGlobalStyles.buttonSucess}
+              onPress={() => setOpen(false)}
+            >
+              <Text style={ModaGlobalStyles.buttonText}>Adicionar Gasto</Text>
+            </TouchableOpacity>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </View>
   );
-};
-
-export default GastosFixos;
+}

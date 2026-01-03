@@ -74,7 +74,15 @@ export default function Layout() {
 
           {/* Tela de Cartão */}
           <Stack.Screen
-            name="cartao/[cardId]"
+            name="cartoes"
+            options={{
+              headerShown: false, // Oculta o cabeçalho
+            }}
+          />
+
+          {/* Tela de financiamento */}
+          <Stack.Screen
+            name="financiamentos"
             options={{
               headerShown: false, // Oculta o cabeçalho
             }}
