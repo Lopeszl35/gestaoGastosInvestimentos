@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { router } from "expo-router";
 import {
   View,
   Text,
@@ -278,10 +279,31 @@ const AddGastosModal: React.FC<AddGastosModalProps> = ({
               ) : erroCartoes ? (
                 <Text style={ModaGlobalStyles.errorText}>{erroCartoes}</Text>
               ) : cartoes.length === 0 ? (
-                <Text style={ModaGlobalStyles.helperText}>
-                  Nenhum cartão cadastrado. Cadastre um cartão para usar crédito.
-                </Text>
-              ) : (
+                      <View>
+                        <Text style={ModaGlobalStyles.helperText}>
+                          Você ainda não cadastrou um cartão. Cadastre um cartão para lançar gastos no crédito.
+                        </Text>
+
+                        <View style={{ marginTop: 10 }}>
+                          <TouchableOpacity
+                            style={ModaGlobalStyles.buttonSucess}
+                            onPress={() => {
+                              onClose(); // fecha o modal pra não ficar por cima
+                              router.push("/cartoes"); // leva o usuário pra cadastrar
+                            }}
+                          >
+                            <Text style={ModaGlobalStyles.buttonText}>Ir para Cartões</Text>
+                          </TouchableOpacity>
+
+                          <TouchableOpacity
+                            style={[ModaGlobalStyles.buttonCancelar, { marginTop: 10 }]}
+                            onPress={onClose}
+                          >
+                            <Text style={ModaGlobalStyles.buttonTextLight}>Agora não</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    ) : (
                 <View style={ModaGlobalStyles.selectList}>
                   {cartoes.map((c) => {
                     const selected = idCartao === c.id_cartao;

@@ -18,19 +18,14 @@ export default function Layout() {
     <SafeAreaProvider>
       <UserProvider>
         {showNavBar && <NavBar />}
-        <Stack
-          screenOptions={{
-            headerShown: false,
-            contentStyle: { backgroundColor: themes.colors.background },
-          }}
-        >
+        <Stack>
           {/* Tela de Login */}
           <Stack.Screen
             name="index"
             options={{
-              headerShown: true,
               headerStyle: { backgroundColor: themes.colors.primary },
               headerTintColor: themes.colors.white,
+              contentStyle: { backgroundColor: themes.colors.background },
               headerTitleStyle: {
                 fontWeight: "bold",
               },
@@ -43,14 +38,53 @@ export default function Layout() {
           <Stack.Screen
             name="register"
             options={{
-              headerShown: true,
               headerStyle: { backgroundColor: themes.colors.primary },
               headerTintColor: themes.colors.white,
+              contentStyle: { backgroundColor: themes.colors.background },
               headerTitleStyle: {
                 fontWeight: "bold",
               },
               headerTitleAlign: "center",
               headerTitle: "Cadastro",
+            }}
+          />
+
+          {/* Outras telas */}
+          <Stack.Screen
+            name="home"
+            options={{
+              headerShown: false, // Oculta o cabeçalho
+            }}
+          />
+          {/* Tela de Gastos Variáveis */}
+          <Stack.Screen
+            name="gastosVariaveis"
+            options={{
+              headerShown: false, // Oculta o cabeçalho
+            }}
+          />
+
+          {/* Tela de Gastos Fixos */}
+          <Stack.Screen
+            name="gastosFixos"
+            options={{
+              headerShown: false, // Oculta o cabeçalho
+            }}
+          />
+
+          {/* Tela de Cartão */}
+          <Stack.Screen
+            name="cartoes"
+            options={{
+              headerShown: false, // Oculta o cabeçalho
+            }}
+          />
+
+          {/* Tela de financiamento */}
+          <Stack.Screen
+            name="financiamentos"
+            options={{
+              headerShown: false, // Oculta o cabeçalho
             }}
           />
         </Stack>

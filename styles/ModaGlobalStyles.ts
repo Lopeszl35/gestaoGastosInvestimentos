@@ -65,11 +65,6 @@ export const ModaGlobalStyles = StyleSheet.create({
     marginBottom: 12,
   },
 
-  modalMessageStrong: {
-    fontWeight: "900",
-    color: "#EAF0FF",
-  },
-
   // Inputs
   inputContainer: {
     marginBottom: 12,
@@ -99,80 +94,6 @@ export const ModaGlobalStyles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.05)",
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.10)",
-  },
-
-  // Helpers / estados
-  helperText: {
-    color: "rgba(234,240,255,0.65)",
-    fontSize: 12,
-    lineHeight: 16,
-  },
-
-  errorText: {
-    color: "#FF6B6B",
-    fontSize: 12,
-    fontWeight: "900",
-  },
-
-  // Segmented (forma de pagamento)
-  segmentRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-  },
-
-  segmentItem: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 999,
-    backgroundColor: "rgba(255,255,255,0.05)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.10)",
-  },
-
-  segmentItemActive: {
-    backgroundColor: "rgba(124,247,212,0.14)",
-    borderColor: "rgba(124,247,212,0.35)",
-  },
-
-  segmentText: {
-    color: "rgba(234,240,255,0.85)",
-    fontWeight: "900",
-    fontSize: 12,
-  },
-
-  segmentTextActive: {
-    color: "#7CF7D4",
-  },
-
-  // Select list (cartões)
-  selectList: {
-    marginTop: 8,
-    gap: 10,
-  },
-
-  selectItem: {
-    padding: 12,
-    borderRadius: 14,
-    backgroundColor: "rgba(255,255,255,0.04)",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.06)",
-  },
-
-  selectItemActive: {
-    borderColor: "rgba(124,247,212,0.45)",
-    backgroundColor: "rgba(124,247,212,0.10)",
-  },
-
-  selectItemTitle: {
-    color: "#EAF0FF",
-    fontWeight: "900",
-  },
-
-  selectItemSub: {
-    color: "rgba(234,240,255,0.65)",
-    marginTop: 3,
-    fontSize: 12,
   },
 
   // Buttons
@@ -223,5 +144,11 @@ export const ModaGlobalStyles = StyleSheet.create({
   buttonTextLight: {
     fontWeight: "900",
     color: "#EAF0FF",
+  },
+
+  helperText: {
+    marginTop: 2,
+    fontSize: 12,
+    color: "rgba(234,240,255,0.55)",
   },
 });
