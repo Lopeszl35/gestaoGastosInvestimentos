@@ -42,11 +42,9 @@ export function useGastosVariaveis() {
 
       const data = await getCategorias(user?.id_usuario);
 
-      // ✅ garante array sempre
       const categoriasArray = Array.isArray(data) ? data : [];
       setCategorias(categoriasArray);
 
-      // ✅ se vier vazio, NÃO é erro e não trava nada
       if (categoriasArray.length === 0) {
         setGastosLimiteMes(0);
         setGastosTotalMes(0);
@@ -70,8 +68,6 @@ export function useGastosVariaveis() {
   },
   [user?.id_usuario]
 );
-
-    // src/hooks/useGastosVariaveis.ts
 
     useEffect(() => {
     if (!user?.id_usuario) {

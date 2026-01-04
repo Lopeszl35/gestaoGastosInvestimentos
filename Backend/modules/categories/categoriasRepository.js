@@ -48,49 +48,15 @@ export default class CategoriasRepository {
     }
   }
 
-  async getCategorias(id_usuario) {
+  async getCategoriasAtivas(id_usuario) {
     let sql = `
-            SELECT 
-            cg.id_categoria,
-            cg.id_usuario,
-            cg.nome,
-            CAST(cg.limite AS DECIMAL(10, 2)) AS limite,
-
-            IFNULL((
-                SELECT CAST(SUM(g.valor) AS DECIMAL(10, 2))
-                FROM gastos g
-                WHERE g.id_categoria = cg.id_categoria
-            ), 0) AS totalGastos,
-
-            IFNULL((
-                SELECT CAST(SUM(g.valor) AS DECIMAL(10, 2))
-                FROM gastos g
-                WHERE g.id_categoria = cg.id_categoria 
-                AND MONTH(g.data_gasto) = MONTH(CURDATE()) 
-                AND YEAR(g.data_gasto) = YEAR(CURDATE())
-            ), 0) AS totalGastosMes,
-
-           
-            IFNULL(tgm.limite_gasto_mes, 0) AS limiteGastoMes,
-            IFNULL(tgm.gasto_atual_mes, 0)  AS gastoAtualMes
-
-            FROM categorias_gastos cg
-            LEFT JOIN total_gastos_mes tgm
-            ON tgm.id_usuario = cg.id_usuario
-            AND tgm.ano = YEAR(CURDATE())
-            AND tgm.mes = MONTH(CURDATE())
+           SELECT * FROM categorias_gastos
+           WHERE id_usuario = ?
+           AND ativo = 1
         `;
 
-    const params = [];
-    // Filtra as categorias pelo id_usuario, se fornecido
-    if (typeof id_usuario === "number" && id_usuario > 0) {
-      sql += " WHERE cg.id_usuario = ?";
-      params.push(id_usuario);
-    }
-
     try {
-      const result = await this.database.executaComando(sql, params);
-      console.log("result: ", result);
+      const result = await this.database.executaComando(sql, [id_usuario]);
       return result;
     } catch (error) {
       console.error("Erro no CategoriasRepository.getCategorias:", error.message);

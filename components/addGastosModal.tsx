@@ -36,15 +36,6 @@ interface AddGastosModalProps {
   idCategoria: number;
 }
 
-/**
- * 📍 Arquivo: components/addGastosModal.tsx
- * Modal para adicionar gasto em uma categoria.
- * Regra: UI apenas. Campos e validações leves (UX). Regras/integrações ficam em services/domain.
- *
- * ✅ NOVO: seleção de forma de pagamento.
- * - Dinheiro / PIX / Débito / Crédito
- * - Se Crédito: carrega e permite escolher um cartão cadastrado.
- */
 const AddGastosModal: React.FC<AddGastosModalProps> = ({
   visible,
   onClose,

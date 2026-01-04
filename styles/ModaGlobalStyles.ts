@@ -12,10 +12,7 @@ const shadow = Platform.select({
   android: { elevation: 8 },
 });
 
-/**
- * 📍 Arquivo: styles/ModaGlobalStyles.ts
- * Estilos globais para modais, alinhados ao padrão premium/dark da Home.
- */
+
 export const ModaGlobalStyles = StyleSheet.create({
   // Overlay
   modalContainer: {
@@ -145,10 +142,97 @@ export const ModaGlobalStyles = StyleSheet.create({
     fontWeight: "900",
     color: "#EAF0FF",
   },
+    // ==========================
+  // Textos auxiliares / mensagens
+  // ==========================
+  modalMessageStrong: {
+    color: "#EAF0FF",
+    fontWeight: "900",
+  },
 
   helperText: {
-    marginTop: 2,
+    marginTop: 6,
     fontSize: 12,
     color: "rgba(234,240,255,0.55)",
+    fontWeight: "700",
+    lineHeight: 16,
   },
+
+  errorText: {
+    marginTop: 6,
+    fontSize: 12,
+    color: "#F87171",
+    fontWeight: "900",
+    lineHeight: 16,
+  },
+
+  // ==========================
+  // Segment (forma de pagamento)
+  // ==========================
+  segmentRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    marginTop: 10,
+  },
+
+  segmentItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 14,
+    backgroundColor: "rgba(255,255,255,0.04)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+  },
+
+  segmentItemActive: {
+    backgroundColor: "rgba(43,224,128,0.14)", // verde suave
+    borderColor: "rgba(43,224,128,0.55)",
+  },
+
+  segmentText: {
+    color: "rgba(234,240,255,0.75)",
+    fontWeight: "900",
+    fontSize: 12,
+  },
+
+  segmentTextActive: {
+    color: "#2BE080",
+  },
+
+  // ==========================
+  // Lista de seleção de cartões
+  // ==========================
+  selectList: {
+    marginTop: 10,
+    gap: 10,
+  },
+
+  selectItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 14,
+    backgroundColor: "rgba(255,255,255,0.04)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+  },
+
+  selectItemActive: {
+    backgroundColor: "rgba(234,240,255,0.06)",
+    borderColor: "rgba(234,240,255,0.22)",
+  },
+
+  selectItemTitle: {
+    color: "#EAF0FF",
+    fontWeight: "900",
+  },
+
+  selectItemSub: {
+    marginTop: 4,
+    color: "rgba(234,240,255,0.60)",
+    fontSize: 12,
+    fontWeight: "800",
+  },
+
 });
+

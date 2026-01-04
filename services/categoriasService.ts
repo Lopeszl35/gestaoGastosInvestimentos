@@ -3,7 +3,7 @@ import { fetchWithToken } from "./apiService";
 
 export const getCategorias = async (idUsuario?: number): Promise<any> => {
     try {
-        const response = await fetchWithToken(`getCategorias/${idUsuario}`, {
+        const response = await fetchWithToken(`getCategoriasAtivas/${idUsuario}`, {
             method: "GET",
         });
         console.log("response: ", response);

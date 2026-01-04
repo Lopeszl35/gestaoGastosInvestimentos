@@ -1,7 +1,7 @@
 
 class CategoriasController {
-  constructor(CategoriasModel, TransactionUtil) {
-    this.CategoriasModel = CategoriasModel;
+  constructor(CategoriasService, TransactionUtil) {
+    this.CategoriasService = CategoriasService;
     this.TransactionUtil = TransactionUtil;
   }
 
@@ -12,7 +12,7 @@ class CategoriasController {
       console.log("Categoria recebida: ", categoria);
       const result = await this.TransactionUtil.executeTransaction(
         async (connection) => {
-          return await this.CategoriasModel.createCategoria(
+          return await this.CategoriasService.createCategoria(
             categoria,
             id_usuario,
             connection
@@ -32,7 +32,7 @@ class CategoriasController {
     }
   }
 
-  async updateCategoria(req, res) {
+  async updateCategoria(req, res, next) {
     const { id_categoria } = req.query;
     const categoria = req.body;
     if (!id_categoria) {
@@ -44,7 +44,7 @@ class CategoriasController {
     try {
       const result = await this.TransactionUtil.executeTransaction(
         async (connection) => {
-          return await this.CategoriasModel.updateCategoria(
+          return await this.CategoriasService.updateCategoria(
             id_categoria,
             categoria,
             connection
@@ -53,14 +53,11 @@ class CategoriasController {
       );
       return res.status(200).json(result);
     } catch (error) {
-      console.error("Erro ao atualizar categoria:", error.message);
-      res
-        .status(400)
-        .json({ message: "Erro ao atualizar categoria: " + error.message });
+      next(error);
     }
   }
 
-  async deleteCategoria(req, res) {
+  async deleteCategoria(req, res, next) {
     const { id_categoria } = req.query;
     if (!id_categoria) {
       return res
@@ -70,7 +67,7 @@ class CategoriasController {
     try {
       const result = await this.TransactionUtil.executeTransaction(
         async (connection) => {
-          return await this.CategoriasModel.deleteCategoria(
+          return await this.CategoriasService.deleteCategoria(
             id_categoria,
             connection
           );
@@ -79,17 +76,14 @@ class CategoriasController {
       console.log("result: ", result);
       res.status(200).json(result);
     } catch (error) {
-      res
-        .status(400)
-        .json({ message: "Erro ao deletar categoria: " + error.message });
+      next(error);
     }
   }
 
-  async getCategorias(req, res, next) {
+  async getCategoriasAtivas(req, res, next) {
     const { id_usuario } = req.params;
-    console.log("id_usuario recebido: ", id_usuario);
     try {
-      const result = await this.CategoriasModel.getCategorias(id_usuario);
+      const result = await this.CategoriasService.getCategoriasAtivas(id_usuario);
       res.status(200).json(result);
     } catch (error) {
       next(error);

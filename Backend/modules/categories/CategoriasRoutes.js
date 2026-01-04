@@ -9,12 +9,12 @@ const router = express.Router();
 router.use(cors());
 
 export default (categoriasController) => {
-  router.post("/criarCategoria/:id_usuario", (req, res, next) => {
+  router.post("/criarCategoria/:id_usuario", validateCreateCategoria, (req, res, next) => {
     categoriasController.createCategorias(req, res, next);
   });
 
-  router.get("/getCategorias/:id_usuario", validateGetCategorias, (req, res, next) => {
-    categoriasController.getCategorias(req, res, next);
+  router.get("/getCategoriasAtivas/:id_usuario", validateGetCategorias, (req, res, next) => {
+    categoriasController.getCategoriasAtivas(req, res, next);
   });
 
   router.delete("/deleteCategorias", (req, res, next) => {

@@ -128,7 +128,6 @@ const GastosVariaveis: React.FC = () => {
     valor: number;
     descricao: string;
 
-    // 🔥 NOVO
     formaPagamento: PaymentMethod;
     idCartao?: number | null;
   }) => {
@@ -139,7 +138,6 @@ const GastosVariaveis: React.FC = () => {
         valor: data.valor,
         descricao: data.descricao,
 
-        // 🔥 NOVO
         forma_pagamento: data.formaPagamento,
         id_cartao: data.formaPagamento === "CREDITO" ? data.idCartao : null,
       }
@@ -168,7 +166,6 @@ const GastosVariaveis: React.FC = () => {
     }
   };
 
-  // -------- UI --------
   return (
     <ProtectedRoute>
       <View style={gvStyles.container}>
@@ -183,7 +180,6 @@ const GastosVariaveis: React.FC = () => {
           contentContainerStyle={gvStyles.content}
           ListHeaderComponent={
             <>
-              {/* HEADER PREMIUM */}
               {error && (
                 <View
                   style={{

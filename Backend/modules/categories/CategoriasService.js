@@ -23,9 +23,9 @@ export default class CategoriasService {
         }
     }
 
-    async getCategorias(id_usuario) {
+    async getCategoriasAtivas(id_usuario) {
         try {
-            const result = await this.CategoriasRepoitory.getCategorias(id_usuario);
+            const result = await this.CategoriasRepoitory.getCategoriasAtivas(id_usuario);
             return result;
         } catch (error) {
             console.log("Erro ao buscar categorias no modelo:", error.message);
