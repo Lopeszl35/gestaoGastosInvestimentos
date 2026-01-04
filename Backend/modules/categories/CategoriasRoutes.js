@@ -2,7 +2,8 @@ import express from "express";
 import cors from "cors";
 import {
   validateCreateCategoria,
-  validateGetCategorias
+  validateGetCategorias,
+  validateDeleteCategoria
 } from "./categoriasValidade.js";
 
 const router = express.Router();
@@ -17,7 +18,7 @@ export default (categoriasController) => {
     categoriasController.getCategoriasAtivas(req, res, next);
   });
 
-  router.delete("/deleteCategorias", (req, res, next) => {
+  router.delete("/deleteCategorias", validateDeleteCategoria, (req, res, next) => {
     categoriasController.deleteCategoria(req, res, next);
   });
 

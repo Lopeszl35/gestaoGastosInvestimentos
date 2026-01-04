@@ -59,13 +59,8 @@ class CategoriasController {
 
   async deleteCategoria(req, res, next) {
     const { id_categoria } = req.query;
-    if (!id_categoria) {
-      return res
-        .status(400)
-        .json({ message: "Id da categoria não informado." });
-    }
     try {
-      const result = await this.TransactionUtil.executeTransaction(
+      await this.TransactionUtil.executeTransaction(
         async (connection) => {
           return await this.CategoriasService.deleteCategoria(
             id_categoria,
@@ -73,8 +68,10 @@ class CategoriasController {
           );
         }
       );
-      console.log("result: ", result);
-      res.status(200).json(result);
+      res.status(200).json({
+        message: "Categoria deletada com sucesso",
+        status: 200,
+      });
     } catch (error) {
       next(error);
     }
@@ -82,6 +79,7 @@ class CategoriasController {
 
   async getCategoriasAtivas(req, res, next) {
     const { id_usuario } = req.params;
+
     try {
       const result = await this.CategoriasService.getCategoriasAtivas(id_usuario);
       res.status(200).json(result);

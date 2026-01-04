@@ -50,9 +50,24 @@ export default class CategoriasRepository {
 
   async getCategoriasAtivas(id_usuario) {
     let sql = `
-           SELECT * FROM categorias_gastos
-           WHERE id_usuario = ?
-           AND ativo = 1
+           SELECT 
+      cg.id_categoria,
+      cg.nome,
+      cg.limite,
+      cg.ativo,
+      COALESCE(SUM(g.valor), 0) AS totalGastoCategoriaMes,
+      CASE
+        WHEN cg.limite IS NULL OR cg.limite = 0 THEN NULL
+        ELSE ROUND((COALESCE(SUM(g.valor), 0) / cg.limite) * 100, 2)
+      END AS percentualGastoCategoriaMes
+    FROM categorias_gastos cg
+    LEFT JOIN gastos g
+      ON g.id_categoria = cg.id_categoria
+      AND g.id_usuario = cg.id_usuario
+    WHERE cg.id_usuario = ?
+      AND cg.ativo = 1
+    GROUP BY cg.id_categoria, cg.nome, cg.limite, cg.ativo
+    ORDER BY cg.nome ASC;
         `;
 
     try {
@@ -60,7 +75,6 @@ export default class CategoriasRepository {
       return result;
     } catch (error) {
       console.error("Erro no CategoriasRepository.getCategorias:", error.message);
-      ErroSqlHandler.tratarErroSql(error);
       throw error;
     }
   }
@@ -84,7 +98,9 @@ export default class CategoriasRepository {
 
   async deleteCategoria(id_categoria, connection) {
     const sql = `
-            DELETE FROM categorias_gastos WHERE id_categoria = ?;
+            UPDATE categorias_gastos 
+            SET ativo = 0 
+            WHERE id_categoria = ?;
         `;
     const params = [id_categoria];
     try {

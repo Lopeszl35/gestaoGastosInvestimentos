@@ -247,7 +247,7 @@ const GastosVariaveis: React.FC = () => {
                     <View
                       style={[
                         gvStyles.progressBarFill,
-                        { width: `${progressoMes * 100}%` },
+                        { width: `${progressoMes}%` },
                       ]}
                     />
                   </View>
@@ -281,7 +281,7 @@ const GastosVariaveis: React.FC = () => {
           }
           renderItem={({ item }) => {
             const limite = Number(item.limite || 0);
-            const totalMes = Number(item.totalGastosMes || 0);
+            const totalMes = Number(item.totalGastoCategoriaMes || 0);
 
             const pct = limite > 0 ? Math.min(totalMes / limite, 1) : 0;
 

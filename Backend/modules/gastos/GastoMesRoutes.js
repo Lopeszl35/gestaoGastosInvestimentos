@@ -14,7 +14,7 @@ router.use(cors());
 
 export default (gastoMesController) => {
 
-    // rota para obter a meta de limite imposta no mês pelo usuário
+    // rota para obter a meta de limite imposta no mês pelo usuário e gasto total do mês
     router.get('/getLimiteGastoMes', validateGetLimiteGastoMes , (req, res, next) => {
         gastoMesController.getGastoLimiteMes(req, res, next);
     });
@@ -31,6 +31,10 @@ export default (gastoMesController) => {
 
      router.post("/addGasto", validateAddGasto, (req, res, next) => {
      gastoMesController.addGasto(req, res, next);
+  });
+
+  router.patch("/updateGasto", (req, res, next) => {
+    gastoMesController.recalcularGastoAtualMes(req, res, next);
   });
 
     return router;

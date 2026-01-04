@@ -13,7 +13,7 @@ const router = express.Router();
 router.use(cors());
 
 export default (userController) => {
-    router.post('/createUser', validateCreateUser, (req, res, next) => {
+    router.post('/createUser', (req, res, next) => {
         userController.createUser(req, res, next);
     });
 

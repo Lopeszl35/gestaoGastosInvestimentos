@@ -13,7 +13,6 @@ import https from 'https';
 import DependencyInjector from './utils/DependencyInjector.js'; // Utilitário de injeção de dependências
 import manipuladorDeErros from './middleware/manipuladorDeErros.js';
 import verifyToken from './middleware/verifyToken.js';
-import UserService from './modules/usuario/UserService.js';
 
 // Inicialização do Servidor
 console.log('Servidor iniciando...');
@@ -68,6 +67,10 @@ const loadDependencies = async () => {
         const { default: TransactionUtil } = await import('./utils/TransactionUtil.js');
         DependencyInjector.register('TransactionUtil', new TransactionUtil(DependencyInjector.get('Database')));
 
+        // Registra Barramento de Eventos (domain events)
+        const { default: BarramentoEventos } = await import('./utils/BarramentoEventos.js');
+        DependencyInjector.register('BarramentoEventos', new BarramentoEventos());
+        console.log('BarramentoEventos registrado com sucesso.');
 
         // Registro de repositórios
         const { default: UserRepository } = await import('./modules/usuario/userRepository.js');
@@ -82,6 +85,13 @@ const loadDependencies = async () => {
         DependencyInjector.register('GastoMesRepository', new GastoMesRepository(database));
         console.log('GastoMesRepository registrado com sucesso.');
 
+        // Alertas / Notificações (NOVO)
+        const { default: AlertasRepository } = await import('./modules/alertas/AlertasRepository.js');
+        DependencyInjector.register('AlertasRepository', new AlertasRepository(database));
+
+        const { default: NotificacoesService } = await import('./modules/alertas/NotificacoesService.js');
+        DependencyInjector.register('NotificacoesService', new NotificacoesService());
+
         // Registro de Services
         const { default: UserService } = await import('./modules/usuario/UserService.js');
         DependencyInjector.register('UserService', new UserService(
@@ -91,13 +101,14 @@ const loadDependencies = async () => {
 
         const { default: CategoriasService } = await import('./modules/categories/CategoriasService.js');
         DependencyInjector.register('CategoriasService', new CategoriasService(
-            DependencyInjector.get('CategoriasRepository')
+            DependencyInjector.get('CategoriasRepository'),
         ));
         console.log('CategoriasService registrado com sucesso.');
 
         const { default: GastoMesService } = await import('./modules/gastos/GastoMesService.js');
         DependencyInjector.register('GastoMesService', new GastoMesService(
-            DependencyInjector.get('GastoMesRepository')
+        DependencyInjector.get('GastoMesRepository'),
+        DependencyInjector.get('BarramentoEventos')
         ));
         console.log('GastoMesService registrado com sucesso.');
 
@@ -117,6 +128,22 @@ const loadDependencies = async () => {
             DependencyInjector.get('GastoMesService'),
             DependencyInjector.get('TransactionUtil')
         ));
+
+        // AlertasService (NOVO)
+        const { default: AlertasService } = await import('./modules/alertas/AlertasService.js');
+        DependencyInjector.register('AlertasService', new AlertasService(
+        DependencyInjector.get('AlertasRepository'),
+        DependencyInjector.get('NotificacoesService')
+        ));
+
+        // Registra listeners de domínio (gastos) (NOVO)
+        const { default: registrarListenersDeGastos } = await import('./modules/gastos/registrarListenersDeGastos.js');
+        registrarListenersDeGastos({
+        barramentoEventos: DependencyInjector.get('BarramentoEventos'),
+        gastoMesRepository: DependencyInjector.get('GastoMesRepository'),
+        alertasService: DependencyInjector.get('AlertasService'),
+        userRepository: DependencyInjector.get('UserRepository'),
+        });
        
         console.log('Todas as dependências foram registradas!');
     } catch (error) {

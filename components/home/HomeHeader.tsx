@@ -7,17 +7,12 @@ import { homeColors } from "@/styles/homeStyles";
 type Props = {
   firstName: string;
   perfil: string;
-  saldoLabel: string;
-  saldoValue: string;
   onSearchPress: () => void;
   onBellPress: () => void;
 };
 
 export default function HomeHeader({
   firstName,
-  perfil,
-  saldoLabel,
-  saldoValue,
   onSearchPress,
   onBellPress,
 }: Props) {
@@ -85,46 +80,6 @@ export default function HomeHeader({
         >
           <MaterialIcons name="notifications-none" size={20} color={homeColors.text} />
         </TouchableOpacity>
-      </View>
-
-      <View style={{
-        marginTop: 14,
-        borderRadius: 18,
-        padding: 14,
-        backgroundColor: "rgba(255,255,255,0.06)",
-        borderWidth: 1,
-        borderColor: "rgba(255,255,255,0.10)",
-      }}>
-        <Text style={{ color: homeColors.text3, fontWeight: "800", fontSize: 12 }}>
-          {saldoLabel}
-        </Text>
-        <Text style={{ color: homeColors.text, fontWeight: "900", fontSize: 28, marginTop: 6 }}>
-          {saldoValue}
-        </Text>
-
-        <View style={{ flexDirection: "row", gap: 10, marginTop: 10, flexWrap: "wrap" }}>
-          <View style={{
-            flexDirection: "row", alignItems: "center", gap: 6,
-            paddingVertical: 8, paddingHorizontal: 10,
-            borderRadius: 999,
-            backgroundColor: "rgba(255,255,255,0.06)",
-            borderWidth: 1, borderColor: "rgba(255,255,255,0.10)"
-          }}>
-            <MaterialIcons name="account-circle" size={16} color={homeColors.text2} />
-            <Text style={{ color: homeColors.text2, fontWeight: "800", fontSize: 12 }}>{perfil}</Text>
-          </View>
-
-          <View style={{
-            flexDirection: "row", alignItems: "center", gap: 6,
-            paddingVertical: 8, paddingHorizontal: 10,
-            borderRadius: 999,
-            backgroundColor: "rgba(255,255,255,0.06)",
-            borderWidth: 1, borderColor: "rgba(255,255,255,0.10)"
-          }}>
-            <MaterialIcons name="calendar-today" size={16} color={homeColors.text2} />
-            <Text style={{ color: homeColors.text2, fontWeight: "800", fontSize: 12 }}>Este mês</Text>
-          </View>
-        </View>
       </View>
     </LinearGradient>
   );

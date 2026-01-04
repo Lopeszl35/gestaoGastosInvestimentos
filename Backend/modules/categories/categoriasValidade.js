@@ -40,5 +40,22 @@ export const validateGetCategorias = [
     .isInt({ gt: 0 }).withMessage('Id do usuário deve ser um número inteiro positivo.')
     .notEmpty().withMessage('Id do usuário não pode ser vazio.'),
 
+    // opcionais
+    query("ano")
+      .optional()
+      .isInt({ min: 2000, max: 2100 }).withMessage("Ano inválido."),
+
+    query("mes")
+      .optional()
+      .isInt({ min: 1, max: 12 }).withMessage("Mês inválido."),
+
     handleValidation
 ];
+
+export const validateDeleteCategoria = [
+    query('id_categoria').exists().withMessage('Id da categoria obrigatório')
+    .isInt({ gt: 0 }).withMessage('Id da categoria deve ser um número inteiro positivo.')
+    .notEmpty().withMessage('Id da categoria não pode ser vazio.'),
+
+    handleValidation
+]

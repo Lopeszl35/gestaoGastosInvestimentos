@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useUser } from "@/context/UserContext";
 import { getCategorias } from "@/services/categoriasService";
+import { getLimiteGastoMes } from "@/services/GastosMesService";
 
 export function useGastosVariaveis() {
   const { user } = useUser();
@@ -9,7 +10,8 @@ export function useGastosVariaveis() {
   const [overlayLoading, setOverlayLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  const [configuracoesGastoMes, setConfiguracoesGastoMes] = useState<any>(null);
+  const [progressoMes, setProgressoMes] = useState<any>(null);
   const [categorias, setCategorias] = useState<any[]>([]);
   const [gastostotalMes, setGastosTotalMes] = useState(0);
   const [gastosLimiteMes, setGastosLimiteMes] = useState(0);
@@ -27,10 +29,6 @@ export function useGastosVariaveis() {
     [gastostotalMes, gastosLimiteMes]
   );
 
-  const progressoMes = useMemo(() => {
-    if (!gastosLimiteMes || gastosLimiteMes <= 0) return 0;
-    return Math.min(gastostotalMes / gastosLimiteMes, 1);
-  }, [gastostotalMes, gastosLimiteMes]);
 
   const fetchCategorias = useCallback(
   async (opts?: { showOverlay?: boolean }) => {
@@ -41,8 +39,11 @@ export function useGastosVariaveis() {
       if (showOverlay) setOverlayLoading(true);
 
       const data = await getCategorias(user?.id_usuario);
+      const idUsuario = user?.id_usuario;
+ 
 
       const categoriasArray = Array.isArray(data) ? data : [];
+      console.log("categoriasArray: ", categoriasArray);
       setCategorias(categoriasArray);
 
       if (categoriasArray.length === 0) {
@@ -51,12 +52,14 @@ export function useGastosVariaveis() {
         setError(null);
         return;
       }
+      const limiteGastosMes = await getLimiteGastoMes((Number(idUsuario)), new Date().getFullYear(), new Date().getMonth() + 1);
+      setConfiguracoesGastoMes(limiteGastosMes);
+      setProgressoMes(categoriasArray[0].percentualGastoCategoriaMes);
+      const limiteGastosNoMes = Number(limiteGastosMes.limite_gasto_mes) || 0;
+      const gastoTotalDoMes = Number(limiteGastosMes.gasto_atual_mes) || 0;
 
-      const limiteMes = Number(categoriasArray[0].limiteGastoMes) || 0;
-      const gastoMes = Number(categoriasArray[0].gastoAtualMes) || 0;
-
-      setGastosLimiteMes(Number.isFinite(limiteMes) ? limiteMes : 0);
-      setGastosTotalMes(Number.isFinite(gastoMes) ? gastoMes : 0);
+      setGastosLimiteMes(Number.isFinite(limiteGastosNoMes) ? limiteGastosNoMes : 0);
+      setGastosTotalMes(Number.isFinite(gastoTotalDoMes) ? gastoTotalDoMes : 0);
     } catch (e: any) {
       // ✅ timeout ou erro do fetch vão cair aqui
       setError(e?.message || "Erro ao buscar categorias.");
@@ -81,19 +84,6 @@ export function useGastosVariaveis() {
     fetchCategorias();
     }, [user?.id_usuario, fetchCategorias]);
 
-
-
-
-    useEffect(() => {
-    // Watchdog: se a API não responder, a tela não pode ficar presa no loader
-    const t = setTimeout(() => {
-        setInitialLoading(false);
-        // Se ainda não tem dados e não tem erro, assume indisponibilidade
-        setError((prev) => prev ?? "Servidor indisponível ou sem resposta (timeout).");
-    }, 1500); // 1.5s é suficiente pra você enxergar a tela
-
-    return () => clearTimeout(t);
-    }, []);
 
 
   const refresh = useCallback(async () => {

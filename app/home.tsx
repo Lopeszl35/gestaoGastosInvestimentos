@@ -145,8 +145,6 @@ const Home: React.FC = () => {
           <HomeHeader
             firstName={firstName}
             perfil={userData?.perfil_financeiro || "Perfil"}
-            saldoLabel="Saldo Total"
-            saldoValue={loading ? "Carregando..." : saldoFormatado}
             onSearchPress={() => alert("Em breve: busca global")}
             onBellPress={() => alert("Em breve: notificações")}
           />

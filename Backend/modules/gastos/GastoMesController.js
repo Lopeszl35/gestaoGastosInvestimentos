@@ -34,8 +34,6 @@ export default class GastoMesController {
     const { id_usuario, ano, mes } = req.query;
     try {
       const result = await this.GastoMesService.getLimiteGastosMes(id_usuario, ano, mes);
-      console.log("Resultado obtido na controller getGastoLimiteMes:", result);
-      
       if (result && result.code === "NAO_ENCONTRADO") {
         throw new NaoEncontrado(result.mensagem, 404);
       }
@@ -87,4 +85,15 @@ export default class GastoMesController {
       next(error);
     }
   }
+
+  async recalcularGastoAtualMes(req, res, next) {
+    const { id_usuario, ano, mes } = req.query;
+    try {
+      const result = await this.GastoMesService.recalcularGastoAtualMes(id_usuario, ano, mes);
+      return res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
 }

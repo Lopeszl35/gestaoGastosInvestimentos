@@ -10,7 +10,6 @@ class UserController {
   async createUser(req, res, next) {
     const user = req.body;
     try {
-      // Executa a lógica dentro de uma transação
       const response = await this.UserService.createUser(new UserPublicDTO(user));
       if (!response.insertId) {
             throw new Error('Erro ao criar o usuário: ' + JSON.stringify(response));

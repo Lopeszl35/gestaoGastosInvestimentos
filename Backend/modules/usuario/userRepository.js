@@ -6,6 +6,38 @@ class UserRepository {
         this.Database = Database;
     }
 
+    async diminuirSaldoAtual({ id_usuario, valor, connection }) {
+        const sql = `
+            UPDATE usuarios
+            SET saldo_atual = saldo_atual - ?
+            WHERE id_usuario = ?
+            AND saldo_atual >= ?;
+        `;
+
+        const params = [Number(valor), Number(id_usuario), Number(valor)];
+
+        try {
+            // ✅ com transação
+            if (connection) {
+            const [result] = await connection.query(sql, params);
+
+            if (result.affectedRows === 0) {
+                const erro = new Error("Saldo insuficiente para realizar o gasto.");
+                erro.code = "SALDO_INSUFICIENTE";
+                throw erro;
+            }
+
+            return { mensagem: "Saldo atualizado com sucesso." };
+            }
+
+            return { mensagem: "Saldo atualizado com sucesso." };
+        } catch (error) {
+            console.error("Erro no UserRepository.diminuirSaldoAtual:", error.message);
+            throw error;
+        }
+        }
+
+
     /**
      * Cria um usuário no banco de dados.
      * @param {Object} user - Dados do usuário a serem salvos.

@@ -6,7 +6,6 @@ export const getCategorias = async (idUsuario?: number): Promise<any> => {
         const response = await fetchWithToken(`getCategoriasAtivas/${idUsuario}`, {
             method: "GET",
         });
-        console.log("response: ", response);
 
         if (!response.ok) {
             const ErrorData = await response.json();

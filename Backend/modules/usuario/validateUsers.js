@@ -18,7 +18,7 @@ export const validateCreateUser = [
     .trim().exists({ checkFalsy: true }).withMessage('O email é obrigatório.')
     .isEmail().withMessage('O email deve ser um endereço de email válido.'),
 
-    body('senha')
+    body('senha_hash')
     .trim().exists({ checkFalsy: true }).withMessage('A senha é obrigatória.')
     .isLength({ min: 6 }).withMessage('A senha deve ter pelo menos 6 caracteres.')
     .isStrongPassword() .withMessage('A senha deve conter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma letra minúscula, um número e um caractere especial.'),
@@ -34,6 +34,10 @@ export const validateCreateUser = [
     body('saldo_inicial')
     .optional()
     .isFloat({ min: 0 }).withMessage('O saldo inicial deve ser um número positivo.'),
+
+    body('saldo_atual')
+    .optional()
+    .isFloat({ min: 0 }).withMessage('O saldo atual deve ser um número positivo.'),
 
     handleValidation
 ]

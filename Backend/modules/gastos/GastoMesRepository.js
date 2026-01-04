@@ -27,11 +27,8 @@ class GastoMesRepository {
         Number(mes),
         Number(limiteGastoMes),
       ];
-      console.log("Executando SQL com params:", params);
 
       const result = await connection.query(sql, params);
-
-      console.log("Result:", result);
 
       return {
         mensagem: "Configuração mensal salva com sucesso.",
@@ -46,11 +43,8 @@ class GastoMesRepository {
     }
   }
 
-  /**
-   * Retorna a configuração mensal atual do usuário (linha única).
-   */
-  async getLimiteGastosMes(id_usuario, ano, mes, connection) {
-    const conn = connection ?? this.database;
+
+  async getLimiteGastosMes(id_usuario, ano, mes) {
     try {
       const sql = `
         SELECT
@@ -63,17 +57,10 @@ class GastoMesRepository {
       `;
       
       const params = [(Number(id_usuario)), Number(ano), Number(mes)];
-      const rows = await conn.executaComando(sql, params);
-      if (!rows || rows.length === 0) {
-        return {
-          mensagem: "Nenhuma configuração de gasto mensal encontrada para o usuário neste mês/ano.",
-          code: "NAO_ENCONTRADO",
-          id_usuario: Number(id_usuario),
-          ano: Number(ano),
-          mes: Number(mes),
-        };
-      }
-      return rows?.[0] ?? null;
+      const rows = await this.database.executaComando(sql, params);
+      console.log("getLimiteGastosMesRows: ", rows);
+      return rows
+   
     } catch (error) {
       ErroSqlHandler.tratarErroSql(error);
       throw error;
@@ -107,14 +94,10 @@ class GastoMesRepository {
    * - Útil se você quiser "consertar" caso alguém mexa manualmente no banco
    * - Ou se você inserir gastos antigos e quiser garantir consistência
    */
-  async recalcularGastoAtualMes(id_usuario, connection) {
+  async recalcularGastoAtualMes(id_usuario, ano, mes, connection) {
     const conn = connection ?? this.database;
 
     try {
-      // Pega ano/mes configurados
-      const cfg = await this.getLimiteGastosMes(id_usuario, conn);
-      if (!cfg) return null;
-
       const sql = `
         UPDATE total_gastos_mes t
         JOIN (
@@ -133,19 +116,19 @@ class GastoMesRepository {
 
       const result = await conn.executaComando(sql, [
         Number(id_usuario),
-        Number(cfg.ano),
-        Number(cfg.mes),
+        Number(ano),
+        Number(mes),
         Number(id_usuario),
       ]);
 
       return {
         mensagem: "Gasto atual do mês recalculado.",
-        ano: cfg.ano,
-        mes: cfg.mes,
+        ano: ano,
+        mes: mes,
         result,
       };
     } catch (error) {
-      ErroSqlHandler.tratarErroSql(error);
+      
       throw error;
     }
   }
@@ -179,11 +162,6 @@ class GastoMesRepository {
       ORDER BY cg.nome, g.data_gasto, g.id_gasto;
     `;
 
-    // ⚠️ Repare: cg.id_usuario = ? precisa ser o último param
-    // mas params já começou com idUsuario. Então ajustamos:
-    // - coloco o WHERE cg.id_usuario = ? no final do SQL,
-    // - e passo o idUsuario no final do array.
-
     // Mais simples: reordenar params:
     const orderedParams =
       inicio && fim
@@ -199,19 +177,6 @@ class GastoMesRepository {
     }
   }
 
-  async getSaldoAtual(id_usuario, connection) {
-    try {
-      const sql = `
-        SELECT saldo_atual FROM usuarios WHERE id_usuario = ?
-      `;
-      const [result] = await connection.query(sql, [id_usuario]);
-      return result[0]?.saldo_atual || 0;
-    } catch (error) {
-      console.log("Erro no GastoMesRepository.getSaldoAtual:", error.message);
-      ErroSqlHandler.tratarErroSql(error);
-      throw error;
-    }
-  }
 
   async addGasto(gastos, id_usuario, connection) {
     const sql = `
@@ -243,6 +208,61 @@ class GastoMesRepository {
       throw error;
     }
   }
+
+    async getSaldoAtual(id_usuario, connection) {
+    const sql = `
+      SELECT saldo_atual
+      FROM usuarios
+      WHERE id_usuario = ?
+      LIMIT 1;
+    `;
+
+    try {
+      if (connection) {
+        const [rows] = await connection.query(sql, [Number(id_usuario)]);
+        const saldo = rows?.[0]?.saldo_atual ?? 0;
+        return Number(saldo);
+      }
+
+      const rows = await this.database.executaComando(sql, [Number(id_usuario)]);
+      const saldo = rows?.[0]?.saldo_atual ?? 0;
+      return Number(saldo);
+    } catch (error) {
+      ErroSqlHandler.tratarErroSql(error);
+      throw error;
+    }
+  }
+
+  /**
+   * Incrementa gasto_atual_mes em total_gastos_mes baseado na data do gasto.
+   * - Se não existir registro para (id_usuario, ano, mes), cria com limite_gasto_mes = 0.
+   */
+  async incrementarGastoAtualMes({ id_usuario, data_gasto, valor, connection }) {
+    const sql = `
+      INSERT INTO total_gastos_mes (id_usuario, ano, mes, limite_gasto_mes, gasto_atual_mes)
+      VALUES (?, YEAR(?), MONTH(?), 0.00, ?)
+      ON DUPLICATE KEY UPDATE
+        gasto_atual_mes = gasto_atual_mes + VALUES(gasto_atual_mes),
+        updated_at = CURRENT_TIMESTAMP;
+    `;
+
+    const params = [Number(id_usuario), data_gasto, data_gasto, Number(valor)];
+
+    try {
+      if (connection) {
+        await connection.query(sql, params);
+        return { mensagem: "Gasto do mês incrementado com sucesso." };
+      }
+
+      await this.database.executaComandoNonQuery(sql, params);
+      return { mensagem: "Gasto do mês incrementado com sucesso." };
+    } catch (error) {
+      ErroSqlHandler.tratarErroSql(error);
+      throw error;
+    }
+  }
+
+
 }
 
 export default GastoMesRepository;
