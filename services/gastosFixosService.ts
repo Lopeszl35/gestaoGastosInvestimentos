@@ -117,3 +117,43 @@ export const addGastoFixo = async (id_usuario: number, gastoFixo: any) => {
 
   return response.json();
 };
+
+export const toggleGastoFixoAtivo = async (
+  id_usuario: number,
+  id_gasto_fixo: number,
+  ativo: 0 | 1
+) => {
+  const response = await fetchWithToken(
+    `gastosFixos/${id_gasto_fixo}/ativo?id_usuario=${id_usuario}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ativo }),
+    }
+  );
+
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error(err.message || "Erro ao atualizar status do gasto fixo.");
+  }
+
+  // evita JSON parse error se vier vazio
+  const text = await response.text();
+  return text ? JSON.parse(text) : { mensagem: "Status atualizado com sucesso." };
+};
+
+export const getTelaGastosFixos = async (id_usuario: number) => {
+  const response = await fetchWithToken(`getTelaGastosFixos/${id_usuario}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error(err.message || "Erro ao buscar tela de gastos fixos.");
+  }
+
+  const text = await response.text();
+  return text ? JSON.parse(text) : { resumo: null, gastosPorCategoria: [], lista: [] };
+};
+

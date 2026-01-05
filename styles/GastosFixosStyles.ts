@@ -153,4 +153,143 @@ export const GastosFixosStyles = StyleSheet.create({
     backgroundColor: "#2BE080",
     marginLeft: 22,
   },
+
+    // linha 2 inputs do modal (pra não ficar inline)
+  row2: {
+    flexDirection: "row",
+    gap: 10,
+  },
+
+  // Switch OFF
+  switchOff: {
+    opacity: 0.8,
+    borderColor: "rgba(234,240,255,0.18)",
+    backgroundColor: "rgba(0,0,0,0.18)",
+    justifyContent: "center",
+  },
+
+  knobOff: {
+    alignSelf: "flex-start",
+    backgroundColor: "rgba(234,240,255,0.65)",
+  },
+
+  // Empty state
+  emptyBox: {
+    marginTop: 12,
+    padding: 16,
+    borderRadius: 16,
+    backgroundColor: "rgba(255,255,255,0.04)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.06)",
+  },
+  emptyText: {
+    color: "rgba(234,240,255,0.75)",
+    fontSize: 13,
+    fontWeight: "800",
+  },
+  emptyCta: {
+    marginTop: 10,
+    paddingVertical: 10,
+    borderRadius: 14,
+    backgroundColor: "#2BE080",
+    alignItems: "center",
+  },
+  emptyCtaText: {
+    fontWeight: "900",
+    color: "#0B1220",
+  },
+
+    // Campo select compacto (Categoria)
+  selectField: {
+    marginTop: 10,
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    backgroundColor: "rgba(255,255,255,0.04)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+
+  selectFieldValue: {
+    color: "#EAF0FF",
+    fontWeight: "900",
+    fontSize: 14,
+  },
+
+  selectFieldHint: {
+    marginTop: 4,
+    color: "rgba(234,240,255,0.55)",
+    fontWeight: "800",
+    fontSize: 12,
+  },
+
+  // Modal do picker
+  pickerOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.55)",
+    padding: 16,
+    justifyContent: "center",
+  },
+
+  pickerCard: {
+    borderRadius: 18,
+    backgroundColor: "#0F1A2E",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+    padding: 14,
+    maxHeight: "80%",
+  },
+
+  pickerHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255,255,255,0.06)",
+  },
+
+  pickerTitle: {
+    color: "#EAF0FF",
+    fontWeight: "900",
+    fontSize: 16,
+  },
+
+  pickerList: {
+    paddingTop: 12,
+    paddingBottom: 6,
+    gap: 10,
+  },
+
+  pickerItem: {
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    backgroundColor: "rgba(255,255,255,0.04)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.06)",
+  },
+
+  pickerItemActive: {
+    backgroundColor: "rgba(234,240,255,0.06)",
+    borderColor: "rgba(43,224,128,0.35)",
+  },
+
+  pickerItemTitle: {
+    color: "#EAF0FF",
+    fontWeight: "900",
+  },
+
+  pickerItemSub: {
+    marginTop: 4,
+    color: "rgba(234,240,255,0.60)",
+    fontSize: 12,
+    fontWeight: "800",
+  },
+
+  
+
 });

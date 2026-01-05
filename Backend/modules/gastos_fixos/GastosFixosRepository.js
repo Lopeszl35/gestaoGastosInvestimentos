@@ -153,4 +153,73 @@ export default class GastosFixosRepository {
     }
   }
 
+  async buscarGastoFixoPorIdEUsuario(id_gasto_fixo, id_usuario) {
+    try {
+      const sql = `
+        SELECT id_gasto_fixo, id_usuario, ativo
+        FROM gastos_fixos
+        WHERE id_gasto_fixo = ? AND id_usuario = ?
+        LIMIT 1
+      `;
+      const rows = await this.database.executaComando(sql, [Number(id_gasto_fixo), Number(id_usuario)]);
+      return Array.isArray(rows) && rows.length ? rows[0] : null;
+    } catch (error) {
+      ErroSqlHandler.tratarErroSql(error);
+      throw error;
+    }
+  }
+
+  async atualizarAtivoGastoFixo(id_gasto_fixo, id_usuario, ativo) {
+    try {
+      const sql = `
+        UPDATE gastos_fixos
+        SET ativo = ?
+        WHERE id_gasto_fixo = ? AND id_usuario = ?
+      `;
+      const result = await this.database.executaComando(sql, [
+        Number(ativo),
+        Number(id_gasto_fixo),
+        Number(id_usuario),
+      ]);
+
+      return result;
+    } catch (error) {
+      ErroSqlHandler.tratarErroSql(error);
+      throw error;
+    }
+  }
+
+  async obterGastosFixosPorCategoria(id_usuario) {
+    try {
+      const sql = `
+        SELECT
+          CASE
+            WHEN tipo IN ('luz','agua','telefone') THEN 'Utilidades'
+            WHEN tipo IN ('internet','assinatura') THEN 'Assinaturas'
+            ELSE 'Outros'
+          END AS categoria,
+          ROUND(SUM(
+            CASE recorrencia
+              WHEN 'mensal' THEN valor
+              WHEN 'bimestral' THEN valor / 2
+              WHEN 'trimestral' THEN valor / 3
+              WHEN 'anual' THEN valor / 12
+              ELSE valor
+            END
+          ), 2) AS total
+        FROM gastos_fixos
+        WHERE id_usuario = ?
+          AND ativo = 1
+        GROUP BY categoria
+        ORDER BY total DESC;
+      `;
+
+      const rows = await this.database.executaComando(sql, [Number(id_usuario)]);
+      return Array.isArray(rows) ? rows : [];
+    } catch (error) {
+      ErroSqlHandler.tratarErroSql(error);
+      throw error;
+    }
+  }
+
 }

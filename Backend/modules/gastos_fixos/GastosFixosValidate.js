@@ -82,3 +82,22 @@ export const validateGetGastosFixos = [
 
   handleValidation,
 ];
+
+export const validateToggleGastoFixoAtivo = [
+  param("id_gasto_fixo")
+    .exists({ checkFalsy: true }).withMessage("id_gasto_fixo é obrigatório.")
+    .bail()
+    .isInt({ gt: 0 }).withMessage("id_gasto_fixo deve ser um número inteiro positivo."),
+
+  query("id_usuario")
+    .exists({ checkFalsy: true }).withMessage("id_usuario é obrigatório.")
+    .bail()
+    .isInt({ gt: 0 }).withMessage("id_usuario deve ser um número inteiro positivo."),
+
+  body("ativo")
+    .exists({ checkFalsy: true }).withMessage("ativo é obrigatório.")
+    .bail()
+    .isInt({ min: 0, max: 1 }).withMessage("ativo deve ser 0 ou 1."),
+
+  handleValidation,
+];

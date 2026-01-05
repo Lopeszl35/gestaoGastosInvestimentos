@@ -43,4 +43,34 @@ export default class GastosFixosController {
       next(error);
     }
   }
+
+  async toggleAtivo(req, res, next) {
+    try {
+      const id_gasto_fixo = Number(req.params.id_gasto_fixo);
+      const id_usuario = Number(req.query.id_usuario);
+      const ativo = Number(req.body.ativo);
+
+      const result = await this.GastosFixosService.toggleAtivoGastoFixo(
+        id_gasto_fixo,
+        id_usuario,
+        ativo
+      );
+
+      return res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getTela(req, res, next) {
+    try {
+      const { id_usuario } = req.params;
+
+      const tela = await this.GastosFixosService.getTelaGastosFixos(Number(id_usuario));
+
+      return res.status(200).json(tela);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

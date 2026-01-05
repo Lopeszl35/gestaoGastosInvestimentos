@@ -135,6 +135,7 @@ export const ModaGlobalStyles = StyleSheet.create({
 
   buttonText: {
     fontWeight: "900",
+    textAlign: "center",
     color: "#0B1220",
   },
 
