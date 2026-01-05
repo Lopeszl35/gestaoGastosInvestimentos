@@ -81,6 +81,11 @@ const loadDependencies = async () => {
         DependencyInjector.register('CategoriasRepository', new CategoriasRepository(database));
         console.log('CategoriasRepository registrado com sucesso.');
 
+        const { default: GastosFixosRepository } = await import("./modules/gastos_fixos/GastosFixosRepository.js");
+        DependencyInjector.register("GastosFixosRepository", new GastosFixosRepository(database));
+        console.log("GastosFixosRepository registrado com sucesso.");
+
+
         const { default: GastoMesRepository } = await import('./modules/gastos/GastoMesRepository.js');
         DependencyInjector.register('GastoMesRepository', new GastoMesRepository(database));
         console.log('GastoMesRepository registrado com sucesso.');
@@ -112,6 +117,13 @@ const loadDependencies = async () => {
         ));
         console.log('GastoMesService registrado com sucesso.');
 
+        const { default: GastosFixosService } = await import("./modules/gastos_fixos/GastosFixosService.js");
+        DependencyInjector.register("GastosFixosService", new GastosFixosService(
+        DependencyInjector.get("GastosFixosRepository")
+        ));
+        console.log("GastosFixosService registrado com sucesso.");
+
+
         // Registro de controllers
         const { default: UserController } = await import('./modules/usuario/userController.js');
         DependencyInjector.register('UserController', new UserController(
@@ -128,6 +140,13 @@ const loadDependencies = async () => {
             DependencyInjector.get('GastoMesService'),
             DependencyInjector.get('TransactionUtil')
         ));
+
+        const { default: GastosFixosController } = await import("./modules/gastos_fixos/GastosFixosController.js");
+        DependencyInjector.register("GastosFixosController", new GastosFixosController(
+        DependencyInjector.get("GastosFixosService")
+        ));
+        console.log("GastosFixosController registrado com sucesso.");
+
 
         // AlertasService (NOVO)
         const { default: AlertasService } = await import('./modules/alertas/AlertasService.js');
@@ -171,10 +190,15 @@ const initializeServer = async () => {
         const { default: GastoMesRoutes } = await import('./modules/gastos/GastoMesRoutes.js');
         const gastoMesController = DependencyInjector.get('GastoMesController');
 
+        const { default: GastosFixosRoutes } = await import("./modules/gastos_fixos/GastosFixosRoutes.js");
+        const gastosFixosController = DependencyInjector.get("GastosFixosController");
+
+
         
         app.use(CategoriasRoutes(categoriasController));
         app.use(UserRoutes(userController));
         app.use(GastoMesRoutes(gastoMesController));
+        app.use(GastosFixosRoutes(gastosFixosController));
         app.use(manipulador404);
         app.use(manipuladorDeErros);
         console.log('Rotas carregadas com sucesso!');

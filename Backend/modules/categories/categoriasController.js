@@ -59,11 +59,13 @@ class CategoriasController {
 
   async deleteCategoria(req, res, next) {
     const { id_categoria } = req.query;
+    const dataAtual = new Date();
     try {
       await this.TransactionUtil.executeTransaction(
         async (connection) => {
           return await this.CategoriasService.deleteCategoria(
             id_categoria,
+            dataAtual,
             connection
           );
         }
@@ -83,6 +85,40 @@ class CategoriasController {
     try {
       const result = await this.CategoriasService.getCategoriasAtivas(id_usuario);
       res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getCategoriasInativas(req, res, next) {
+    const { id_usuario } = req.params;
+    try {
+      const result = await this.CategoriasService.getCategoriasInativas(id_usuario);
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async reativarCategoria(req, res, next) {
+    const { id_categoria } = req.params;
+    const { id_usuario } = req.query;
+
+    try {
+      const result = await this.TransactionUtil.executeTransaction(
+        async (connection) => {
+          return await this.CategoriasService.reativarCategoria(
+            id_categoria,
+            id_usuario,
+            connection
+          );
+        }
+      )
+      console.log('result: ', result);
+      res.status(200).json({
+        message: "Categoria reativada com sucesso",
+        status: 200,
+      });
     } catch (error) {
       next(error);
     }

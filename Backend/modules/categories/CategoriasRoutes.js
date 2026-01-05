@@ -18,8 +18,16 @@ export default (categoriasController) => {
     categoriasController.getCategoriasAtivas(req, res, next);
   });
 
+  router.get("/getCategoriasInativas/:id_usuario", (req, res, next) => {
+    categoriasController.getCategoriasInativas(req, res, next);
+  });
+
   router.delete("/deleteCategorias", validateDeleteCategoria, (req, res, next) => {
     categoriasController.deleteCategoria(req, res, next);
+  });
+
+  router.patch("/categorias/:id_categoria/reativar", (req, res, next) => {
+    categoriasController.reativarCategoria(req, res, next);
   });
 
   router.patch("/updateCategoria", (req, res, next) => {

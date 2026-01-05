@@ -96,22 +96,58 @@ export default class CategoriasRepository {
     }
   }
 
-  async deleteCategoria(id_categoria, connection) {
+  async deleteCategoria(id_categoria, dataAtual, connection) {
     const sql = `
             UPDATE categorias_gastos 
-            SET ativo = 0 
+            SET ativo = 0,inativado_em = ?
             WHERE id_categoria = ?;
         `;
-    const params = [id_categoria];
+    const params = [dataAtual, id_categoria];
     try {
       const result = await connection.query(sql, params);
       return result;
     } catch (error) {
       console.error("Erro no CategoriasRepository.deleteCategoria:", error.message);
+      
+      throw error;
+    }
+  }
+
+  async getCategoriasInativas(id_usuario) {
+    const sql = `
+            SELECT * 
+            FROM categorias_gastos 
+            WHERE id_usuario = ? 
+            AND ativo = 0;
+        `;
+    const params = [id_usuario];
+    try {
+      const result = await this.database.executaComando(sql, params);
+      return result;
+    } catch (error) {
+      console.error("Erro no CategoriasRepository.getCategoriasInativas:", error.message);
       ErroSqlHandler.tratarErroSql(error);
       throw error;
     }
   }
 
+  async reativarCategoria(id_categoria, id_usuario, connection) {
+    console.log('idUsuario e idCategoria: ', id_categoria, id_usuario);
+    const sql = `
+            UPDATE categorias_gastos 
+            SET ativo = 1 
+            WHERE id_categoria = ? 
+            AND id_usuario = ?;
+        `;
+    const params = [id_categoria, id_usuario];
+    try {
+      const result = await connection.query(sql, params);
+      return result;
+    } catch (error) {
+      console.error("Erro no CategoriasRepository.reativarCategoria:", error.message);
+      ErroSqlHandler.tratarErroSql(error);
+      throw error;
+    }
+  }
   
 }

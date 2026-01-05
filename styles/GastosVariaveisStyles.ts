@@ -24,6 +24,25 @@ export const gvStyles = StyleSheet.create({
     ...shadow,
   },
 
+    inativasBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    backgroundColor: "rgba(255,255,255,0.04)",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.08)",
+  },
+
+  inativasBtnText: {
+    color: "#EAF0FF",
+    fontWeight: "900",
+    fontSize: 12,
+  },
+
+
   headerTopRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   headerTitle: { color: "#EAF0FF", fontSize: 18, fontWeight: "900" },
   headerSub: { color: "rgba(234,240,255,0.70)", marginTop: 2, fontSize: 12 },
@@ -102,4 +121,42 @@ export const gvStyles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.06)",
   },
   emptyText: { color: "rgba(234,240,255,0.75)", fontSize: 13 },
+
+    // ==========================
+  // Variantes de status (OK / ATENÇÃO / ESTOURADO)
+  // ==========================
+  cardOk: {},
+
+  cardWarn: {
+    borderColor: "rgba(234, 179, 8, 0.35)", // amarelo
+    backgroundColor: "rgba(234, 179, 8, 0.06)",
+  },
+
+  cardDanger: {
+    borderColor: "rgba(248, 113, 113, 0.40)", // vermelho
+    backgroundColor: "rgba(248, 113, 113, 0.06)",
+  },
+
+  pillOk: {
+    backgroundColor: "rgba(43,224,128,0.14)",
+    borderColor: "rgba(43,224,128,0.30)",
+  },
+  pillWarn: {
+    backgroundColor: "rgba(234,179,8,0.14)",
+    borderColor: "rgba(234,179,8,0.35)",
+  },
+  pillDanger: {
+    backgroundColor: "rgba(248,113,113,0.14)",
+    borderColor: "rgba(248,113,113,0.35)",
+  },
+
+  pillTextOk: { color: "#2BE080" },
+  pillTextWarn: { color: "#EAB308" },
+  pillTextDanger: { color: "#F87171" },
+
+  progressBarFillOk: { backgroundColor: "#2BE080" },
+  progressBarFillWarn: { backgroundColor: "#EAB308" },
+  progressBarFillDanger: { backgroundColor: "#F87171" },
+
+
 });

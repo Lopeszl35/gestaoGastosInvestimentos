@@ -44,12 +44,32 @@ export default class CategoriasService {
         }
     }
 
-    async deleteCategoria(id_categoria, connection) {
+    async deleteCategoria(id_categoria, dataAtual, connection) {
         try {
-            const result = await this.CategoriasRepository.deleteCategoria(id_categoria, connection);
+            const result = await this.CategoriasRepository.deleteCategoria(id_categoria, dataAtual, connection);
             return result;
         } catch (error) {
             console.log("Erro ao deletar categoria no service:", error.message);
+            throw error;
+        }
+    }
+
+    async getCategoriasInativas(id_usuario) {
+        try {
+            const result = await this.CategoriasRepository.getCategoriasInativas(id_usuario);
+            return result;
+        } catch (error) {
+            console.log("Erro ao buscar categorias inativas no service:", error.message);
+            throw error;
+        }
+    }
+
+    async reativarCategoria(id_categoria, id_usuario, connection) {
+        try {
+            const result = await this.CategoriasRepository.reativarCategoria(id_categoria, id_usuario, connection);
+            return result;
+        } catch (error) {
+            console.log("Erro ao reativar categoria no service:", error.message);
             throw error;
         }
     }

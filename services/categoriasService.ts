@@ -111,3 +111,47 @@ export const updateCategoria =  async (categoria: any, id_categoria: number): Pr
         throw new Error(error.message || "Erro ao atualizar categoria.");
     }
 }
+
+async function safeParseJson(response: Response) {
+  const text = await response.text();
+  if (!text) return null;
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
+}
+
+function extractErrorMessage(payload: any) {
+  if (!payload) return "Erro na requisição.";
+  if (typeof payload === "string") return payload;
+  return payload.message || payload.error || "Erro na requisição.";
+}
+
+export async function getCategoriasInativas(id_usuario: number): Promise<any[]> {
+  const res = await fetchWithToken(`getCategoriasInativas/${id_usuario}`, {
+    method: "GET",
+  });
+
+  const payload = await safeParseJson(res);
+
+  if (!res.ok) {
+    throw new Error(extractErrorMessage(payload));
+  }
+
+  return Array.isArray(payload) ? payload : [];
+}
+
+export async function reativarCategoria(id_categoria: number, id_usuario: number): Promise<any> {
+  const res = await fetchWithToken(`categorias/${id_categoria}/reativar?id_usuario=${id_usuario}`, {
+    method: "PATCH",
+  });
+
+  const payload = await safeParseJson(res);
+
+  if (!res.ok) {
+    throw new Error(extractErrorMessage(payload));
+  }
+
+  return payload;
+}

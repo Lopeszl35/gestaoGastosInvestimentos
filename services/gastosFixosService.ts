@@ -96,9 +96,24 @@ export async function getGastosFixosData(id_usuario: number) {
 
   // 🔌 Backend futuro:
   const res = await fetchWithToken(
-    `gastos-fixos/dashboard?id_usuario=${id_usuario}`,
+    `/getResumoGastosFixos/${id_usuario}`,
     { method: "GET" }
   );
   if (!res.ok) throw new Error("Erro ao carregar gastos fixos.");
   return res.json();
 }
+
+export const addGastoFixo = async (id_usuario: number, gastoFixo: any) => {
+  const response = await fetchWithToken(`addGastoFixo?id_usuario=${id_usuario}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ gastoFixo }),
+  });
+
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error(err.message || "Erro ao criar gasto fixo.");
+  }
+
+  return response.json();
+};

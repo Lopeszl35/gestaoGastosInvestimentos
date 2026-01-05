@@ -15,6 +15,7 @@ import ConfigGastoMesModal from "@/components/ConfigGastoMesModal";
 import ConfigGastoCategoriaModal from "@/components/ConfigGastoCategoriaModal";
 import AddGastosModal from "@/components/addGastosModal";
 import ConfirmDelete from "@/components/ConfirmDelete";
+import CategoriasInativasModal from "@/components/CategoriasInativasModal";
 import { gvStyles } from "@/styles/GastosVariaveisStyles";
 import { useGastosVariaveis } from "@/hooks/useGastosVariaveis";
 
@@ -58,6 +59,8 @@ const GastosVariaveis: React.FC = () => {
     useState(false);
   const [showModalAddGastos, setShowModalAddGastos] = useState(false);
   const [showModalConfirmDelete, setShowModalConfirmDelete] = useState(false);
+  const [showModalCategoriasInativas, setShowModalCategoriasInativas] = useState(false);
+
 
   const saldoMesText = useMemo(
     () =>
@@ -262,12 +265,22 @@ const GastosVariaveis: React.FC = () => {
 
               <View style={gvStyles.sectionHeaderRow}>
                 <Text style={gvStyles.sectionTitle}>Categorias</Text>
-                <TouchableOpacity
-                  onPress={() => setShowModalAddCategoria(true)}
-                >
-                  <Text style={gvStyles.sectionAction}>+ Nova</Text>
-                </TouchableOpacity>
+
+                <View style={{ flexDirection: "row", gap: 10 }}>
+                  <TouchableOpacity
+                    onPress={() => setShowModalCategoriasInativas(true)}
+                    style={gvStyles.inativasBtn}
+                  >
+                    <MaterialIcons name="visibility" size={18} color="#EAF0FF" />
+                    <Text style={gvStyles.inativasBtnText}>Inativas</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity onPress={() => setShowModalAddCategoria(true)}>
+                    <Text style={gvStyles.sectionAction}>+ Nova</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
+
 
               {categorias.length === 0 && (
                 <View style={gvStyles.emptyBox}>
@@ -283,7 +296,53 @@ const GastosVariaveis: React.FC = () => {
             const limite = Number(item.limite || 0);
             const totalMes = Number(item.totalGastoCategoriaMes || 0);
 
-            const pct = limite > 0 ? Math.min(totalMes / limite, 1) : 0;
+            // ✅ percentual vindo do backend (ex: "86.43")
+            const backendPct = Number.parseFloat(String(item.percentualGastoCategoriaMes ?? ""));
+
+            // fallback se vier null/NaN
+            const ratioFallback = limite > 0 ? totalMes / limite : 0;
+
+            // ratio REAL (pode passar de 1)
+            const ratio = Number.isFinite(backendPct) ? backendPct / 100 : ratioFallback;
+
+            // pct para barra (0..1)
+            const pct = limite > 0 ? Math.min(ratio, 1) : 0;
+
+            // label pode passar de 100%
+            const pctLabel = limite > 0 ? Math.round(ratio * 100) : 0;
+
+            // status visual
+            const status: "ok" | "warn" | "danger" =
+              limite <= 0 ? "ok" : ratio >= 1 ? "danger" : ratio >= 0.8 ? "warn" : "ok";
+
+            const pillStyle =
+              status === "danger"
+                ? gvStyles.pillDanger
+                : status === "warn"
+                ? gvStyles.pillWarn
+                : gvStyles.pillOk;
+
+            const pillTextStyle =
+              status === "danger"
+                ? gvStyles.pillTextDanger
+                : status === "warn"
+                ? gvStyles.pillTextWarn
+                : gvStyles.pillTextOk;
+
+            const cardStatusStyle =
+              status === "danger"
+                ? gvStyles.cardDanger
+                : status === "warn"
+                ? gvStyles.cardWarn
+                : gvStyles.cardOk;
+
+            const progressFillStyle =
+              status === "danger"
+                ? gvStyles.progressBarFillDanger
+                : status === "warn"
+                ? gvStyles.progressBarFillWarn
+                : gvStyles.progressBarFillOk;
+
 
             return (
               <TouchableOpacity
@@ -300,7 +359,7 @@ const GastosVariaveis: React.FC = () => {
                 <View style={gvStyles.cardRow}>
                   <Text style={gvStyles.cardTitle}>{item.nome}</Text>
                   <View style={gvStyles.pill}>
-                    <Text style={gvStyles.pillText}>
+                    <Text style={[gvStyles.pillText, pillTextStyle]}>
                       {Math.round(pct * 100)}%
                     </Text>
                   </View>
@@ -316,6 +375,7 @@ const GastosVariaveis: React.FC = () => {
                     <View
                       style={[
                         gvStyles.progressBarFill,
+                        progressFillStyle,
                         { width: `${pct * 100}%` },
                       ]}
                     />
@@ -409,6 +469,16 @@ const GastosVariaveis: React.FC = () => {
           nomeCategoria={categoriaSelecionada?.nome || ""}
           idCategoria={categoriaSelecionada?.id_categoria || 0}
         />
+
+        <CategoriasInativasModal
+          visible={showModalCategoriasInativas}
+          onClose={() => setShowModalCategoriasInativas(false)}
+          idUsuario={user!.id_usuario}
+          onReativado={async () => {
+            await fetchCategorias({ showOverlay: true });
+          }}
+        />
+
 
         <ConfirmDelete
           visible={showModalConfirmDelete}
