@@ -45,4 +45,29 @@ export class CartoesController {
       return next(erro);
     }
   }
+
+  async criarLancamento(req, res, next) {
+    try {
+        const idUsuario = Number(req.params.id_usuario);
+        const uuidCartao = String(req.params.cartao_uuid);
+
+        const resultado = await this.cartoesService.criarLancamentoCartao({
+        idUsuario,
+        uuidCartao,
+        dadosLancamento: {
+            descricao: req.body.descricao,
+            categoria: req.body.categoria,
+            valorTotal: req.body.valorTotal,
+            dataCompra: req.body.dataCompra,
+            parcelado: req.body.parcelado,
+            numeroParcelas: req.body.numeroParcelas,
+        },
+        });
+
+        return res.status(201).json(resultado);
+    } catch (erro) {
+        return next(erro);
+    }
+    }
+
 }
