@@ -1,8 +1,5 @@
 export const EVENTO_GASTO_INSERIDO = "GASTO_INSERIDO";
 
-/**
- * Mantém o addGasto “limpo” e joga efeitos colaterais em listeners.
- */
 export default function registrarListenersDeGastos({
   barramentoEventos,
   gastoMesRepository,

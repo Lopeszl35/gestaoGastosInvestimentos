@@ -61,6 +61,12 @@ const loadDependencies = async () => {
         const database = Database.getInstance();
         DependencyInjector.register('Database', database);
 
+        const { testarConexaoSequelize } = await import("./database/sequelize.js");
+        const { configurarRelacionamentosModelos } = await import("./database/models/index.js");
+
+        await testarConexaoSequelize();
+        configurarRelacionamentosModelos();
+
         console.log('Database registrado com sucesso.');
 
         // Registra TransactionUtil
@@ -71,6 +77,32 @@ const loadDependencies = async () => {
         const { default: BarramentoEventos } = await import('./utils/BarramentoEventos.js');
         DependencyInjector.register('BarramentoEventos', new BarramentoEventos());
         console.log('BarramentoEventos registrado com sucesso.');
+
+        // Registro de cartoes
+        const { CartoesRepositorioORM } = await import("./modules/cartoes/repositories/CartoesRepositorioORM.js");
+        const { CartaoFaturasRepositorioORM } = await import("./modules/cartoes/repositories/CartaoFaturasRepositorioORM.js");
+        const { CartaoLancamentosRepositorioORM } = await import("./modules/cartoes/repositories/CartaoLancamentosRepositorioORM.js");
+        const { CartoesService } = await import("./modules/cartoes/CartoesService.js");
+        const { CartoesController } = await import("./modules/cartoes/CartoesController.js");
+
+        DependencyInjector.register("CartoesRepositorioORM", new CartoesRepositorioORM());
+        DependencyInjector.register("CartaoFaturasRepositorioORM", new CartaoFaturasRepositorioORM());
+        DependencyInjector.register("CartaoLancamentosRepositorioORM", new CartaoLancamentosRepositorioORM());
+
+        DependencyInjector.register(
+        "CartoesService",
+        new CartoesService({
+            cartoesRepositorio: DependencyInjector.get("CartoesRepositorioORM"),
+            faturasRepositorio: DependencyInjector.get("CartaoFaturasRepositorioORM"),
+            lancamentosRepositorio: DependencyInjector.get("CartaoLancamentosRepositorioORM"),
+        })
+        );
+
+        DependencyInjector.register(
+        "CartoesController",
+        new CartoesController(DependencyInjector.get("CartoesService"))
+        );
+
 
         // Registro de repositórios
         const { default: UserRepository } = await import('./modules/usuario/userRepository.js');
@@ -193,12 +225,16 @@ const initializeServer = async () => {
         const { default: GastosFixosRoutes } = await import("./modules/gastos_fixos/GastosFixosRoutes.js");
         const gastosFixosController = DependencyInjector.get("GastosFixosController");
 
+        const { default: CartoesRoutes } = await import("./modules/cartoes/CartoesRoutes.js");
+        const cartoesController = DependencyInjector.get("CartoesController")
+
 
         
         app.use(CategoriasRoutes(categoriasController));
         app.use(UserRoutes(userController));
         app.use(GastoMesRoutes(gastoMesController));
         app.use(GastosFixosRoutes(gastosFixosController));
+        app.use('api/', CartoesRoutes(DependencyInjector.get("CartoesController")));
         app.use(manipulador404);
         app.use(manipuladorDeErros);
         console.log('Rotas carregadas com sucesso!');
