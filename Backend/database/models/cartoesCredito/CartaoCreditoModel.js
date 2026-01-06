@@ -16,7 +16,7 @@ CartaoCreditoModel.init(
       field: "id_usuario",
       allowNull: false,
     },
-    uuid: {
+    uuid_cartao: {
       type: DataTypes.CHAR(36),
       field: "uuid",
       allowNull: false,

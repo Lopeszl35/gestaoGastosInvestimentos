@@ -1,0 +1,1 @@
+ALTER TABLE cartoes_credito ADD COLUMN uuid_cartao CHAR(36) NULL AFTER id_cartao, ADD COLUMN ultimos4 CHAR(4) NULL AFTER bandeira, ADD COLUMN cor_hex CHAR(7) NULL AFTER ultimos4; UPDATE cartoes_credito SET uuid_cartao = UUID() WHERE uuid_cartao IS NULL; ALTER TABLE cartoes_credito MODIFY uuid_cartao CHAR(36) NOT NULL, ADD UNIQUE KEY uq_cartoes_credito_uuid (uuid_cartao);
