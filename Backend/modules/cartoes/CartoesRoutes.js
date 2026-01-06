@@ -19,5 +19,12 @@ export default function CartoesRoutes(cartoesController) {
     (req, res, next) => cartoesController.criarCartao(req, res, next)
   );
 
+  // rota para ensirir gastos
+  router.post(
+  "/cartoes/:id_usuario/:cartao_uuid/lancamentos",
+  criarLancamentoCartaoValidate,
+  (req, res, next) => cartoesController.criarLancamento(req, res, next)
+);
+
   return router;
 }

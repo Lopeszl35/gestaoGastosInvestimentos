@@ -1,5 +1,6 @@
 import { sequelize } from "../../database/sequelize.js";
 import { CartaoCreditoEntity } from "./domain/CartaoCreditoEntity.js";
+import { CartaoLancamentoEntity } from "./domain/CartaoLancamentoEntity.js"
 import naoEncontrado from "../../errors/naoEncontrado.js";
 import crypto from "crypto";
 
@@ -206,8 +207,6 @@ export class CartoesService {
   }
 
   async criarCartaoCredito({ idUsuario, dadosCartao }) {
-    
-
     const uuidCartao = crypto.randomUUID();
 
     const entidade = new CartaoCreditoEntity({
@@ -251,5 +250,63 @@ export class CartoesService {
       ativo: Boolean(criadoModel.ativo),
     };
   } 
+
+  async criarLancamentoCartao({ idUsuario, uuidCartao, dadosLancamento }) {
+    const cartaoModel = await this.cartoesRepositorio.buscarCartaoPorUuidEUsuario(uuidCartao, idUsuario);
+
+    if (!cartaoModel) throw new naoEncontrado("Cartão não encontrado.");
+    if (!cartaoModel.ativo) throw new naoEncontrado("Cartão inativo.");
+
+    const entidade = new CartaoLancamentoEntity({
+        descricao: dadosLancamento.descricao,
+        categoria: dadosLancamento.categoria,
+        valorTotal: dadosLancamento.valorTotal,
+        dataCompra: dadosLancamento.dataCompra,
+        parcelado: dadosLancamento.parcelado,
+        numeroParcelas: dadosLancamento.numeroParcelas,
+        diaFechamento: cartaoModel.diaFechamento,
+    });
+
+    const resultado = await sequelize.transaction(async (transaction) => {
+        const lancamentoModel = await this.lancamentosRepositorio.criarLancamentoCartao({
+        idUsuario,
+        idCartao: cartaoModel.idCartao,
+        descricao: entidade.descricao,
+        categoria: entidade.categoria,
+        valorTotal: entidade.valorTotal,
+        numeroParcelas: entidade.numeroParcelas,
+        valorParcela: entidade.valorParcela,
+        dataCompra: entidade.dataCompra,
+        primeiroMesRef: entidade.primeiroMesRef,
+        transaction,
+        });
+
+        for (const { ano, mes } of entidade.mesesImpactados) {
+        await this.faturasRepositorio.upsertSomarTotalLancamentos({
+            idUsuario,
+            idCartao: cartaoModel.idCartao,
+            ano,
+            mes,
+            valorSomar: entidade.valorParcela,
+            transaction,
+        });
+        }
+
+        return lancamentoModel;
+    });
+
+    return {
+        idLancamento: resultado.idLancamento,
+        cartaoUuid: uuidCartao,
+        descricao: resultado.descricao,
+        categoria: resultado.categoria,
+        valorTotal: Number(resultado.valorTotal),
+        numeroParcelas: resultado.numeroParcelas,
+        valorParcela: Number(resultado.valorParcela),
+        dataCompra: resultado.dataCompra,
+        primeiroMesRef: resultado.primeiroMesRef,
+    };
+    }
+
 
 }

@@ -28,4 +28,73 @@ export class CartaoLancamentosRepositorioORM {
       order: [["data_compra", "DESC"]],
     });
   }
+
+  /**
+   * Cria um lançamento (à vista ou parcelado) na tabela cartao_lancamentos.
+   * OBS: Aqui não é lugar de regra de negócio — isso já veio calculado da Entity (valorParcela, primeiroMesRef, etc).
+   */
+  async criarLancamentoCartao({
+    idUsuario,
+    idCartao,
+    descricao,
+    categoria,
+    valorTotal,
+    numeroParcelas,
+    valorParcela,
+    dataCompra,
+    primeiroMesRef,
+    transaction,
+  }) {
+    return CartaoLancamentoModel.create(
+      {
+        idUsuario,
+        idCartao,
+        descricao,
+        categoria: categoria ?? null,
+        valorTotal,
+        numeroParcelas,
+        valorParcela,
+        dataCompra,
+        primeiroMesRef,
+        parcelasPagas: 0,
+        ativo: true,
+      },
+      { transaction }
+    );
+  }
+
+   /**
+   * Cria um lançamento (à vista ou parcelado) na tabela cartao_lancamentos.
+   * OBS: Aqui não é lugar de regra de negócio — isso já veio calculado da Entity (valorParcela, primeiroMesRef, etc).
+   */
+  async criarLancamentoCartao({
+    idUsuario,
+    idCartao,
+    descricao,
+    categoria,
+    valorTotal,
+    numeroParcelas,
+    valorParcela,
+    dataCompra,
+    primeiroMesRef,
+    transaction,
+  }) {
+    return CartaoLancamentoModel.create(
+      {
+        idUsuario,
+        idCartao,
+        descricao,
+        categoria: categoria ?? null,
+        valorTotal,
+        numeroParcelas,
+        valorParcela,
+        dataCompra,
+        primeiroMesRef,
+        parcelasPagas: 0,
+        ativo: true,
+      },
+      { transaction }
+    );
+  }
+
 }
