@@ -13,6 +13,8 @@ export default function manipuladorDeErros(err, req, res, next) {
         });
     } 
 
+    
+
     // Erro desconhecido (programming error / bug / lib)
     console.error('Erro não tratado:', err);
 

@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../../sequelize.js";
+import { v4 as uuidv4 } from "uuid";
 
 export class CartaoCreditoModel extends Model {}
 
@@ -18,8 +19,11 @@ CartaoCreditoModel.init(
     },
     uuid_cartao: {
       type: DataTypes.CHAR(36),
-      field: "uuid",
+      field: "uuid_cartao",
       allowNull: false,
+      unique: true,
+      defaultValue: () => uuidv4(),
+
     },
     nome: {
       type: DataTypes.STRING(80),
@@ -28,7 +32,7 @@ CartaoCreditoModel.init(
     },
     ultimos4: {
       type: DataTypes.CHAR(4),
-      field: "ultimos_4",
+      field: "ultimos4",
       allowNull: true,
     },
     bandeira: {

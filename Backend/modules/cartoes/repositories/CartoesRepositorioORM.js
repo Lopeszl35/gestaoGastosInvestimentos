@@ -10,7 +10,7 @@ export class CartoesRepositorioORM {
 
   async buscarCartaoPorUuidEUsuario(uuidCartao, idUsuario) {
     return CartaoCreditoModel.findOne({
-      where: { uuid: uuidCartao, idUsuario, ativo: true },
+      where: { uuid_cartao: uuidCartao, idUsuario, ativo: true },
     });
   }
 

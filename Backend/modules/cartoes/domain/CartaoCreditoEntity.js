@@ -1,8 +1,8 @@
 import RequisicaoIncorreta from "../../../errors/RequisicaoIncorreta.js";
 
 export class CartaoCreditoEntity {
-  constructor({ uuid, nome, bandeira, ultimos4, corHex, limite, diaFechamento, diaVencimento, ativo = true }) {
-    this.uuid = uuid;
+  constructor({ uuid_cartao, nome, bandeira, ultimos4, corHex, limite, diaFechamento, diaVencimento, ativo = true }) {
+    this.uuid_cartao = uuid_cartao;
     this.nome = nome;
     this.bandeira = bandeira;
     this.ultimos4 = ultimos4;

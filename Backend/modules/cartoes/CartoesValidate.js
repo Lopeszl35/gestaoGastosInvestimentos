@@ -1,4 +1,4 @@
-import { param, query, validationResult } from "express-validator";
+import { param, query, body, validationResult } from "express-validator";
 import ErroValidacao from "../../errors/ValidationError.js";
 
 function validarRequisicao(req, res, next) {
@@ -30,7 +30,9 @@ export const obterVisaoGeralCartoesValidate = [
     .withMessage("O mês deve estar entre 1 e 12."),
 
   query("cartao_uuid")
-    .optional()
+    .notEmpty()
+    .exists()
+    .withMessage("O cartao_uuid é obrigatório.")
     .isUUID()
     .withMessage("cartao_uuid deve ser um UUID válido."),
 
@@ -74,3 +76,51 @@ export const criarCartaoCreditoValidate = [
 
   validarRequisicao,
 ];
+
+export const criarLancamentoCartaoValidate = [
+  param("id_usuario").notEmpty().isInt({ min: 1 }).withMessage("id_usuario inválido."),
+  param("cartao_uuid").notEmpty().isUUID().withMessage("cartao_uuid inválido."),
+
+  body("descricao")
+    .notEmpty()
+    .isString()
+    .isLength({ min: 2, max: 255 })
+    .withMessage("descricao inválida."),
+
+  body("categoria")
+    .optional({ nullable: true })
+    .isString()
+    .isLength({ max: 80 })
+    .withMessage("categoria inválida."),
+
+  body("valorTotal")
+    .notEmpty()
+    .isFloat({ min: 0.01 })
+    .withMessage("valorTotal inválido."),
+
+  body("dataCompra")
+    .notEmpty()
+    .isISO8601()
+    .withMessage("dataCompra inválida (use YYYY-MM-DD)."),
+
+  body("parcelado")
+    .notEmpty()
+    .isBoolean()
+    .withMessage("parcelado inválido (true/false)."),
+
+  body("numeroParcelas")
+    .custom((value, { req }) => {
+      const parcelado = req.body.parcelado === true || req.body.parcelado === "true";
+
+      if (!parcelado) return true; // à vista: não precisa informar, o back força 1
+
+      const n = Number(value);
+      if (!Number.isInteger(n) || n < 2 || n > 60) {
+        throw new Error("numeroParcelas inválido (quando parcelado=true, mínimo 2 e máximo 60).");
+      }
+      return true;
+    }),
+
+  validarRequisicao,
+];
+

@@ -66,7 +66,7 @@ export class CartoesService {
 
     const cartoes = cartoesModel.map((c) => {
       const entidade = new CartaoCreditoEntity({
-        uuid: c.uuid,
+        uuid_cartao: c.uuid_cartao,
         nome: c.nome,
         bandeira: c.bandeira,
         ultimos4: c.ultimos4,
@@ -80,7 +80,7 @@ export class CartoesService {
       const limiteUsado = fatura ? numero(fatura.totalLancamentos) - numero(fatura.totalPago) : 0;
 
       return {
-        uuid: entidade.uuid,
+        uuid_cartao: entidade.uuid_cartao,
         nome: entidade.nome,
         bandeira: entidade.bandeira,
         ultimos4: entidade.ultimos4,
@@ -103,7 +103,7 @@ export class CartoesService {
     }
 
     const entidadeSelecionada = new CartaoCreditoEntity({
-      uuid: cartaoSelecionadoModel.uuid,
+      uuid_cartao: cartaoSelecionadoModel.uuid_cartao,
       nome: cartaoSelecionadoModel.nome,
       bandeira: cartaoSelecionadoModel.bandeira,
       ultimos4: cartaoSelecionadoModel.ultimos4,
@@ -182,10 +182,10 @@ export class CartoesService {
     return {
       periodo: { ano, mes },
       cartoes,
-      cartaoSelecionadoUuid: entidadeSelecionada.uuid,
+      cartaoSelecionadoUuid: entidadeSelecionada.uuid_cartao,
       detalhes: {
         resumoCartao: {
-          uuid: entidadeSelecionada.uuid,
+          uuid_cartao: entidadeSelecionada.uuid_cartao,
           nome: entidadeSelecionada.nome,
           bandeira: entidadeSelecionada.bandeira,
           ultimos4: entidadeSelecionada.ultimos4,

@@ -1,5 +1,5 @@
 import express from "express";
-import { obterVisaoGeralCartoesValidate, criarCartaoCreditoValidate  } from "./CartoesValidate.js";
+import { obterVisaoGeralCartoesValidate, criarCartaoCreditoValidate, criarLancamentoCartaoValidate  } from "./CartoesValidate.js";
 
 const router = express.Router();
 

@@ -234,7 +234,7 @@ const initializeServer = async () => {
         app.use(UserRoutes(userController));
         app.use(GastoMesRoutes(gastoMesController));
         app.use(GastosFixosRoutes(gastosFixosController));
-        app.use('api/', CartoesRoutes(DependencyInjector.get("CartoesController")));
+        app.use('/api/', CartoesRoutes(DependencyInjector.get("CartoesController")));
         app.use(manipulador404);
         app.use(manipuladorDeErros);
         console.log('Rotas carregadas com sucesso!');
