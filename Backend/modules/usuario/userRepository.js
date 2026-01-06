@@ -17,7 +17,6 @@ class UserRepository {
         const params = [Number(valor), Number(id_usuario), Number(valor)];
 
         try {
-            // ✅ com transação
             if (connection) {
             const [result] = await connection.query(sql, params);
 
@@ -69,7 +68,6 @@ class UserRepository {
     }
 
 async atualizarUsuario(idUsuario, dadosParaAtualizacao) {
-    console.log("dadosParaAtualizacao:", dadosParaAtualizacao);
     const colunasParaAtualizar = Object.keys(dadosParaAtualizacao);
 
     const clausulaSet = colunasParaAtualizar
@@ -108,7 +106,6 @@ async atualizarUsuario(idUsuario, dadosParaAtualizacao) {
             SELECT saldo_atual FROM Usuarios
             WHERE id_usuario = ?;
         `;
-
         try {
             const saldo = await this.Database.executaComando(sql, [userId]);
             return saldo;
@@ -124,7 +121,6 @@ async atualizarUsuario(idUsuario, dadosParaAtualizacao) {
             SET saldo_atual = ?
             WHERE id_usuario = ?`
         ;
-
         try {
             const resultado = await this.Database.executaComando(sql, [novoSaldo, userId]);
             return resultado;
