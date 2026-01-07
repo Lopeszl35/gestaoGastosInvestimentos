@@ -2,6 +2,7 @@ import { sequelize } from "../../database/sequelize.js";
 import { CartaoCreditoEntity } from "./domain/CartaoCreditoEntity.js";
 import { CartaoLancamentoEntity } from "./domain/CartaoLancamentoEntity.js"
 import naoEncontrado from "../../errors/naoEncontrado.js";
+import RequisicaoIncorreta from "../../errors/RequisicaoIncorreta.js";
 import crypto from "crypto";
 
 function numero(valor) {
@@ -220,6 +221,24 @@ export class CartoesService {
       diaVencimento: dadosCartao.diaVencimento,
       ativo: true,
     });
+
+    const nomeNorm = String(entidade.nome ?? "").trim().toLowerCase();
+    const bandeiraNorm = String(entidade.bandeira ?? "").trim().toLowerCase();
+    const ultimos4Norm = String(entidade.ultimos4 ?? "").trim(); // não faz sentido lower
+
+    const jaExiste = await this.cartoesRepositorio.existeCartaoAtivoIgual({
+      idUsuario,
+      nomeNorm,
+      bandeiraNorm,
+      ultimos4Norm,
+    });
+
+    if (jaExiste) {
+      throw new RequisicaoIncorreta(
+        "Cartão já cadastrado.",
+        ["Já existe um cartão ativo com o mesmo nome/bandeira/últimos 4 dígitos."]
+      );
+    }
 
     const criadoModel = await this.cartoesRepositorio.criarCartaoParaUsuario({
       idUsuario,

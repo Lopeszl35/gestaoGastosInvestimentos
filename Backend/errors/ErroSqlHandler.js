@@ -43,6 +43,10 @@ class ErroSqlHandler {
   static erroDuplicado(error) {
     const msg = this._getMensagemSql(error);
 
+      if (msg.includes("uq_cartao_unico_usuario_ativo")) {
+        return new RequisicaoIncorreta("Cartão já cadastrado.");
+      }
+
     // mantém sua regra atual
     if (msg.includes("email")) {
       return new RequisicaoIncorreta("Email já cadastrado.");

@@ -75,6 +75,21 @@ CartaoCreditoModel.init(
       type: DataTypes.DATE,
       field: "updated_at",
     },
+    nomeNorm: {
+      type: DataTypes.STRING(120),
+      allowNull: false,
+      field: "nome_norm",
+    },
+    bandeiraNorm: {
+      type: DataTypes.STRING(30),
+      allowNull: false,
+      field: "bandeira_norm",
+    },
+    ultimos4Norm: {
+      type: DataTypes.STRING(4),
+      allowNull: false,
+      field: "ultimos4_norm",
+    },
   },
   {
     sequelize,
