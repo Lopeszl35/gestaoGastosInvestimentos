@@ -53,6 +53,7 @@ export function useGastosVariaveis() {
         return;
       }
       const limiteGastosMes = await getLimiteGastoMes((Number(idUsuario)), new Date().getFullYear(), new Date().getMonth() + 1);
+      console.log("limiteGastosMes: ", limiteGastosMes);
       setConfiguracoesGastoMes(limiteGastosMes);
       setProgressoMes(categoriasArray[0].percentualGastoCategoriaMes);
       const limiteGastosNoMes = Number(limiteGastosMes.limite_gasto_mes) || 0;
