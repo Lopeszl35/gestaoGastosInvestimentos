@@ -1,1 +1,1 @@
-export const API_URL = "http://192.168.1.9:3000";
+export const API_URL = "https://backendgestaogastos-production-7a4d.up.railway.app";
