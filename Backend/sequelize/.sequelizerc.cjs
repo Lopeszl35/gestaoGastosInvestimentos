@@ -1,6 +1,0 @@
-const path = require("path");
-
-module.exports = {
-  config: path.resolve("sequelize/config.cjs"),
-  "migrations-path": path.resolve("sequelize/migrations"),
-};
