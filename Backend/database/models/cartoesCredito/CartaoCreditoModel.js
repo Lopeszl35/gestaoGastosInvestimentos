@@ -94,6 +94,20 @@ CartaoCreditoModel.init(
   {
     sequelize,
     tableName: "cartoes_credito",
-    timestamps: false,
+    timestamps: true,
+    createdAt: "created_at",
+    updatedAt: "updated_at",
+
+    hooks: {
+      beforeValidate: (instance) => {
+        const nome = String(instance.nome ?? "").trim().toLowerCase();
+        const bandeira = String(instance.bandeira ?? "").trim().toLowerCase();
+        const ultimos4 = String(instance.ultimos4 ?? "").trim();
+
+        if (!instance.nomeNorm) instance.nomeNorm = nome.toLowerCase();
+        if (!instance.bandeiraNorm) instance.bandeiraNorm = bandeira.toLowerCase();
+        if (!instance.ultimos4Norm) instance.ultimos4Norm = ultimos4; // não precisa lower
+      }
+    }
   }
 );
