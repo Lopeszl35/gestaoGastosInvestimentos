@@ -54,10 +54,12 @@ export function useGastosVariaveis() {
       }
       const limiteGastosMes = await getLimiteGastoMes((Number(idUsuario)), new Date().getFullYear(), new Date().getMonth() + 1);
       console.log("limiteGastosMes: ", limiteGastosMes);
+
       setConfiguracoesGastoMes(limiteGastosMes);
       setProgressoMes(categoriasArray[0].percentualGastoCategoriaMes);
-      const limiteGastosNoMes = Number(limiteGastosMes.limite_gasto_mes) || 0;
-      const gastoTotalDoMes = Number(limiteGastosMes.gasto_atual_mes) || 0;
+
+      const limiteGastosNoMes = Number(limiteGastosMes?.limite_gasto_mes) || 0;
+      const gastoTotalDoMes = Number(limiteGastosMes?.gasto_atual_mes) || 0;
 
       setGastosLimiteMes(Number.isFinite(limiteGastosNoMes) ? limiteGastosNoMes : 0);
       setGastosTotalMes(Number.isFinite(gastoTotalDoMes) ? gastoTotalDoMes : 0);

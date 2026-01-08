@@ -12,8 +12,9 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.lopeszl35.gestaogastosinvestimentos",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/logo.png",
         "backgroundColor": "#ffffff"
       }
     },
@@ -37,6 +38,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5ae044b4-50d5-42d9-8c8a-9c9333cce89d"
+      }
     }
   }
 }
