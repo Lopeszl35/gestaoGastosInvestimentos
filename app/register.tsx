@@ -32,19 +32,33 @@ const Register: React.FC = () => {
   const { isPasswordVisible, togglePasswordVisibility } =
     useTogglePasswordVisibility();
 
+    async function handlerRegisterValidetor() {
+      const erros = [];
+
+      if (!name || !email || !password || !perfilFinanceiro || !salarioMensal) {
+        erros.push("Preencha todos os campos obrigatórios");
+      }
+      if (!email.includes("@") || !email.includes(".com")) {
+        erros.push("Email inválido");
+      }
+      if (password.length < 8) {
+        erros.push("A senha deve ter pelo menos 8 caracteres");
+      }
+      if (erros.length > 0) {
+        setMessageError(erros.join("\n"));
+      } else {
+        return true;
+      }
+    }
+
   async function handleRegister() {
     setLoading(true);
-    if (!name || !email || !password || !perfilFinanceiro || !salarioMensal) {
-      setMessageError("Preencha todos os campos obrigatórios");
+    const validado = await handlerRegisterValidetor();
+
+    if (!validado) {
       setLoading(false);
-    } else if (!email.includes("@") || !email.includes(".com")) {
-      setMessageError("Email inválido");
-      setLoading(false);
-    } else if (password.length < 8) {
-      setMessageError("A senha deve ter pelo menos 8 caracteres");
-      setLoading(false);
+      return;
     }
-    setMessageError("");
 
     try {
       const user: UserCadastro = {
