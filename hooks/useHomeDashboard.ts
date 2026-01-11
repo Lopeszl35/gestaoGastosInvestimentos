@@ -49,7 +49,7 @@ export function useHomeDashboard(userId?: number | string): UseHomeDashboardResu
     setError(null);
     setLoading(true);
     try {
-      const data = await getUserData(userId);
+      const data = await getUserData(Number(userId));
       setUserData(data);
     } catch (e) {
       console.error("Erro ao buscar dados do usuário:", e);
@@ -76,7 +76,7 @@ export function useHomeDashboard(userId?: number | string): UseHomeDashboardResu
 
   const saveSaldoAtual = async (saldo: number) => {
     if (!userId) return;
-    await atualizarUserSaldo(saldo, userId);
+    await atualizarUserSaldo(saldo, Number(userId));
     await fetchUser();
   };
 

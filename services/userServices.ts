@@ -35,6 +35,7 @@ export const loginUser = async (email: string, senha: string): Promise<any> => {
     });
 
     const data = await response.json();
+    console.log("User data:", data);
 
     if (!response.ok) {
       throw new Error(data.message || "Erro ao fazer login.");

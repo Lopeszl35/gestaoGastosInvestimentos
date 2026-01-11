@@ -34,6 +34,11 @@ export function useGastosVariaveis() {
   async (opts?: { showOverlay?: boolean }) => {
     const showOverlay = opts?.showOverlay ?? false;
 
+    if (!user || !user.id_usuario) {
+        console.warn("Usuário não definido ao buscar categorias.");
+        return; 
+    }
+
     try {
       setError(null);
       if (showOverlay) setOverlayLoading(true);

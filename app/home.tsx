@@ -37,7 +37,6 @@ const Home: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [userData, setUserData] = useState<UserData | null>(null);
-  const [showModalConfigSaldo, setShowModalConfigSaldo] = useState(false);
 
   // Mock (até integrar com seu módulo real)
   const stats = useMemo(

@@ -17,6 +17,7 @@ import { Link, useRouter } from "expo-router";
 import { useTogglePasswordVisibility } from "@/hooks/useTogglePasswordVisibility";
 import { loginUser } from "@/services/userServices";
 import { useUser } from "@/context/UserContext";
+import { storeUser } from "@/utils/tokenStorage";
 
 
 
@@ -46,6 +47,7 @@ const Login: React.FC = () => {
       const data = await loginUser(email, password);
       // Atualiza o contexto do usuário com os dados retornados do backend
       setUser(data.user);
+      await storeUser(data.user);
       
       router.push("/home");
       setLoading(false);
